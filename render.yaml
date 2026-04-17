@@ -1,0 +1,31 @@
+# Render Blueprint Specification
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: badshop-api
+    env: node
+    region: singapore
+    plan: free
+    branch: main
+    rootDir: server
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: CLIENT_URL
+        sync: false
