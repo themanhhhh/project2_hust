@@ -2,7 +2,7 @@
 
 import { use } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Package, MapPin, CreditCard, Loader2, AlertCircle, Truck, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { Header } from '@/components/shop/Header';
 import { Footer } from '@/components/shop/Footer';
@@ -71,6 +71,8 @@ function parseTrackingHistory(trackingHistory: any) {
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: orderIdentifier } = use(params);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { isAuthenticated, loading: authLoading } = useAuth();
 
   // Fetch order - try by order number first (ORD-xxx format), fallback to ID
@@ -87,7 +89,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   // Redirect if not authenticated
   if (!authLoading && !isAuthenticated) {
-    router.replace('/login');
+    const search = searchParams.toString();
+    const redirectPath = `${pathname}${search ? `?${search}` : ''}`;
+    router.replace(`/login?redirect=${encodeURIComponent(redirectPath)}`);
     return null;
   }
 

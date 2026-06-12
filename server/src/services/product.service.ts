@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma';
+import { AppError } from '../middlewares/error.middleware';
 
 const PRODUCT_INCLUDE = {
   category: true,
@@ -8,12 +9,32 @@ const PRODUCT_INCLUDE = {
 };
 
 export class ProductService {
+  private async ensureSellerIsActive(sellerId?: string | null) {
+    if (!sellerId) {
+      return;
+    }
+
+    const seller = await prisma.seller.findFirst({
+      where: {
+        id: sellerId,
+        is_delete: false,
+        is_active: true,
+        status: 'active',
+      },
+      select: { id: true },
+    });
+
+    if (!seller) {
+      throw new AppError('Seller must be active after KYB approval before managing products', 403);
+    }
+  }
+
   async findAll(limit?: number) {
     return prisma.product.findMany({
       where: { is_delete: false, is_active: true },
       include: PRODUCT_INCLUDE,
       ...(limit ? { take: limit } : {}),
-      orderBy: { created_at: 'desc' } as any,
+      orderBy: { id: 'desc' },
     });
   }
 
@@ -50,6 +71,8 @@ export class ProductService {
 
   async create(data: any) {
     const { images, ...productData } = data;
+    await this.ensureSellerIsActive(productData.seller_id);
+
     const product = await prisma.product.create({
       data: {
         ...productData,
@@ -70,6 +93,17 @@ export class ProductService {
 
   async update(id: string, data: any) {
     const { images, ...productData } = data;
+    const existingProduct = await prisma.product.findFirst({
+      where: { id, is_delete: false },
+      select: { seller_id: true },
+    });
+
+    if (!existingProduct) {
+      return null;
+    }
+
+    await this.ensureSellerIsActive(productData.seller_id ?? existingProduct.seller_id);
+
     if (images && Array.isArray(images)) {
       await prisma.productImage.deleteMany({ where: { product_id: id } });
       if (images.length > 0) {

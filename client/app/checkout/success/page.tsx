@@ -40,17 +40,21 @@ const paymentLabels: Record<string, string> = {
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
-  const orderNumber = searchParams.get('order');
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(!!orderNumber);
+  const orderNumbersParam = searchParams.get('orders') || searchParams.get('order') || '';
+  const orderNumbers = orderNumbersParam
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(orderNumbers.length > 0);
 
   useEffect(() => {
-    if (!orderNumber) return;
+    if (orderNumbers.length === 0) return;
 
     const fetchOrder = async () => {
       try {
-        const data = await orderApi.getByOrderNumber(orderNumber);
-        setOrder(data as any);
+        const data = await Promise.all(orderNumbers.map((orderNumber) => orderApi.getByOrderNumber(orderNumber)));
+        setOrders(data as any);
       } catch (err) {
         console.error('Failed to fetch order:', err);
       } finally {
@@ -58,7 +62,9 @@ function CheckoutSuccessContent() {
       }
     };
     fetchOrder();
-  }, [orderNumber]);
+  }, [orderNumbersParam]);
+
+  const grandTotal = orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('vi-VN', {
@@ -100,51 +106,62 @@ function CheckoutSuccessContent() {
             <Loader2 className="h-6 w-6 animate-spin text-gray-400 mr-2" />
             <span className="text-muted-foreground">Đang tải thông tin đơn hàng...</span>
           </div>
-        ) : order ? (
+        ) : orders.length > 0 ? (
           <>
-            {/* Order Info */}
-            <Card className="mb-6">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">
-                      Mã đơn hàng
-                    </p>
-                    <p className="font-mono font-medium">{order.order_number}</p>
+            {orders.map((order) => (
+              <Card key={order.id} className="mb-6">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">
+                        Mã đơn hàng
+                      </p>
+                      <p className="font-mono font-medium">{order.order_number}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">
+                        Ngày đặt
+                      </p>
+                      <p className="font-medium">{formatDate(order.created_at)}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">
-                      Ngày đặt
-                    </p>
-                    <p className="font-medium">{formatDate(order.created_at)}</p>
+
+                  <Separator className="my-4" />
+
+                  {order.order_items && order.order_items.length > 0 && (
+                    <div className="space-y-3">
+                      {order.order_items.map((item) => (
+                        <div key={item.id} className="flex justify-between text-sm">
+                          <span>
+                            {item.product?.name || 'Sản phẩm'}{' '}
+                            <span className="text-muted-foreground">x{item.quantity}</span>
+                          </span>
+                          <span>{formatPrice(item.price * item.quantity)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <Separator className="my-4" />
+
+                  <div className="flex justify-between font-medium text-lg">
+                    <span>Tổng đơn</span>
+                    <span>{formatPrice(order.total)}</span>
                   </div>
-                </div>
+                </CardContent>
+              </Card>
+            ))}
 
-                <Separator className="my-4" />
-
-                {/* Items */}
-                {order.order_items && order.order_items.length > 0 && (
-                  <div className="space-y-3">
-                    {order.order_items.map((item) => (
-                      <div key={item.id} className="flex justify-between text-sm">
-                        <span>
-                          {item.product?.name || 'Sản phẩm'}{' '}
-                          <span className="text-muted-foreground">x{item.quantity}</span>
-                        </span>
-                        <span>{formatPrice(item.price * item.quantity)}</span>
-                      </div>
-                    ))}
+            {orders.length > 1 && (
+              <Card className="mb-6">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between font-semibold text-lg">
+                    <span>Tổng tất cả đơn</span>
+                    <span>{formatPrice(grandTotal)}</span>
                   </div>
-                )}
-
-                <Separator className="my-4" />
-
-                <div className="flex justify-between font-medium text-lg">
-                  <span>Tổng cộng</span>
-                  <span>{formatPrice(order.total)}</span>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </>
         ) : (
           /* Fallback when no order number in URL */

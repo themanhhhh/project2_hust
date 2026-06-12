@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
@@ -12,16 +12,20 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!loading) {
       if (!isAuthenticated) {
-        router.push('/account');
+        const search = searchParams.toString();
+        const redirectPath = `${pathname}${search ? `?${search}` : ''}`;
+        router.push(`/login?redirect=${encodeURIComponent(redirectPath)}`);
       } else if (requireAdmin && user?.role !== 'admin') {
         router.push('/');
       }
     }
-  }, [loading, isAuthenticated, user, requireAdmin, router]);
+  }, [loading, isAuthenticated, pathname, requireAdmin, router, searchParams, user]);
 
   if (loading) {
     return (

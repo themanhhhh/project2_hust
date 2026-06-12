@@ -5,8 +5,11 @@ async function seed() {
   console.log('🌱 Starting database seed...');
 
   try {
+    const hash = '$2a$10$QWWPdNlZZ6CNhOqjKg5fZuHLZqVjXdGxRH7VfKfKpqPZk.hEqgBi.';
+
     // Clear existing data (respecting FK constraints)
     console.log('🗑️  Clearing existing data...');
+    await prisma.shipment.deleteMany();
     await prisma.orderItem.deleteMany();
     await prisma.order.deleteMany();
     await prisma.review.deleteMany();
@@ -18,6 +21,8 @@ async function seed() {
     await prisma.cartItem.deleteMany();
     await prisma.cart.deleteMany();
     await prisma.product.deleteMany();
+    await prisma.kyb.deleteMany();
+    await prisma.seller.deleteMany();
     await prisma.category.deleteMany();
     await prisma.brand.deleteMany();
     await prisma.user.deleteMany();
@@ -53,39 +58,53 @@ async function seed() {
     console.log('✅ Created 6 brands');
 
     // ============================================
+    // SELLERS
+    // ============================================
+    console.log('🏪 Seeding sellers...');
+    const [sellerYonex, sellerVictor] = await Promise.all([
+      prisma.seller.create({ data: { email: 'seller.yonex@badshop.com', password_hash: hash, store_name: 'Yonex Official Store', description: 'Official Yonex seller', status: 'active' } }),
+      prisma.seller.create({ data: { email: 'seller.victor@badshop.com', password_hash: hash, store_name: 'Victor Premium Store', description: 'Official Victor seller', status: 'active' } }),
+    ]);
+    await Promise.all([
+      prisma.kyb.create({ data: { seller_id: sellerYonex.id, business_name: 'Yonex Official Store', business_registration_number: 'KYB-YONEX-001', status: 'approved' } }),
+      prisma.kyb.create({ data: { seller_id: sellerVictor.id, business_name: 'Victor Premium Store', business_registration_number: 'KYB-VICTOR-001', status: 'approved' } }),
+    ]);
+    console.log('✅ Created 2 active sellers with approved KYB');
+
+    // ============================================
     // PRODUCTS
     // ============================================
     console.log('🏸 Seeding products...');
     const products = await Promise.all([
       // Yonex Rackets
-      prisma.product.create({ data: { name: 'Yonex Astrox 100 ZZ', slug: 'yonex-astrox-100-zz', sku: 'YNX-AX100ZZ', price: 4500000, original_price: 5200000, category_id: catRacket.id, brand_id: brandYonex.id, stock_quantity: 25, badge: 'bestseller', rating: 4.9 } }),
-      prisma.product.create({ data: { name: 'Yonex Nanoflare 800 Pro', slug: 'yonex-nanoflare-800-pro', sku: 'YNX-NF800P', price: 4200000, category_id: catRacket.id, brand_id: brandYonex.id, stock_quantity: 30, badge: 'new', rating: 4.8 } }),
-      prisma.product.create({ data: { name: 'Yonex Arcsaber 11 Pro', slug: 'yonex-arcsaber-11-pro', sku: 'YNX-AS11P', price: 3800000, original_price: 4200000, category_id: catRacket.id, brand_id: brandYonex.id, stock_quantity: 20, badge: 'sale', rating: 4.7 } }),
-      prisma.product.create({ data: { name: 'Yonex Duora 10', slug: 'yonex-duora-10', sku: 'YNX-D10', price: 3500000, category_id: catRacket.id, brand_id: brandYonex.id, stock_quantity: 15, badge: 'none', rating: 4.6 } }),
+      prisma.product.create({ data: { name: 'Yonex Astrox 100 ZZ', slug: 'yonex-astrox-100-zz', sku: 'YNX-AX100ZZ', price: 4500000, original_price: 5200000, category_id: catRacket.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 25, badge: 'bestseller', rating: 4.9 } }),
+      prisma.product.create({ data: { name: 'Yonex Nanoflare 800 Pro', slug: 'yonex-nanoflare-800-pro', sku: 'YNX-NF800P', price: 4200000, category_id: catRacket.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 30, badge: 'new', rating: 4.8 } }),
+      prisma.product.create({ data: { name: 'Yonex Arcsaber 11 Pro', slug: 'yonex-arcsaber-11-pro', sku: 'YNX-AS11P', price: 3800000, original_price: 4200000, category_id: catRacket.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 20, badge: 'sale', rating: 4.7 } }),
+      prisma.product.create({ data: { name: 'Yonex Duora 10', slug: 'yonex-duora-10', sku: 'YNX-D10', price: 3500000, category_id: catRacket.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 15, badge: 'none', rating: 4.6 } }),
       // Victor Rackets
-      prisma.product.create({ data: { name: 'Victor Thruster K Falcon', slug: 'victor-thruster-k-falcon', sku: 'VCT-TKF', price: 3200000, original_price: 3800000, category_id: catRacket.id, brand_id: brandVictor.id, stock_quantity: 18, badge: 'sale', rating: 4.5 } }),
-      prisma.product.create({ data: { name: 'Victor Auraspeed 90K', slug: 'victor-auraspeed-90k', sku: 'VCT-AS90K', price: 4000000, category_id: catRacket.id, brand_id: brandVictor.id, stock_quantity: 22, badge: 'new', rating: 4.7 } }),
-      prisma.product.create({ data: { name: 'Victor DriveX 9X', slug: 'victor-drivex-9x', sku: 'VCT-DX9X', price: 2800000, category_id: catRacket.id, brand_id: brandVictor.id, stock_quantity: 35, badge: 'bestseller', rating: 4.6 } }),
+      prisma.product.create({ data: { name: 'Victor Thruster K Falcon', slug: 'victor-thruster-k-falcon', sku: 'VCT-TKF', price: 3200000, original_price: 3800000, category_id: catRacket.id, brand_id: brandVictor.id, seller_id: sellerVictor.id, stock_quantity: 18, badge: 'sale', rating: 4.5 } }),
+      prisma.product.create({ data: { name: 'Victor Auraspeed 90K', slug: 'victor-auraspeed-90k', sku: 'VCT-AS90K', price: 4000000, category_id: catRacket.id, brand_id: brandVictor.id, seller_id: sellerVictor.id, stock_quantity: 22, badge: 'new', rating: 4.7 } }),
+      prisma.product.create({ data: { name: 'Victor DriveX 9X', slug: 'victor-drivex-9x', sku: 'VCT-DX9X', price: 2800000, category_id: catRacket.id, brand_id: brandVictor.id, seller_id: sellerVictor.id, stock_quantity: 35, badge: 'bestseller', rating: 4.6 } }),
       // Lining
-      prisma.product.create({ data: { name: 'Lining Aeronaut 9000', slug: 'lining-aeronaut-9000', sku: 'LN-AN9000', price: 3600000, original_price: 4000000, category_id: catRacket.id, brand_id: brandLining.id, stock_quantity: 20, badge: 'sale', rating: 4.5 } }),
-      prisma.product.create({ data: { name: 'Lining N7 II Light', slug: 'lining-n7-ii-light', sku: 'LN-N7IIL', price: 2500000, category_id: catRacket.id, brand_id: brandLining.id, stock_quantity: 40, badge: 'none', rating: 4.3 } }),
+      prisma.product.create({ data: { name: 'Lining Aeronaut 9000', slug: 'lining-aeronaut-9000', sku: 'LN-AN9000', price: 3600000, original_price: 4000000, category_id: catRacket.id, brand_id: brandLining.id, seller_id: sellerYonex.id, stock_quantity: 20, badge: 'sale', rating: 4.5 } }),
+      prisma.product.create({ data: { name: 'Lining N7 II Light', slug: 'lining-n7-ii-light', sku: 'LN-N7IIL', price: 2500000, category_id: catRacket.id, brand_id: brandLining.id, seller_id: sellerYonex.id, stock_quantity: 40, badge: 'none', rating: 4.3 } }),
       // Shoes
-      prisma.product.create({ data: { name: 'Yonex Power Cushion 65 Z3', slug: 'yonex-power-cushion-65-z3', sku: 'YNX-PC65Z3', price: 3200000, category_id: catShoes.id, brand_id: brandYonex.id, stock_quantity: 50, badge: 'bestseller', rating: 4.8 } }),
-      prisma.product.create({ data: { name: 'Yonex Aerus Z', slug: 'yonex-aerus-z', sku: 'YNX-AZ', price: 3800000, original_price: 4200000, category_id: catShoes.id, brand_id: brandYonex.id, stock_quantity: 30, badge: 'sale', rating: 4.9 } }),
-      prisma.product.create({ data: { name: 'Victor A922', slug: 'victor-a922', sku: 'VCT-A922', price: 2800000, category_id: catShoes.id, brand_id: brandVictor.id, stock_quantity: 45, badge: 'new', rating: 4.6 } }),
-      prisma.product.create({ data: { name: 'Lining Ranger TD', slug: 'lining-ranger-td', sku: 'LN-RTD', price: 2200000, original_price: 2600000, category_id: catShoes.id, brand_id: brandLining.id, stock_quantity: 60, badge: 'sale', rating: 4.4 } }),
+      prisma.product.create({ data: { name: 'Yonex Power Cushion 65 Z3', slug: 'yonex-power-cushion-65-z3', sku: 'YNX-PC65Z3', price: 3200000, category_id: catShoes.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 50, badge: 'bestseller', rating: 4.8 } }),
+      prisma.product.create({ data: { name: 'Yonex Aerus Z', slug: 'yonex-aerus-z', sku: 'YNX-AZ', price: 3800000, original_price: 4200000, category_id: catShoes.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 30, badge: 'sale', rating: 4.9 } }),
+      prisma.product.create({ data: { name: 'Victor A922', slug: 'victor-a922', sku: 'VCT-A922', price: 2800000, category_id: catShoes.id, brand_id: brandVictor.id, seller_id: sellerVictor.id, stock_quantity: 45, badge: 'new', rating: 4.6 } }),
+      prisma.product.create({ data: { name: 'Lining Ranger TD', slug: 'lining-ranger-td', sku: 'LN-RTD', price: 2200000, original_price: 2600000, category_id: catShoes.id, brand_id: brandLining.id, seller_id: sellerYonex.id, stock_quantity: 60, badge: 'sale', rating: 4.4 } }),
       // Clothes
-      prisma.product.create({ data: { name: 'Yonex Men Polo Shirt 2024', slug: 'yonex-men-polo-shirt-2024', sku: 'YNX-MPS24', price: 850000, category_id: catClothes.id, brand_id: brandYonex.id, stock_quantity: 100, badge: 'new', rating: 4.5 } }),
-      prisma.product.create({ data: { name: 'Victor Women Dress 2024', slug: 'victor-women-dress-2024', sku: 'VCT-WD24', price: 950000, original_price: 1100000, category_id: catClothes.id, brand_id: brandVictor.id, stock_quantity: 80, badge: 'sale', rating: 4.6 } }),
+      prisma.product.create({ data: { name: 'Yonex Men Polo Shirt 2024', slug: 'yonex-men-polo-shirt-2024', sku: 'YNX-MPS24', price: 850000, category_id: catClothes.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 100, badge: 'new', rating: 4.5 } }),
+      prisma.product.create({ data: { name: 'Victor Women Dress 2024', slug: 'victor-women-dress-2024', sku: 'VCT-WD24', price: 950000, original_price: 1100000, category_id: catClothes.id, brand_id: brandVictor.id, seller_id: sellerVictor.id, stock_quantity: 80, badge: 'sale', rating: 4.6 } }),
       // Accessories
-      prisma.product.create({ data: { name: 'Yonex Grip Tape AC102', slug: 'yonex-grip-tape-ac102', sku: 'YNX-GT-AC102', price: 45000, category_id: catAccessories.id, brand_id: brandYonex.id, stock_quantity: 500, badge: 'bestseller', rating: 4.7 } }),
-      prisma.product.create({ data: { name: 'Yonex String BG65', slug: 'yonex-string-bg65', sku: 'YNX-BG65', price: 120000, category_id: catAccessories.id, brand_id: brandYonex.id, stock_quantity: 300, badge: 'bestseller', rating: 4.8 } }),
+      prisma.product.create({ data: { name: 'Yonex Grip Tape AC102', slug: 'yonex-grip-tape-ac102', sku: 'YNX-GT-AC102', price: 45000, category_id: catAccessories.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 500, badge: 'bestseller', rating: 4.7 } }),
+      prisma.product.create({ data: { name: 'Yonex String BG65', slug: 'yonex-string-bg65', sku: 'YNX-BG65', price: 120000, category_id: catAccessories.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 300, badge: 'bestseller', rating: 4.8 } }),
       // Bags
-      prisma.product.create({ data: { name: 'Yonex Pro Racquet Bag 9pcs', slug: 'yonex-pro-racquet-bag-9pcs', sku: 'YNX-PRB9', price: 2500000, original_price: 2800000, category_id: catBags.id, brand_id: brandYonex.id, stock_quantity: 25, badge: 'sale', rating: 4.7 } }),
-      prisma.product.create({ data: { name: 'Victor Backpack BR9012', slug: 'victor-backpack-br9012', sku: 'VCT-BP9012', price: 1200000, category_id: catBags.id, brand_id: brandVictor.id, stock_quantity: 40, badge: 'none', rating: 4.5 } }),
+      prisma.product.create({ data: { name: 'Yonex Pro Racquet Bag 9pcs', slug: 'yonex-pro-racquet-bag-9pcs', sku: 'YNX-PRB9', price: 2500000, original_price: 2800000, category_id: catBags.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 25, badge: 'sale', rating: 4.7 } }),
+      prisma.product.create({ data: { name: 'Victor Backpack BR9012', slug: 'victor-backpack-br9012', sku: 'VCT-BP9012', price: 1200000, category_id: catBags.id, brand_id: brandVictor.id, seller_id: sellerVictor.id, stock_quantity: 40, badge: 'none', rating: 4.5 } }),
       // Shuttlecocks
-      prisma.product.create({ data: { name: 'Yonex Aerosensa 50', slug: 'yonex-aerosensa-50', sku: 'YNX-AS50', price: 480000, category_id: catShuttlecock.id, brand_id: brandYonex.id, stock_quantity: 200, badge: 'bestseller', rating: 4.9 } }),
-      prisma.product.create({ data: { name: 'Victor Gold Champion', slug: 'victor-gold-champion', sku: 'VCT-GC', price: 380000, original_price: 420000, category_id: catShuttlecock.id, brand_id: brandVictor.id, stock_quantity: 150, badge: 'sale', rating: 4.6 } }),
+      prisma.product.create({ data: { name: 'Yonex Aerosensa 50', slug: 'yonex-aerosensa-50', sku: 'YNX-AS50', price: 480000, category_id: catShuttlecock.id, brand_id: brandYonex.id, seller_id: sellerYonex.id, stock_quantity: 200, badge: 'bestseller', rating: 4.9 } }),
+      prisma.product.create({ data: { name: 'Victor Gold Champion', slug: 'victor-gold-champion', sku: 'VCT-GC', price: 380000, original_price: 420000, category_id: catShuttlecock.id, brand_id: brandVictor.id, seller_id: sellerVictor.id, stock_quantity: 150, badge: 'sale', rating: 4.6 } }),
     ]);
     console.log(`✅ Created ${products.length} products`);
 
@@ -102,7 +121,6 @@ async function seed() {
     // USERS
     // ============================================
     console.log('👤 Seeding users...');
-    const hash = '$2a$10$QWWPdNlZZ6CNhOqjKg5fZuHLZqVjXdGxRH7VfKfKpqPZk.hEqgBi.';
     const [admin, u1, u2, u3, u4] = await Promise.all([
       prisma.user.create({ data: { email: 'admin@badshop.com', password_hash: hash, name: 'Admin User', phone: '0901234567', role: 'admin' } }),
       prisma.user.create({ data: { email: 'nguyen.van.a@gmail.com', password_hash: hash, name: 'Nguyễn Văn A', phone: '0912345678' } }),

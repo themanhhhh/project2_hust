@@ -15,23 +15,23 @@ export class OrderController extends BaseController {
   async findAll(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const result = await this.orderService.findAllWithFilters({ page, limit, search: req.query.search as string, status: req.query.status as string, date: req.query.date as string });
+    const result = await this.orderService.findAllWithFilters({ page, limit, search: req.query.search as string, status: req.query.status as string, date: req.query.date as string }, (req as any).user);
     res.json({ success: true, data: result.data, pagination: result.pagination });
   }
 
   async findByOrderNumber(req: Request, res: Response): Promise<void> {
-    const order = await this.orderService.findByOrderNumber(req.params.orderNumber);
+    const order = await this.orderService.findByOrderNumber(req.params.orderNumber, (req as any).user);
     if (!order) throw new AppError('Order not found', 404);
     res.json({ success: true, data: order });
   }
 
   async findByUser(req: Request, res: Response): Promise<void> {
-    const orders = await this.orderService.findByUser(req.params.userId);
+    const orders = await this.orderService.findByUser(req.params.userId, (req as any).user);
     res.json({ success: true, data: orders });
   }
 
   async findById(req: Request, res: Response): Promise<void> {
-    const order = await this.orderService.findById(req.params.id);
+    const order = await this.orderService.findById(req.params.id, (req as any).user);
     if (!order) throw new AppError('Order not found', 404);
     res.json({ success: true, data: order });
   }

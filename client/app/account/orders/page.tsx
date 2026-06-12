@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight, Loader2, Package, Truck } from 'lucide-react';
 import { Footer } from '@/components/shop/Footer';
 import { Header } from '@/components/shop/Header';
@@ -27,11 +27,15 @@ const statusMap: Record<string, { label: string; variant: 'default' | 'secondary
 
 export default function OrdersPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { data: orders, loading } = useUserOrders(user?.id || '');
 
   if (!authLoading && !isAuthenticated) {
-    router.replace('/login');
+    const search = searchParams.toString();
+    const redirectPath = `${pathname}${search ? `?${search}` : ''}`;
+    router.replace(`/login?redirect=${encodeURIComponent(redirectPath)}`);
     return null;
   }
 

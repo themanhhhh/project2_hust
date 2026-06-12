@@ -14,6 +14,7 @@ import {
   Collection,
 } from './types';
 import { getToken } from './auth';
+import { getSellerToken } from './seller-auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
@@ -37,7 +38,7 @@ async function fetchApi<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   
-  const token = getToken();
+  const token = getToken() || getSellerToken();
   
   const config: RequestInit = {
     headers: {
@@ -705,7 +706,6 @@ export const collectionApi = {
 // ============================================
 // SELLER API (Seller-scoped endpoints using Seller Token)
 // ============================================
-import { getSellerToken } from './seller-auth';
 
 async function fetchSellerApi<T>(
   endpoint: string,
@@ -757,18 +757,14 @@ export const sellerApi = {
     if (filters.search) params.append('search', filters.search);
     if (filters.status && filters.status !== 'all') params.append('status', filters.status);
     if (filters.date) params.append('date', filters.date);
-    const sellerToken = getSellerToken();
-    return fetch(`${API_BASE_URL}/orders?${params.toString()}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(sellerToken ? { 'Authorization': `Bearer ${sellerToken}` } : {}),
-      },
-    }).then(async (res) => {
-      if (!res.ok) throw new Error('API Error');
-      const json = await res.json();
-      return { data: json.data || [], pagination: json.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 } };
-    });
+    return fetchSellerApi(`/sellers/profile/orders${params.toString() ? `?${params.toString()}` : ''}`);
   },
+
+  updateMyOrder: (orderId: string, data: Partial<Order>): Promise<Order> =>
+    fetchSellerApi(`/sellers/profile/orders/${orderId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+
+  deleteMyOrder: (orderId: string): Promise<void> =>
+    fetchSellerApi(`/sellers/profile/orders/${orderId}`, { method: 'DELETE' }),
 };
 
 // Export all APIs as a single object for convenience

@@ -12,8 +12,18 @@ import { orderApi } from '@/lib/api';
 function VerifyOTPContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const orderId = searchParams.get('orderId') || '';
-  const orderNumber = searchParams.get('order') || '';
+  const orderIds = (searchParams.get('orderIds') || searchParams.get('orderId') || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const orderNumbers = (searchParams.get('orders') || searchParams.get('order') || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const currentIndex = Number(searchParams.get('index') || 0);
+  const orderId = orderIds[currentIndex] || '';
+  const orderNumber = orderNumbers[currentIndex] || '';
+  const totalOrders = Math.max(orderIds.length, orderNumbers.length, orderId ? 1 : 0);
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
@@ -25,8 +35,12 @@ function VerifyOTPContent() {
 
   // Auto-focus first input
   useEffect(() => {
+    setOtp(['', '', '', '', '', '']);
+    setError('');
+    setSuccess(false);
+    setCooldown(0);
     inputRefs.current[0]?.focus();
-  }, []);
+  }, [orderId]);
 
   // Cooldown timer for resend
   useEffect(() => {
@@ -85,7 +99,12 @@ function VerifyOTPContent() {
       if (result.success) {
         setSuccess(true);
         setTimeout(() => {
-          router.push(`/checkout/success?order=${orderNumber}`);
+          if (currentIndex < orderIds.length - 1) {
+            router.push(`/checkout/verify?orderIds=${encodeURIComponent(orderIds.join(','))}&orders=${encodeURIComponent(orderNumbers.join(','))}&index=${currentIndex + 1}`);
+            return;
+          }
+
+          router.push(`/checkout/success?orders=${encodeURIComponent(orderNumbers.join(','))}`);
         }, 1500);
       } else {
         setError(result.message || 'Mã OTP không đúng');
@@ -182,6 +201,12 @@ function VerifyOTPContent() {
                     <br />
                     Vui lòng nhập mã để xác nhận đơn hàng{' '}
                     <span className="font-mono font-medium text-foreground">{orderNumber}</span>
+                    {totalOrders > 1 ? (
+                      <>
+                        <br />
+                        Đơn {currentIndex + 1}/{totalOrders}
+                      </>
+                    ) : null}
                   </p>
                 </div>
 

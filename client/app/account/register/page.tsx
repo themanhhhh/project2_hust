@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -21,30 +22,28 @@ export default function RegisterPage() {
     confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
-      router.push('/');
+      router.replace('/');
     }
   }, [isAuthenticated, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp');
+      toast.error('Mật khẩu xác nhận không khớp');
       setLoading(false);
       return;
     }
 
     // Validate password length
     if (formData.password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự');
+      toast.error('Mật khẩu phải có ít nhất 6 ký tự');
       setLoading(false);
       return;
     }
@@ -58,12 +57,13 @@ export default function RegisterPage() {
       });
       
       if (result.success) {
+        toast.success('Đăng ký thành công.');
         router.push('/');
       } else {
-        setError(result.message || 'Đăng ký thất bại');
+        toast.error(result.message || 'Đăng ký thất bại');
       }
     } catch {
-      setError('Có lỗi xảy ra. Vui lòng thử lại.');
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -99,12 +99,6 @@ export default function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
-              {error && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                  {error}
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="name">
                   Họ và tên <span className="text-red-500">*</span>

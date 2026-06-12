@@ -12,7 +12,7 @@ import {
   Download,
   Loader2
 } from 'lucide-react';
-import { useOrders, useProducts, useUsers } from '@/hooks/useApi';
+import { useSellerOrders, useProducts, useUsers } from '@/hooks/useApi';
 import { formatPrice } from '@/lib/productMapper';
 import { AdminSelect } from '@/components/admin/AdminSelect';
 import { AdminLoading } from '@/components/admin/AdminLoading';
@@ -114,10 +114,11 @@ function getChartData(orders: any[], period: PeriodType, year: number, month: nu
 }
 
 export default function AdminReportsPage() {
-  const { data: orders, loading: ordersLoading } = useOrders();
+  const { data: sellerOrdersResult, loading: ordersLoading } = useSellerOrders({ page: 1, limit: 1000 });
   const { data: products, loading: productsLoading } = useProducts();
   const { data: usersResponse, loading: usersLoading } = useUsers();
   const users = usersResponse?.data || [];
+  const orders = sellerOrdersResult?.data || [];
 
   const now = new Date();
   const [period, setPeriod] = useState<PeriodType>('year');
@@ -128,7 +129,6 @@ export default function AdminReportsPage() {
 
   // Filter orders by date range
   const filteredOrders = useMemo(() => {
-    if (!orders) return [];
     const { start, end } = getDateRange(period, selectedYear, selectedMonth);
     return orders.filter((order: any) => {
       const orderDate = new Date(order.created_at || order.createdAt);
@@ -143,8 +143,6 @@ export default function AdminReportsPage() {
 
   // Calculate previous period stats to compute growth
   const previousPeriodStats = useMemo(() => {
-    if (!orders) return { revenue: 0, orders: 0 };
-    
     let prevStart: Date, prevEnd: Date;
     
     if (period === 'year') {

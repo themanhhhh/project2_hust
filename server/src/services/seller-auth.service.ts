@@ -28,7 +28,13 @@ export class SellerAuthService {
     if (!valid) throw new Error('Sai mật khẩu');
 
     const token = jwt.sign(
-      { id: seller.id, role: 'seller', store_name: seller.store_name },
+      {
+        id: seller.id,
+        userId: seller.id,
+        email: seller.email,
+        role: 'seller',
+        store_name: seller.store_name,
+      },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '7d' }
     );

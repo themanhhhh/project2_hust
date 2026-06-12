@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { useOrders, useShipmentByOrder } from '@/hooks/useApi';
+import { useSellerOrders, useShipmentByOrder } from '@/hooks/useApi';
 import { fulfillmentApi } from '@/lib/api';
 import { formatPrice } from '@/lib/productMapper';
 import { cn } from '@/lib/utils';
@@ -98,7 +98,7 @@ function parseTrackingHistory(trackingHistory: Shipment['tracking_history']) {
 }
 
 export default function AdminFulfillmentPage() {
-  const { data: orders, loading, refetch } = useOrders();
+  const { data: ordersResult, loading, refetch } = useSellerOrders({ page: 1, limit: 100 });
   const [query, setQuery] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState<string>('');
   const [busyAction, setBusyAction] = useState<string>('');
@@ -126,9 +126,9 @@ export default function AdminFulfillmentPage() {
   });
 
   const normalizedOrders = useMemo(() => {
-    const items = Array.isArray(orders) ? orders : [];
+    const items = Array.isArray(ordersResult?.data) ? ordersResult.data : [];
     return items.filter(Boolean);
-  }, [orders]);
+  }, [ordersResult]);
 
   const filteredOrders = useMemo(() => {
     return normalizedOrders.filter((order: any) => {

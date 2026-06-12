@@ -13,14 +13,12 @@ import { Separator } from '@/components/ui/separator';
 import { useProduct, useProducts } from '@/hooks/useApi';
 import { mapProductForDisplay, mapProductsForDisplay, formatPrice } from '@/lib/productMapper';
 import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: product, loading, error } = useProduct(id);
   const { data: allProducts } = useProducts();
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -73,12 +71,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     : [];
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
     setIsAdding(true);
-    await addToCart({
+    const addedToCart = await addToCart({
       productId: product.id,
       name: product.name,
       brand: displayProduct.brand,
@@ -87,15 +81,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       quantity,
     });
     setIsAdding(false);
+
+    if (!addedToCart) {
+      return;
+    }
   };
 
   const handleBuyNow = async () => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
     setIsBuying(true);
-    await addToCart({
+    const addedToCart = await addToCart({
       productId: product.id,
       name: product.name,
       brand: displayProduct.brand,
@@ -104,6 +98,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       quantity,
     });
     setIsBuying(false);
+
+    if (!addedToCart) {
+      return;
+    }
+
     router.push('/checkout');
   };
 

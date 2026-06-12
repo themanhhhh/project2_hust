@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { DollarSign, ShoppingCart, Users, Package, MoreHorizontal, Eye } from 'lucide-react';
 import { RevenueChart } from '@/components/admin/RevenueChart';
 import { StatsCard } from '@/components/admin/StatsCard';
-import { useOrders, useProducts, useDashboardStats } from '@/hooks/useApi';
+import { useSellerOrders, useProducts, useDashboardStats } from '@/hooks/useApi';
 import { formatPrice } from '@/lib/productMapper';
 import { AdminLoading } from '@/components/admin/AdminLoading';
 import { AdminSelect } from '@/components/admin/AdminSelect';
@@ -30,16 +30,17 @@ export default function AdminDashboardPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const { data: stats, loading: statsLoading } = useDashboardStats();
-  const { data: orders, loading: ordersLoading } = useOrders();
+  const { data: sellerOrdersResult, loading: ordersLoading } = useSellerOrders({ page: 1, limit: 1000 });
   const { data: products, loading: productsLoading } = useProducts();
+  const orders = sellerOrdersResult?.data || [];
   
   // Use API data only - no mock fallback
-  const recentOrders = orders?.slice(0, 5) || [];
+  const recentOrders = orders.slice(0, 5);
   const loading = statsLoading || ordersLoading || productsLoading; // Keep others for lists for now
 
   const availableYears = useMemo(() => {
     const years = new Set<number>();
-    (orders || []).forEach((order: any) => {
+    orders.forEach((order: any) => {
       const rawDate = order.created_at || order.createdAt;
       if (!rawDate) return;
       const date = new Date(rawDate);
@@ -62,7 +63,7 @@ export default function AdminDashboardPage() {
         .sort((a, b) => a - b)
         .map((year) => ({ label: `${year}`, revenue: 0, orders: 0 }));
 
-      (orders || []).forEach((order: any) => {
+      orders.forEach((order: any) => {
         if (order.status === 'cancelled') return;
 
         const rawDate = order.created_at || order.createdAt;
@@ -89,7 +90,7 @@ export default function AdminDashboardPage() {
         { label: 'W5', revenue: 0, orders: 0 },
       ];
 
-      (orders || []).forEach((order: any) => {
+      orders.forEach((order: any) => {
         if (order.status === 'cancelled') return;
 
         const rawDate = order.created_at || order.createdAt;

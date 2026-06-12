@@ -22,6 +22,7 @@ import { Header } from '@/components/shop/Header';
 import { Footer } from '@/components/shop/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import { getToken } from '@/lib/auth';
+import { toast } from 'sonner';
 
 // Format price in VND
 function formatPrice(price: number): string {
@@ -59,8 +60,6 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 function ChangePasswordSection() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -70,18 +69,16 @@ function ChangePasswordSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
 
     // Validate
     if (formData.newPassword !== formData.confirmPassword) {
-      setError('Mật khẩu mới không khớp');
+      toast.error('Mật khẩu mới không khớp');
       setLoading(false);
       return;
     }
 
     if (formData.newPassword.length < 6) {
-      setError('Mật khẩu mới phải có ít nhất 6 ký tự');
+      toast.error('Mật khẩu mới phải có ít nhất 6 ký tự');
       setLoading(false);
       return;
     }
@@ -102,17 +99,16 @@ function ChangePasswordSection() {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('Đổi mật khẩu thành công!');
+        toast.success('Đổi mật khẩu thành công!');
         setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         setTimeout(() => {
           setOpen(false);
-          setSuccess('');
         }, 2000);
       } else {
-        setError(data.message || 'Đổi mật khẩu thất bại');
+        toast.error(data.message || 'Đổi mật khẩu thất bại');
       }
     } catch {
-      setError('Có lỗi xảy ra. Vui lòng thử lại.');
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -138,17 +134,6 @@ function ChangePasswordSection() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="p-3 text-sm text-green-600 bg-green-50 rounded-md">
-                {success}
-              </div>
-            )}
-            
             <div className="space-y-2">
               <Label htmlFor="currentPassword">Mật khẩu hiện tại</Label>
               <Input
@@ -213,12 +198,10 @@ function LoginForm() {
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const result = await login(formData);
@@ -228,13 +211,13 @@ function LoginForm() {
         if (result.user?.role === 'admin') {
           router.push('/admin');
         } else {
-          router.push('/account');
+          router.push('/');
         }
       } else {
-        setError(result.message || 'Đăng nhập thất bại');
+        toast.error(result.message || 'Đăng nhập thất bại');
       }
     } catch {
-      setError('Có lỗi xảy ra. Vui lòng thử lại.');
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -260,12 +243,6 @@ function LoginForm() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
-              {error && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                  {error}
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="email">
                   Email <span className="text-red-500">*</span>

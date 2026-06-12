@@ -7,8 +7,10 @@ const JWT_EXPIRES_IN = '7d';
 
 export interface AuthPayload {
   userId: string;
-  email: string;
+  id?: string;
+  email?: string;
   role: string;
+  store_name?: string;
 }
 
 export class AuthService {

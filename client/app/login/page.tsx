@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,33 +9,37 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, isAuthenticated, loading: authLoading, user } = useAuth();
+  const redirectParam = searchParams.get('redirect') || '';
+  const redirectPath = redirectParam.startsWith('/') ? redirectParam : '';
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   // Redirect if already logged in
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
       if (user?.role === 'admin') {
         router.replace('/admin');
+      } else if (redirectPath) {
+        router.replace(redirectPath);
       } else {
-        router.replace('/account');
+        router.replace('/');
       }
     }
-  }, [authLoading, isAuthenticated, user, router]);
+  }, [authLoading, isAuthenticated, redirectPath, router, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const result = await login(formData);
@@ -43,14 +47,16 @@ export default function LoginPage() {
       if (result.success) {
         if (result.user?.role === 'admin') {
           router.push('/admin');
+        } else if (redirectPath) {
+          router.push(redirectPath);
         } else {
-          router.push('/account');
+          router.push('/');
         }
       } else {
-        setError(result.message || 'Đăng nhập thất bại');
+        toast.error(result.message || 'Đăng nhập thất bại');
       }
     } catch {
-      setError('Có lỗi xảy ra. Vui lòng thử lại.');
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -96,12 +102,6 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
-              {error && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                  {error}
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="email">
                   Email <span className="text-red-500">*</span>

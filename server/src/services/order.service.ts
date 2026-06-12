@@ -2,6 +2,7 @@ import prisma from '../lib/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailService } from './email.service';
 import { OrderStatus } from '@prisma/client';
+import { AppError } from '../middlewares/error.middleware';
 
 const ORDER_INCLUDE = {
   user: { select: { id: true, name: true, email: true } },
@@ -22,14 +23,34 @@ function normalizeStatus(status?: string): OrderStatus | undefined {
 export class OrderService {
   private emailService = new EmailService();
 
+  private buildAccessWhere(actor?: { id?: string; role?: string }) {
+    if (!actor?.id || !actor.role) {
+      return {};
+    }
+
+    if (actor.role === 'seller') {
+      return {
+        order_items: {
+          some: {
+            product: {
+              seller_id: actor.id,
+            },
+          },
+        },
+      };
+    }
+
+    return {};
+  }
+
   async findAll() {
     return prisma.order.findMany({ where: { is_delete: false }, include: ORDER_INCLUDE, orderBy: { created_at: 'desc' } });
   }
 
-  async findAllWithFilters(options: any = {}) {
+  async findAllWithFilters(options: any = {}, actor?: { id?: string; role?: string }) {
     const { page = 1, limit = 10, search, status, date } = options;
     const skip = (page - 1) * limit;
-    const where: any = { is_delete: false };
+    const where: any = { is_delete: false, ...this.buildAccessWhere(actor) };
 
     if (status && status !== 'all') where.status = normalizeStatus(status) ?? status;
     if (date) {
@@ -52,16 +73,16 @@ export class OrderService {
     return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   }
 
-  async findById(id: string) {
-    return prisma.order.findFirst({ where: { id, is_delete: false }, include: ORDER_INCLUDE });
+  async findById(id: string, actor?: { id?: string; role?: string }) {
+    return prisma.order.findFirst({ where: { id, is_delete: false, ...this.buildAccessWhere(actor) }, include: ORDER_INCLUDE });
   }
 
-  async findByOrderNumber(orderNumber: string) {
-    return prisma.order.findFirst({ where: { order_number: orderNumber, is_delete: false }, include: ORDER_INCLUDE });
+  async findByOrderNumber(orderNumber: string, actor?: { id?: string; role?: string }) {
+    return prisma.order.findFirst({ where: { order_number: orderNumber, is_delete: false, ...this.buildAccessWhere(actor) }, include: ORDER_INCLUDE });
   }
 
-  async findByUser(userId: string) {
-    return prisma.order.findMany({ where: { user_id: userId, is_delete: false }, include: ORDER_INCLUDE, orderBy: { created_at: 'desc' } });
+  async findByUser(userId: string, actor?: { id?: string; role?: string }) {
+    return prisma.order.findMany({ where: { user_id: userId, is_delete: false, ...this.buildAccessWhere(actor) }, include: ORDER_INCLUDE, orderBy: { created_at: 'desc' } });
   }
 
   async createOrder(data: any) {
@@ -69,6 +90,43 @@ export class OrderService {
     const items = data.items || [];
     const otpCode = this.emailService.generateOTP();
     const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    const productIds = items
+      .map((item: any) => item.product_id || item.productId)
+      .filter((value: unknown): value is string => typeof value === 'string' && value.length > 0);
+
+    if (productIds.length === 0) {
+      throw new AppError('Đơn hàng phải có ít nhất một sản phẩm', 400);
+    }
+
+    if (productIds.length !== items.length) {
+      throw new AppError('Mỗi sản phẩm trong đơn hàng phải có productId hợp lệ', 400);
+    }
+
+    const products = await prisma.product.findMany({
+      where: {
+        id: { in: productIds },
+        is_delete: false,
+      },
+      select: {
+        id: true,
+        seller_id: true,
+      },
+    });
+
+    if (products.length !== new Set(productIds).size) {
+      throw new AppError('Có sản phẩm không tồn tại hoặc đã bị xóa', 400);
+    }
+
+    const sellerIds = new Set(
+      products
+        .map((product) => product.seller_id)
+        .filter((sellerId): sellerId is string => Boolean(sellerId))
+    );
+
+    if (sellerIds.size !== 1) {
+      throw new AppError('Một đơn hàng chỉ được chứa sản phẩm của một seller', 400);
+    }
 
     const order = await prisma.order.create({
       data: {

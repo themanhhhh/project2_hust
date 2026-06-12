@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { ShoppingCart, Check, CircleAlert } from 'lucide-react';
 import { type DisplayProduct, formatPrice } from '@/lib/productMapper';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface ProductCardProps {
   product: DisplayProduct;
@@ -24,8 +22,6 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [showOutOfStockDialog, setShowOutOfStockDialog] = useState(false);
@@ -44,14 +40,8 @@ export function ProductCard({ product }: ProductCardProps) {
       return;
     }
     
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-    
     setIsAdding(true);
-    
-    await addToCart({
+    const addedToCart = await addToCart({
       productId: product.id,
       name: product.name,
       brand: product.brand,
@@ -59,8 +49,12 @@ export function ProductCard({ product }: ProductCardProps) {
       image: product.image || '/products/placeholder.jpg',
       quantity: 1,
     });
-    
     setIsAdding(false);
+
+    if (!addedToCart) {
+      return;
+    }
+
     setAdded(true);
     
     // Reset after 2 seconds

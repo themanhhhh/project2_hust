@@ -4,7 +4,7 @@ export class CartService {
   async findByUser(userId: string) {
     return prisma.cart.findFirst({
       where: { user_id: userId },
-      include: { cart_items: { include: { product: { include: { product_images: true } } } } },
+      include: { cart_items: { include: { product: { include: { product_images: true, seller: { select: { id: true, store_name: true } } } } } } },
     });
   }
 
@@ -13,7 +13,7 @@ export class CartService {
     if (!cart) {
       cart = await prisma.cart.create({
         data: { user_id: userId },
-        include: { cart_items: { include: { product: { include: { product_images: true } } } } },
+        include: { cart_items: { include: { product: { include: { product_images: true, seller: { select: { id: true, store_name: true } } } } } } },
       });
     }
     return cart;
@@ -57,7 +57,7 @@ export class CartService {
   }
 
   async findById(id: string) {
-    return prisma.cart.findUnique({ where: { id }, include: { cart_items: { include: { product: true } } } });
+    return prisma.cart.findUnique({ where: { id }, include: { cart_items: { include: { product: { include: { seller: { select: { id: true, store_name: true } } } } } } } });
   }
 
   async delete(id: string) {

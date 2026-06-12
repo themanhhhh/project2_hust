@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, CreditCard, Truck, Wallet, Building2, Loader2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { orderApi } from '@/lib/api';
 import { formatPrice } from '@/lib/productMapper';
+import { toast } from 'sonner';
 
 // Vietnamese Address API
 const PROVINCES_API = 'https://provinces.open-api.vn/api';
@@ -47,6 +48,8 @@ const paymentMethods = [
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { items, subtotal, clearCart } = useCart();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,6 +79,15 @@ export default function CheckoutPage() {
   const shipping = subtotal >= 500000 ? 0 : 30000;
   const total = subtotal + shipping;
 
+  const groupedCartItems = items.reduce<Record<string, typeof items>>((groups, item) => {
+    const sellerKey = item.sellerId || `unknown:${item.productId}`;
+    if (!groups[sellerKey]) {
+      groups[sellerKey] = [];
+    }
+    groups[sellerKey].push(item);
+    return groups;
+  }, {});
+
   // Pre-fill user info
   useEffect(() => {
     if (user) {
@@ -91,9 +103,11 @@ export default function CheckoutPage() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.replace('/login');
+      const search = searchParams.toString();
+      const redirectPath = `${pathname}${search ? `?${search}` : ''}`;
+      router.replace(`/login?redirect=${encodeURIComponent(redirectPath)}`);
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, pathname, router, searchParams]);
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -197,36 +211,68 @@ export default function CheckoutPage() {
     
     // Validate user is logged in
     if (!user || !user.id) {
-      router.push('/login');
+      const search = searchParams.toString();
+      const redirectPath = `${pathname}${search ? `?${search}` : ''}`;
+      router.push(`/login?redirect=${encodeURIComponent(redirectPath)}`);
       return;
     }
     
     setIsSubmitting(true);
     
     try {
-      // Create order via API - only send fields that Order entity supports
-      const orderData = {
-        user_id: user.id,
-        total,
-        status: 'pending',
-        payment_status: 'pending',
-        items: items.map(item => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-      };
+      const itemGroups = Object.values(groupedCartItems);
 
-      console.log('Creating order with data:', orderData);
-      const createdOrder = await orderApi.create(orderData as any);
+      if (itemGroups.length === 0) {
+        throw new Error('Giỏ hàng đang trống');
+      }
+
+      if (itemGroups.some((group) => group.some((item) => !item.sellerId))) {
+        throw new Error('Không thể xác định seller của một số sản phẩm trong giỏ hàng');
+      }
+
+      const subtotalByGroup = itemGroups.map((group) =>
+        group.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      );
+
+      const createdOrders = [];
+
+      for (const [index, group] of itemGroups.entries()) {
+        const groupSubtotal = subtotalByGroup[index];
+        const allocatedShipping = shipping === 0
+          ? 0
+          : index === itemGroups.length - 1
+            ? shipping - createdOrders.reduce((sum, order) => sum + order.allocatedShipping, 0)
+            : Math.floor((shipping * groupSubtotal) / Math.max(subtotal, 1));
+
+        const orderData = {
+          user_id: user.id,
+          total: groupSubtotal + allocatedShipping,
+          status: 'pending',
+          payment_status: 'pending',
+          items: group.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        };
+
+        const createdOrder = await orderApi.create(orderData as any);
+        createdOrders.push({
+          id: (createdOrder as any)?.id || '',
+          orderNumber: (createdOrder as any)?.order_number || '',
+          allocatedShipping,
+        });
+      }
+
       setOrderPlaced(true);
       await clearCart();
-      const orderNumber = (createdOrder as any)?.order_number || '';
-      const createdOrderId = (createdOrder as any)?.id || '';
-      router.push(`/checkout/verify?orderId=${createdOrderId}&order=${orderNumber}`);
+
+      const orderIds = createdOrders.map((order) => order.id).filter(Boolean).join(',');
+      const orderNumbers = createdOrders.map((order) => order.orderNumber).filter(Boolean).join(',');
+      router.push(`/checkout/verify?orderIds=${encodeURIComponent(orderIds)}&orders=${encodeURIComponent(orderNumbers)}&index=0`);
     } catch (error) {
       console.error('Failed to create order:', error);
-      alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
+      toast.error(error instanceof Error ? error.message : 'Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.');
     } finally {
       setIsSubmitting(false);
     }

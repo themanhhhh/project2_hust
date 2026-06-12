@@ -104,15 +104,7 @@ export default function SellerOrdersPage() {
     setStatusState(prev => ({ ...prev, [orderId]: nextStatus }));
     setUpdatingOrderId(orderId);
     try {
-      // Gọi API update trạng thái với seller token
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1'}/orders/${orderId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.match(/seller_auth_token=([^;]+)/)?.[1] || ''}`,
-        },
-        body: JSON.stringify({ status: nextStatus }),
-      });
+      await sellerApi.updateMyOrder(orderId, { status: nextStatus } as any);
       await refetch();
     } catch {
       setStatusState(prev => ({ ...prev, [orderId]: previousStatus }));
@@ -126,12 +118,7 @@ export default function SellerOrdersPage() {
     if (!deletingOrderId) return;
     setIsDeletingOrder(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1'}/orders/${deletingOrderId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${document.cookie.match(/seller_auth_token=([^;]+)/)?.[1] || ''}`,
-        },
-      });
+      await sellerApi.deleteMyOrder(deletingOrderId);
       toast.success('Đã xóa đơn hàng.');
       setDeletingOrderId(null);
       await refetch();

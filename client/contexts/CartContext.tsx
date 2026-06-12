@@ -1,14 +1,17 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { getToken } from '@/lib/auth';
+import { toast } from 'sonner';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
 export interface CartItem {
   id: string;
   productId: string;
+  sellerId?: string;
   name: string;
   brand: string;
   price: number;
@@ -21,7 +24,7 @@ interface CartContextType {
   loading: boolean;
   itemCount: number;
   subtotal: number;
-  addToCart: (item: Omit<CartItem, 'id'>) => Promise<void>;
+  addToCart: (item: Omit<CartItem, 'id'>) => Promise<boolean>;
   removeFromCart: (productId: string) => Promise<void>;
   updateQuantity: (productId: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -44,12 +47,13 @@ function mapCartItems(cart: any): CartItem[] {
       const primaryImage = images.find((img: any) => img.is_primary) || images[0];
       const imageUrl = primaryImage?.image_url || primaryImage?.url || '/products/placeholder.jpg';
 
-      return {
-        id: item.id,
-        productId: item.product_id,
-        name: product.name || 'Sản phẩm',
-        brand: product.brand?.name || '',
-        price: Number(product.price) || 0,
+        return {
+          id: item.id,
+          productId: item.product_id,
+          sellerId: product.seller?.id,
+          name: product.name || 'Sản phẩm',
+          brand: product.brand?.name || '',
+          price: Number(product.price) || 0,
         image: imageUrl,
         quantity: item.quantity,
       };
@@ -79,6 +83,9 @@ async function cartFetch(url: string, options: RequestInit = {}): Promise<any> {
 }
 
 export function CartProvider({ children }: CartProviderProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, isAuthenticated } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -122,7 +129,33 @@ export function CartProvider({ children }: CartProviderProps) {
   }, [isAuthenticated, user]);
 
   const addToCart = useCallback(async (item: Omit<CartItem, 'id'>) => {
-    if (!cartId) return;
+    if (!isAuthenticated || !user?.id) {
+      const search = searchParams.toString();
+      const redirectPath = `${pathname}${search ? `?${search}` : ''}`;
+      toast.info('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');
+      window.setTimeout(() => {
+        router.push(`/login?redirect=${encodeURIComponent(redirectPath)}`);
+      }, 1200);
+      return false;
+    }
+
+    let activeCartId = cartId;
+
+    if (!activeCartId) {
+      try {
+        const cartResult = await cartFetch(`/carts/user/${user.id}`, { method: 'POST' });
+        if (!cartResult.data?.id) {
+          throw new Error('Không thể khởi tạo giỏ hàng.');
+        }
+        activeCartId = cartResult.data.id;
+        setCartId(cartResult.data.id);
+        setItems(mapCartItems(cartResult.data));
+      } catch (error) {
+        console.error('Failed to initialize cart:', error);
+        toast.error(error instanceof Error ? error.message : 'Không thể khởi tạo giỏ hàng.');
+        return false;
+      }
+    }
 
     // Optimistic update
     setItems(prev => {
@@ -138,7 +171,7 @@ export function CartProvider({ children }: CartProviderProps) {
     });
 
     try {
-      const result = await cartFetch(`/carts/${cartId}/items`, {
+      const result = await cartFetch(`/carts/${activeCartId}/items`, {
         method: 'POST',
         body: JSON.stringify({
           productId: item.productId,
@@ -149,15 +182,19 @@ export function CartProvider({ children }: CartProviderProps) {
       if (result.data) {
         setItems(mapCartItems(result.data));
       }
+      toast.success('Đã thêm sản phẩm vào giỏ hàng.');
+      return true;
     } catch (error) {
       console.error('Failed to add to cart:', error);
+      toast.error(error instanceof Error ? error.message : 'Không thể thêm sản phẩm vào giỏ hàng.');
       // Revert on error — reload cart
       try {
         const result = await cartFetch(`/carts/user/${user?.id}`, { method: 'POST' });
         if (result.data) setItems(mapCartItems(result.data));
       } catch { /* ignore */ }
+      return false;
     }
-  }, [cartId, user?.id]);
+  }, [cartId, isAuthenticated, pathname, router, searchParams, user?.id]);
 
   const removeFromCart = useCallback(async (identifier: string) => {
     if (!cartId) return;

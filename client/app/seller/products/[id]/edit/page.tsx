@@ -25,6 +25,7 @@ import {
 import { useBrands, useCategories } from '@/hooks/useApi';
 import { api } from '@/lib/api';
 import { uploadFileToPinata } from '@/lib/pinata';
+import { toast } from 'sonner';
 
 export default function EditProductPage() {
   const params = useParams();
@@ -38,7 +39,6 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState('');
   const [images, setImages] = useState<string[]>([]);
   
   const [formData, setFormData] = useState({
@@ -100,7 +100,7 @@ export default function EditProductPage() {
         });
         setImages(product.product_images?.map((img: any) => img.image_url || img.url) || product.images?.map((img: any) => img.url || img.image_url) || []);
       } catch (err) {
-        setError('Không thể tải thông tin sản phẩm');
+        toast.error('Không thể tải thông tin sản phẩm');
       } finally {
         setLoading(false);
       }
@@ -132,7 +132,6 @@ export default function EditProductPage() {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    setError('');
 
     try {
       const uploadPromises = Array.from(files).slice(0, 5 - images.length).map(file => 
@@ -142,7 +141,7 @@ export default function EditProductPage() {
       const uploadedUrls = await Promise.all(uploadPromises);
       setImages(prev => [...prev, ...uploadedUrls].slice(0, 5));
     } catch (err: any) {
-      setError('Không thể tải ảnh lên. Vui lòng thử lại.');
+      toast.error(err?.message || 'Không thể tải ảnh lên. Vui lòng thử lại.');
       console.error('Upload error:', err);
     } finally {
       setIsUploading(false);
@@ -154,7 +153,6 @@ export default function EditProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsSubmitting(true);
     
     try {
@@ -171,10 +169,10 @@ export default function EditProductPage() {
         badge: formData.badge,
         images: images.map((url, index) => ({ url, display_order: index })) as any,
       });
-      
+      toast.success('Cập nhật sản phẩm thành công.');
       router.push('/seller/products');
     } catch (err: any) {
-      setError(err.message || 'Không thể cập nhật sản phẩm');
+      toast.error(err.message || 'Không thể cập nhật sản phẩm');
     } finally {
       setIsSubmitting(false);
     }
@@ -237,12 +235,6 @@ export default function EditProductPage() {
           </Button>
         </div>
       </div>
-
-      {error && (
-        <div className="rounded-lg bg-gray-100 p-4 text-gray-700 dark:bg-slate-900 dark:text-slate-300">
-          {error}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-6">
         {/* Main Content */}
