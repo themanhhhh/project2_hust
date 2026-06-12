@@ -5,10 +5,10 @@ import { use } from 'react';
 import { ArrowLeft, CheckCircle2, CircleDashed, MapPin, PackageSearch, Truck } from 'lucide-react';
 import { Footer } from '@/components/shop/Footer';
 import { Header } from '@/components/shop/Header';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useShipmentByTracking } from '@/hooks/useApi';
+import type { ShipmentTrackingEvent } from '@/lib/types';
 
 const shipmentLabel: Record<string, string> = {
   pending: 'Moi tao',
@@ -23,13 +23,14 @@ const shipmentLabel: Record<string, string> = {
   returned: 'Da hoan tra',
 };
 
-function parseTrackingHistory(trackingHistory: any) {
+function parseTrackingHistory(trackingHistory: unknown): ShipmentTrackingEvent[] {
   if (!trackingHistory) return [];
   if (Array.isArray(trackingHistory)) return trackingHistory;
+  if (typeof trackingHistory !== 'string') return [];
 
   try {
-    const parsed = JSON.parse(trackingHistory);
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed: unknown = JSON.parse(trackingHistory);
+    return Array.isArray(parsed) ? parsed as ShipmentTrackingEvent[] : [];
   } catch {
     return [];
   }
@@ -38,7 +39,7 @@ function parseTrackingHistory(trackingHistory: any) {
 export default function TrackingPage({ params }: { params: Promise<{ trackingNumber: string }> }) {
   const { trackingNumber } = use(params);
   const { data: shipment, loading, error } = useShipmentByTracking(trackingNumber);
-  const timeline = parseTrackingHistory((shipment as any)?.tracking_history);
+  const timeline = parseTrackingHistory(shipment?.tracking_history);
 
   return (
     <>
@@ -101,11 +102,11 @@ export default function TrackingPage({ params }: { params: Promise<{ trackingNum
                     <Truck className="h-5 w-5 text-sky-600" /> Hanh trinh giao hang
                   </CardTitle>
                   <CardDescription>
-                    Carrier: {(shipment as any).carrier || 'Dang cap nhat'} - Shipment: {shipmentLabel[(shipment as any).status] || (shipment as any).status}
+                    Carrier: {shipment.carrier || 'Dang cap nhat'} - Shipment: {shipmentLabel[shipment.status] || shipment.status}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {timeline.length > 0 ? timeline.map((event: any, index: number) => (
+                  {timeline.length > 0 ? timeline.map((event, index) => (
                     <div key={`${event.timestamp || index}-${index}`} className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-4">
                       <div className="flex flex-col items-center">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-sky-700">
@@ -115,7 +116,7 @@ export default function TrackingPage({ params }: { params: Promise<{ trackingNum
                       </div>
                       <div className="min-w-0 flex-1 pb-4">
                         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="font-medium text-slate-900">{shipmentLabel[event.status] || event.status || 'Tracking event'}</div>
+                          <div className="font-medium text-slate-900">{event.status ? shipmentLabel[event.status] || event.status : 'Tracking event'}</div>
                           <div className="text-xs text-slate-500">
                             {event.timestamp ? new Date(event.timestamp).toLocaleString('vi-VN') : '--'}
                           </div>
@@ -143,26 +144,26 @@ export default function TrackingPage({ params }: { params: Promise<{ trackingNum
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl bg-white/5 p-4">
                         <div className="text-slate-400">Tracking</div>
-                        <div className="mt-2 break-all font-medium text-white">{(shipment as any).tracking_number}</div>
+                        <div className="mt-2 break-all font-medium text-white">{shipment.tracking_number}</div>
                       </div>
                       <div className="rounded-2xl bg-white/5 p-4">
                         <div className="text-slate-400">Trang thai</div>
-                        <div className="mt-2 font-medium text-white">{shipmentLabel[(shipment as any).status] || (shipment as any).status}</div>
+                        <div className="mt-2 font-medium text-white">{shipmentLabel[shipment.status] || shipment.status}</div>
                       </div>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl bg-white/5 p-4">
                         <div className="text-slate-400">Carrier</div>
-                        <div className="mt-2 font-medium text-white">{(shipment as any).carrier || '--'}</div>
+                        <div className="mt-2 font-medium text-white">{shipment.carrier || '--'}</div>
                       </div>
                       <div className="rounded-2xl bg-white/5 p-4">
                         <div className="text-slate-400">Service</div>
-                        <div className="mt-2 font-medium text-white">{(shipment as any).carrier_service || '--'}</div>
+                        <div className="mt-2 font-medium text-white">{shipment.carrier_service || '--'}</div>
                       </div>
                     </div>
-                    {(shipment as any).estimated_delivery && (
+                    {shipment.estimated_delivery && (
                       <div className="rounded-2xl bg-gradient-to-r from-sky-500/20 to-cyan-400/10 p-4 text-slate-100">
-                        Du kien giao: {new Date((shipment as any).estimated_delivery).toLocaleString('vi-VN')}
+                        Du kien giao: {new Date(shipment.estimated_delivery).toLocaleString('vi-VN')}
                       </div>
                     )}
                   </CardContent>
@@ -177,15 +178,15 @@ export default function TrackingPage({ params }: { params: Promise<{ trackingNum
                   <CardContent className="space-y-4 text-sm text-slate-600">
                     <div>
                       <div className="font-medium text-slate-900">Nguoi nhan</div>
-                      <div className="mt-1">{(shipment as any).delivery_name || 'Dang cap nhat'}</div>
-                      <div>{(shipment as any).delivery_phone || ''}</div>
-                      <div>{(shipment as any).delivery_address || 'Dia chi se duoc cap nhat sau khi tao shipment.'}</div>
+                      <div className="mt-1">{shipment.delivery_name || 'Dang cap nhat'}</div>
+                      <div>{shipment.delivery_phone || ''}</div>
+                      <div>{shipment.delivery_address || 'Dia chi se duoc cap nhat sau khi tao shipment.'}</div>
                     </div>
                     <div>
                       <div className="font-medium text-slate-900">Diem lay hang</div>
-                      <div className="mt-1">{(shipment as any).pickup_name || 'SmashX'}</div>
-                      <div>{(shipment as any).pickup_phone || ''}</div>
-                      <div>{(shipment as any).pickup_address || 'Kho dang cap nhat.'}</div>
+                      <div className="mt-1">{shipment.pickup_name || 'SmashX'}</div>
+                      <div>{shipment.pickup_phone || ''}</div>
+                      <div>{shipment.pickup_address || 'Kho dang cap nhat.'}</div>
                     </div>
                   </CardContent>
                 </Card>

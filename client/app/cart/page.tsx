@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Minus, Plus, X, ArrowRight, ShoppingBag } from 'lucide-react';
 import { Header } from '@/components/shop/Header';
 import { Footer } from '@/components/shop/Footer';
@@ -91,13 +92,9 @@ export default function CartPage() {
                     <div className="grid md:grid-cols-12 gap-4 items-center">
                       {/* Product */}
                       <div className="md:col-span-6 flex gap-4">
-                        <div className="w-24 h-24 bg-muted shrink-0 flex items-center justify-center rounded overflow-hidden">
+                        <div className="relative w-24 h-24 bg-muted shrink-0 flex items-center justify-center rounded overflow-hidden">
                           {item.image && item.image !== '/products/placeholder.jpg' ? (
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="object-cover w-full h-full"
-                            />
+                            <Image src={item.image} alt={item.name} fill sizes="96px" className="object-cover" unoptimized />
                           ) : (
                             <ShoppingBag className="h-8 w-8 text-muted-foreground" />
                           )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ArrowRight, SlidersHorizontal, ChevronDown, Loader2, AlertCircle, X, Check, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useProductsWithFilters, useCategories, useBrands, useCollections, useProductsByCollection } from '@/hooks/useApi';
 import { mapProductsForDisplay, type DisplayProduct } from '@/lib/productMapper';
+import type { Brand, Category, Collection } from '@/lib/types';
 
 // Category name mapping for display (supports both API Vietnamese slugs and legacy English slugs)
 const categoryNameMapping: Record<string, string> = {
@@ -77,11 +78,9 @@ function ProductsContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [hasExpandedAllProducts, setHasExpandedAllProducts] = useState(false);
-  const [currentPage, setCurrentPage] = useState(() => {
-    const parsed = Number(pageParam || '1');
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-  });
   const productsGridRef = useRef<HTMLDivElement | null>(null);
+  const parsedPage = Number(pageParam || '1');
+  const requestedPage = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
   
   // Fetch categories and brands to get actual IDs
   const { data: categories } = useCategories();
@@ -94,7 +93,7 @@ function ProductsContent() {
     
     const targetName = categoryNameMapping[categorySlug.toLowerCase()];
     if (targetName) {
-      const category = categories.find((c: any) => 
+      const category = categories.find((c: Category) => 
         c.name?.toLowerCase().includes(targetName.toLowerCase()) ||
         c.slug?.toLowerCase() === categorySlug.toLowerCase()
       );
@@ -102,7 +101,7 @@ function ProductsContent() {
     }
     
     // Try direct slug match
-    const category = categories.find((c: any) => 
+    const category = categories.find((c: Category) => 
       c.slug?.toLowerCase() === categorySlug.toLowerCase() ||
       c.name?.toLowerCase() === categorySlug.toLowerCase()
     );
@@ -113,7 +112,7 @@ function ProductsContent() {
   const brandId = useMemo(() => {
     if (!brandSlug || !brands) return undefined;
     
-    const brand = brands.find((b: any) => 
+    const brand = brands.find((b: Brand) => 
       b.name?.toLowerCase() === brandSlug.toLowerCase() ||
       b.slug?.toLowerCase() === brandSlug.toLowerCase()
     );
@@ -123,7 +122,7 @@ function ProductsContent() {
   const collectionId = useMemo(() => {
     if (!collectionSlug || !collections) return undefined;
 
-    const collection = collections.find((c: any) =>
+    const collection = collections.find((c: Collection) =>
       c.slug?.toLowerCase() === collectionSlug.toLowerCase() ||
       c.name?.toLowerCase() === collectionSlug.toLowerCase()
     );
@@ -181,10 +180,13 @@ function ProductsContent() {
     } else {
       params.delete(type);
     }
+    params.delete('page');
+    setHasExpandedAllProducts(false);
     router.push(`/products?${params.toString()}`);
   };
 
   const clearFilters = () => {
+    setHasExpandedAllProducts(false);
     router.push('/products');
   };
 
@@ -202,29 +204,15 @@ function ProductsContent() {
     router.replace(queryString ? `/products?${queryString}` : '/products', { scroll: false });
   };
 
-  useEffect(() => {
-    const parsed = Number(pageParam || '1');
-    const nextPage = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-    setCurrentPage(nextPage);
-  }, [pageParam]);
-
-  useEffect(() => {
-    if (!pageParam && currentPage !== 1) {
-      setCurrentPage(1);
+  const totalPages = useMemo(() => {
+    if (!isAllProductsView || !hasExpandedAllProducts || displayProducts.length <= EXPANDED_PRODUCT_COUNT) {
+      return 1;
     }
-  }, [currentPage, pageParam]);
 
-  useEffect(() => {
-    if (!isAllProductsView) {
-      setHasExpandedAllProducts(false);
-      if (pageParam) {
-        const params = new URLSearchParams(searchParams.toString());
-        params.delete('page');
-        const queryString = params.toString();
-        router.replace(queryString ? `/products?${queryString}` : '/products', { scroll: false });
-      }
-    }
-  }, [isAllProductsView, categorySlug, brandSlug, collectionSlug, saleParam, sortBy, pageParam, router, searchParams]);
+    return 1 + Math.ceil((displayProducts.length - EXPANDED_PRODUCT_COUNT) / PAGINATION_PAGE_SIZE);
+  }, [displayProducts.length, hasExpandedAllProducts, isAllProductsView]);
+
+  const currentPage = Math.min(requestedPage, totalPages);
 
   const paginatedProducts = useMemo(() => {
     if (!isAllProductsView) {
@@ -243,14 +231,6 @@ function ProductsContent() {
     const endIndex = startIndex + PAGINATION_PAGE_SIZE;
     return displayProducts.slice(startIndex, endIndex);
   }, [currentPage, displayProducts, hasExpandedAllProducts, isAllProductsView]);
-
-  const totalPages = useMemo(() => {
-    if (!isAllProductsView || !hasExpandedAllProducts || displayProducts.length <= EXPANDED_PRODUCT_COUNT) {
-      return 1;
-    }
-
-    return 1 + Math.ceil((displayProducts.length - EXPANDED_PRODUCT_COUNT) / PAGINATION_PAGE_SIZE);
-  }, [displayProducts.length, hasExpandedAllProducts, isAllProductsView]);
 
   const visiblePaginationPages = useMemo(() => {
     const maxVisible = 5;
@@ -310,17 +290,9 @@ function ProductsContent() {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
     updatePageQuery(page);
     scrollToProducts();
   };
-
-  useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(totalPages);
-      updatePageQuery(totalPages);
-    }
-  }, [currentPage, totalPages]);
 
   // Get page title based on filter
   const getPageTitle = () => {
@@ -328,11 +300,11 @@ function ProductsContent() {
       return categoryNameMapping[categorySlug.toLowerCase()] || categorySlug;
     }
     if (brandSlug) {
-      const brand = brands?.find((b: any) => b.slug === brandSlug || b.name?.toLowerCase() === brandSlug.toLowerCase());
+      const brand = brands?.find((b: Brand) => b.slug === brandSlug || b.name?.toLowerCase() === brandSlug.toLowerCase());
       return brand?.name || brandSlug.toUpperCase();
     }
     if (collectionSlug) {
-      const collection = collections?.find((c: any) => c.slug === collectionSlug || c.name?.toLowerCase() === collectionSlug.toLowerCase());
+      const collection = collections?.find((c: Collection) => c.slug === collectionSlug || c.name?.toLowerCase() === collectionSlug.toLowerCase());
       return collection?.name || collectionSlug;
     }
     if (saleParam === 'true') {
@@ -512,7 +484,7 @@ function ProductsContent() {
                           Tất cả danh mục
                         </button>
                       </li>
-                      {categories.map((cat: any) => (
+                      {categories.map((cat: Category) => (
                         <li key={cat.id}>
                           <button
                             onClick={() => applyFilter('category', cat.slug)}
@@ -547,7 +519,7 @@ function ProductsContent() {
                           Tất cả thương hiệu
                         </button>
                       </li>
-                      {brands.map((brand: any) => (
+                      {brands.map((brand: Brand) => (
                         <li key={brand.id}>
                           <button
                             onClick={() => applyFilter('brand', brand.slug || brand.name?.toLowerCase())}
@@ -608,7 +580,6 @@ function ProductsContent() {
                   <Button
                     onClick={() => {
                       setHasExpandedAllProducts(true);
-                      setCurrentPage(1);
                       updatePageQuery(1);
                     }}
                     className="h-12 rounded-full bg-black px-8 text-sm uppercase tracking-[0.18em] text-white hover:bg-gray-800"

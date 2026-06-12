@@ -175,6 +175,39 @@ export interface Shipment {
   order?: Order;
 }
 
+export type LegacyOrderItem = OrderItem & {
+  name?: string;
+};
+
+export type LegacyAddress = Address & {
+  full_name?: string;
+};
+
+export type LegacyOrder = Omit<Order, 'orderNumber' | 'items' | 'address' | 'paymentMethod' | 'paymentStatus'> & {
+  orderNumber?: string;
+  order_number?: string;
+  items?: LegacyOrderItem[];
+  order_items?: LegacyOrderItem[];
+  address?: LegacyAddress;
+  created_at?: string;
+  shipping_fee?: number;
+  paymentMethod?: Order['paymentMethod'];
+  payment_method?: Order['paymentMethod'];
+  paymentStatus?: Order['paymentStatus'];
+  payment_status?: Order['paymentStatus'];
+  customer?: string;
+  email?: string;
+  customer_note?: string;
+  fullName?: string;
+  full_name?: string;
+  phone?: string;
+  street?: string;
+  ward?: string;
+  district?: string;
+  province?: string;
+  shipments?: Shipment[];
+};
+
 export interface CartItem {
   id: string;
   productId: string;
@@ -289,4 +322,56 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
   totalPages: number;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PaginatedApiResult<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
+
+export type UnknownRecord = Record<string, unknown>;
+
+export interface SellerProfile {
+  id: string;
+  email: string;
+  store_name: string;
+  description?: string;
+  logo_url?: string;
+  banner_url?: string;
+  status: 'pending' | 'active' | 'suspended';
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SellerKyb {
+  id?: string;
+  seller_id?: string;
+  business_name?: string;
+  business_registration_number?: string;
+  document_url?: string;
+  status?: 'pending' | 'approved' | 'rejected';
+  admin_notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SellerProfileUpdateInput {
+  store_name?: string;
+  description?: string;
+  logo_url?: string;
+  banner_url?: string;
+}
+
+export interface SellerKybSubmitInput {
+  business_name?: string;
+  business_registration_number?: string;
+  document_url?: string;
 }

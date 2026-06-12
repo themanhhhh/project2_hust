@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { 
   Plus, 
   Pencil, 
@@ -204,10 +205,13 @@ export default function AdminBrandsPage() {
                   className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   {brand.logo_url ? (
-                    <img
+                    <Image
                       src={brand.logo_url}
                       alt={brand.name}
-                      className="w-14 h-14 rounded-lg object-contain bg-white border"
+                      width={56}
+                      height={56}
+                      className="h-14 w-14 rounded-lg border bg-white object-contain"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -356,7 +360,7 @@ export default function AdminBrandsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc muốn xóa thương hiệu "{deletingBrand?.name}"? 
+              Bạn có chắc muốn xóa thương hiệu &quot;{deletingBrand?.name}&quot;? 
               Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>

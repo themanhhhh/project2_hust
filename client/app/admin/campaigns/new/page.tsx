@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
@@ -34,6 +35,10 @@ import { uploadApi } from '@/lib/api';
 import { getToken } from '@/lib/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
 
 interface Product {
   id: string;
@@ -107,19 +112,9 @@ export default function NewCampaignPage() {
     setError('');
 
     try {
-      // Use the generic uploadImage method we added
-      // Note: direct usage of api imported from lib/api
-      // We need to make sure we import 'api' correctly or use the right object. 
-      // In my previous step I exported `api` from `lib/api.ts` which includes `campaigns`, `users` etc.
-      // But `uploadImage` was added to `uploadApi` inside `lib/api.ts` but `api` export might not expose it directly if it wasn't added to the exported `api` object.
-      // Let's re-read api.ts. It exports `uploadApi` separately too? 
-      // Re-reading step 176: Yes, `uploadApi` is exported.
-      // I should import `uploadApi` from `lib/api`.
-      const { uploadApi } = require('@/lib/api'); // Dynamic import to avoid issues or just expect it to be there if I add import above.
-      
       const result = await uploadApi.uploadImage(file);
       setFormData(prev => ({ ...prev, image_url: result.url }));
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Không thể tải ảnh banner. Vui lòng thử lại.');
       console.error('Upload error:', err);
     } finally {
@@ -183,8 +178,8 @@ export default function NewCampaignPage() {
       }
 
       router.push('/admin/campaigns');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Không thể tạo chiến dịch'));
     } finally {
       setIsSubmitting(false);
     }
@@ -427,10 +422,13 @@ export default function NewCampaignPage() {
                         }`}>
                           {selectedProducts.includes(product.id) && <Check className="h-3 w-3" />}
                         </div>
-                        <img
+                        <Image
                           src={product.images?.[0]?.url || '/products/placeholder.jpg'}
                           alt={product.name}
-                          className="w-12 h-12 object-cover rounded"
+                          width={48}
+                          height={48}
+                          className="h-12 w-12 rounded object-cover"
+                          unoptimized
                         />
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{product.name}</p>
@@ -515,12 +513,15 @@ export default function NewCampaignPage() {
                   />
                   
                   {formData.image_url ? (
-                    <div className="relative rounded-lg overflow-hidden border">
-                      <img
+                    <div className="relative h-48 overflow-hidden rounded-lg border">
+                      <Image
                         src={formData.image_url}
                         alt="Banner Preview"
-                        className="w-full h-48 object-cover"
+                        fill
+                        sizes="(min-width: 1024px) 33vw, 100vw"
+                        className="object-cover"
                         onError={(e) => (e.currentTarget.style.display = 'none')}
+                        unoptimized
                       />
                       <button
                         type="button"

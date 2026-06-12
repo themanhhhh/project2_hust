@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, Calendar, Eye, FileText, Loader2, User } from 'lucide-react';
 import { Header } from '@/components/shop/Header';
@@ -95,8 +96,8 @@ export default function BlogPostPage() {
             <div className="container mx-auto px-4 py-10 md:py-14">
               <div className="mx-auto max-w-5xl">
                 {post.featured_image && (
-                  <div className="mb-10 overflow-hidden rounded-[32px] border border-gray-100 bg-gray-50 shadow-[0_32px_80px_-45px_rgba(0,0,0,0.35)]">
-                    <img src={post.featured_image} alt={post.title} className="h-auto w-full object-cover" />
+                  <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-[32px] border border-gray-100 bg-gray-50 shadow-[0_32px_80px_-45px_rgba(0,0,0,0.35)]">
+                    <Image src={post.featured_image} alt={post.title} fill sizes="(min-width: 1024px) 1024px, 100vw" className="object-cover" unoptimized />
                   </div>
                 )}
 

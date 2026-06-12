@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { 
   ChevronLeft, 
@@ -549,10 +550,13 @@ export default function EditCampaignPage() {
                         }`}>
                           {selectedProducts.includes(product.id) && <Check className="h-3 w-3" />}
                         </div>
-                        <img
+                        <Image
                           src={getProductThumbnail(product)}
                           alt={product.name}
-                          className="w-12 h-12 object-cover rounded"
+                          width={48}
+                          height={48}
+                          className="h-12 w-12 rounded object-cover"
+                          unoptimized
                         />
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{product.name}</p>
@@ -637,12 +641,15 @@ export default function EditCampaignPage() {
                   />
                   
                   {formData.image_url ? (
-                    <div className="relative rounded-lg overflow-hidden border">
-                      <img
+                    <div className="relative h-48 overflow-hidden rounded-lg border">
+                      <Image
                         src={formData.image_url}
                         alt="Banner Preview"
-                        className="w-full h-48 object-cover"
+                        fill
+                        sizes="(min-width: 1024px) 33vw, 100vw"
+                        className="object-cover"
                         onError={(e) => (e.currentTarget.style.display = 'none')}
+                        unoptimized
                       />
                       <button
                         type="button"

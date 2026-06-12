@@ -31,6 +31,9 @@ import type {
   Post,
   Shipment,
   Collection,
+  PaginatedApiResult,
+  SellerKyb,
+  SellerProfile,
 } from '@/lib/types';
 
 // Generic hook state type
@@ -171,7 +174,7 @@ export function useBrandBySlug(slug: string) {
 // USER HOOKS
 // ============================================
 export function useUsers(page: number = 1, limit: number = 1000) {
-  return useApi<{ data: User[]; pagination: any }>(() => userApi.getAll(page, limit), [page, limit]);
+  return useApi<PaginatedApiResult<User>>(() => userApi.getAll(page, limit), [page, limit]);
 }
 
 export function useUser(id: string) {
@@ -185,9 +188,9 @@ export function useOrders() {
   return useApi<Order[]>(() => orderApi.getAll());
 }
 
-export function useOrdersWithFilters(filters: any) {
+export function useOrdersWithFilters(filters: { page?: number; limit?: number; search?: string; status?: string; date?: string }) {
   const filterKey = JSON.stringify(filters);
-  return useApi<{ data: Order[]; pagination: any }>(() => orderApi.getWithFilters(filters), [filterKey]);
+  return useApi<PaginatedApiResult<Order>>(() => orderApi.getWithFilters(filters), [filterKey]);
 }
 
 export function useOrder(id: string) {
@@ -331,11 +334,11 @@ export function useDashboardStats() {
 // POST HOOKS
 // ============================================
 export function usePosts(page: number = 1, limit: number = 10) {
-  return useApi<{ data: Post[]; pagination: any }>(() => postApi.getAll(page, limit), [page, limit]);
+  return useApi<PaginatedApiResult<Post>>(() => postApi.getAll(page, limit), [page, limit]);
 }
 
 export function usePublishedPosts(page: number = 1, limit: number = 10) {
-  return useApi<{ data: Post[]; pagination: any }>(() => postApi.getPublished(page, limit), [page, limit]);
+  return useApi<PaginatedApiResult<Post>>(() => postApi.getPublished(page, limit), [page, limit]);
 }
 
 export function usePost(id: string) {
@@ -367,16 +370,16 @@ export function useSellerProducts(sellerId: string) {
 
 export function useSellerOrders(filters: { page?: number; limit?: number; search?: string; status?: string; date?: string }) {
   const filterKey = JSON.stringify(filters);
-  return useApi<{ data: Order[]; pagination: any }>(
+  return useApi<PaginatedApiResult<Order>>(
     () => sellerApi.getMyOrders(filters),
     [filterKey]
   );
 }
 
 export function useSellerProfile() {
-  return useApi<any>(() => sellerApi.getProfile());
+  return useApi<SellerProfile>(() => sellerApi.getProfile());
 }
 
 export function useSellerKyb() {
-  return useApi<any>(() => sellerApi.getMyKyb());
+  return useApi<SellerKyb>(() => sellerApi.getMyKyb());
 }

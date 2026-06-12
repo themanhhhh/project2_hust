@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  type LucideIcon,
   LayoutDashboard,
   Package,
   ShoppingCart,
@@ -28,7 +29,7 @@ import {
 import { useSellerAuth } from '@/contexts/SellerAuthContext';
 
 interface MenuItem {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   href?: string;
   children?: { label: string; href: string }[];

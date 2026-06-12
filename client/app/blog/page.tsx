@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { ArrowRight, Calendar, Eye, FileText, Loader2 } from 'lucide-react';
 import { Header } from '@/components/shop/Header';
@@ -76,10 +77,13 @@ export default function BlogPage() {
                     <Link href={`/blog/${post.slug}`} className="block">
                       {post.featured_image ? (
                         <div className={`relative overflow-hidden ${index === 0 ? 'min-h-[320px] xl:min-h-full' : 'h-64'}`}>
-                          <img
+                          <Image
                             src={post.featured_image}
                             alt={post.title}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                            fill
+                            sizes={index === 0 ? '(min-width: 1280px) 50vw, 100vw' : '(min-width: 768px) 50vw, 100vw'}
+                            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                            unoptimized
                           />
                         </div>
                       ) : (

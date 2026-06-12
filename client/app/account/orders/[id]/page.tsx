@@ -2,6 +2,7 @@
 
 import { use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Package, MapPin, CreditCard, Loader2, AlertCircle, Truck, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { Header } from '@/components/shop/Header';
@@ -15,7 +16,7 @@ import { orderApi } from '@/lib/api';
 import { useApi } from '@/hooks/useApi';
 import { useShipmentByOrder } from '@/hooks/useApi';
 import { formatPrice } from '@/lib/productMapper';
-import type { Order } from '@/lib/types';
+import type { LegacyOrder, ShipmentTrackingEvent } from '@/lib/types';
 
 // Status config
 const statusConfig: Record<string, { label: string; color: 'default' | 'secondary' | 'destructive' | 'outline'; icon: typeof Package }> = {
@@ -56,13 +57,14 @@ function formatDate(dateString: string): string {
   });
 }
 
-function parseTrackingHistory(trackingHistory: any) {
+function parseTrackingHistory(trackingHistory: unknown): ShipmentTrackingEvent[] {
   if (!trackingHistory) return [];
   if (Array.isArray(trackingHistory)) return trackingHistory;
+  if (typeof trackingHistory !== 'string') return [];
 
   try {
-    const parsed = JSON.parse(trackingHistory);
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed: unknown = JSON.parse(trackingHistory);
+    return Array.isArray(parsed) ? parsed as ShipmentTrackingEvent[] : [];
   } catch {
     return [];
   }
@@ -127,15 +129,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   // Handle snake_case from API
-  const orderNumber = order.orderNumber || (order as any).order_number || orderIdentifier;
-  const orderItems = order.items || (order as any).order_items || [];
-  const createdAt = order.createdAt || (order as any).created_at;
-  const shippingFee = order.shippingFee ?? (order as any).shipping_fee ?? 0;
-  const paymentMethod = order.paymentMethod || (order as any).payment_method || 'cod';
-  const paymentStatus = order.paymentStatus || (order as any).payment_status || 'pending';
-  const status = statusConfig[order.status] || statusConfig.pending;
+  const displayOrder = order as LegacyOrder;
+  const orderNumber = displayOrder.orderNumber || displayOrder.order_number || orderIdentifier;
+  const orderItems = displayOrder.items || displayOrder.order_items || [];
+  const createdAt = displayOrder.createdAt || displayOrder.created_at;
+  const shippingFee = displayOrder.shippingFee ?? displayOrder.shipping_fee ?? 0;
+  const paymentMethod = displayOrder.paymentMethod || displayOrder.payment_method || 'cod';
+  const paymentStatus = displayOrder.paymentStatus || displayOrder.payment_status || 'pending';
+  const status = statusConfig[displayOrder.status] || statusConfig.pending;
   const StatusIcon = status.icon;
-  const trackingHistory = parseTrackingHistory((shipment as any)?.tracking_history);
+  const trackingHistory = parseTrackingHistory(shipment?.tracking_history);
 
   return (
     <>
@@ -186,7 +189,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {orderItems.map((item: any, index: number) => {
+                    {orderItems.map((item, index) => {
                       const productName = item.product?.name || item.name || 'Sản phẩm';
                       const itemPrice = item.price || 0;
                       const itemQuantity = item.quantity || 1;
@@ -197,9 +200,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                         <div key={item.id || index}>
                           <div className="flex gap-4">
                             {/* Product Image */}
-                            <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                            <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                               {itemImage && itemImage.startsWith('http') ? (
-                                <img src={itemImage} alt={productName} className="w-full h-full object-cover" />
+                                <Image src={itemImage} alt={productName} fill sizes="80px" className="object-cover" unoptimized />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
                                   <Package className="h-8 w-8 text-gray-300" />
@@ -241,7 +244,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                   <CardContent>
                     <div className="space-y-1">
                       <p className="font-medium">
-                        {order.address.fullName || (order.address as any).full_name}
+                        {displayOrder.address?.fullName || displayOrder.address?.full_name}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {order.address.phone}
@@ -269,28 +272,28 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     <div className="grid gap-3 sm:grid-cols-3">
                       <div className="rounded-xl bg-slate-50 p-4">
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">Carrier</p>
-                        <p className="mt-2 font-medium">{(shipment as any).carrier || 'Đang cập nhật'}</p>
+                        <p className="mt-2 font-medium">{shipment.carrier || 'Đang cập nhật'}</p>
                       </div>
                       <div className="rounded-xl bg-slate-50 p-4">
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">Tracking</p>
-                        <p className="mt-2 font-medium break-all">{(shipment as any).tracking_number || 'Chưa có'}</p>
+                        <p className="mt-2 font-medium break-all">{shipment.tracking_number || 'Chưa có'}</p>
                       </div>
                       <div className="rounded-xl bg-slate-50 p-4">
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">Shipment</p>
-                        <p className="mt-2 font-medium">{(shipment as any).status || 'pending'}</p>
+                        <p className="mt-2 font-medium">{shipment.status || 'pending'}</p>
                       </div>
                     </div>
 
-                    {(shipment as any).tracking_number && (
+                    {shipment.tracking_number && (
                       <Button asChild variant="outline" className="w-full sm:w-auto">
-                        <Link href={`/tracking/${(shipment as any).tracking_number}`}>
+                        <Link href={`/tracking/${shipment.tracking_number}`}>
                           Xem trang tracking chi tiết
                         </Link>
                       </Button>
                     )}
 
                     <div className="space-y-3">
-                      {trackingHistory.length > 0 ? trackingHistory.map((event: any, index: number) => (
+                      {trackingHistory.length > 0 ? trackingHistory.map((event, index) => (
                         <div key={`${event.timestamp || index}-${index}`} className="flex gap-3 rounded-xl border p-3">
                           <div className="mt-1 h-2.5 w-2.5 rounded-full bg-blue-500" />
                           <div className="min-w-0 flex-1">

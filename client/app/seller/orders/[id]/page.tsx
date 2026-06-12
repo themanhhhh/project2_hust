@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useOrder } from '@/hooks/useApi';
 import { formatPrice } from '@/lib/productMapper';
 import { AdminLoading } from '@/components/admin/AdminLoading';
@@ -16,6 +17,7 @@ import {
   Truck,
   AlertCircle
 } from 'lucide-react';
+import type { LegacyOrder } from '@/lib/types';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-300',
@@ -91,8 +93,14 @@ export default function OrderDetailPage() {
   }
 
   // The backend might return order_items or items
-  const orderItems = (order as any).order_items || order.items || [];
-  const totalProducts = orderItems.reduce((acc: number, item: any) => acc + (item.quantity || 1), 0);
+  const displayOrder = order as LegacyOrder;
+  const orderItems = displayOrder.order_items || displayOrder.items || [];
+  const totalProducts = orderItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+  const createdAt = displayOrder.createdAt || displayOrder.created_at;
+  const shippingFee = displayOrder.shippingFee || displayOrder.shipping_fee || 0;
+  const paymentMethod = displayOrder.paymentMethod || displayOrder.payment_method || 'cod';
+  const paymentStatus = displayOrder.paymentStatus || displayOrder.payment_status || 'pending';
+  const shippingAddress = displayOrder.address || displayOrder;
 
   return (
     <div className="space-y-6 pb-12">
@@ -104,14 +112,14 @@ export default function OrderDetailPage() {
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold">Đơn hàng #{order.orderNumber || order.id?.substring(0, 8)}</h1>
+              <h1 className="text-2xl font-bold">Đơn hàng #{displayOrder.orderNumber || displayOrder.order_number || order.id?.substring(0, 8)}</h1>
               <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusColors[order.status] || 'bg-gray-100 text-gray-700'}`}>
                 {statusLabels[order.status] || order.status}
               </span>
             </div>
             <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
               <Calendar className="h-4 w-4" />
-              {new Date(order.createdAt || (order as any).created_at).toLocaleString('vi-VN')}
+              {createdAt ? new Date(createdAt).toLocaleString('vi-VN') : ''}
             </p>
           </div>
         </div>
@@ -141,18 +149,22 @@ export default function OrderDetailPage() {
               </h2>
             </div>
             <div className="divide-y divide-border">
-              {orderItems.map((item: any) => {
-                const product = item.product || {};
-                const price = item.price || product.price || 0;
+              {orderItems.map((item) => {
+                const product = item.product;
+                const price = item.price || product?.price || 0;
+                const productImage = product?.images?.[0]?.url || product?.product_images?.[0]?.url || product?.product_images?.[0]?.image_url;
                 
                 return (
                   <div key={item.id} className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4">
-                    <div className="h-20 w-20 flex-shrink-0 bg-muted rounded-md overflow-hidden flex items-center justify-center">
-                      {product.images?.[0]?.url || product.product_images?.[0]?.url ? (
-                        <img 
-                          src={product.images?.[0]?.url || product.product_images?.[0]?.url} 
-                          alt={product.name} 
-                          className="h-full w-full object-cover"
+                    <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md bg-muted">
+                      {productImage ? (
+                        <Image
+                          src={productImage}
+                          alt={product?.name || 'Sản phẩm'}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <Package className="h-8 w-8 text-muted-foreground" />
@@ -161,8 +173,8 @@ export default function OrderDetailPage() {
                     <div className="flex-1 flex flex-col justify-between">
                       <div className="flex justify-between gap-4">
                         <div>
-                          <h3 className="font-medium line-clamp-2">{product.name || 'Sản phẩm không xác định'}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">Mã SP: {product.sku || 'N/A'}</p>
+                          <h3 className="font-medium line-clamp-2">{product?.name || item.name || 'Sản phẩm không xác định'}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">Mã SP: {product?.sku || 'N/A'}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-semibold">{formatPrice(price)}</p>
@@ -190,7 +202,7 @@ export default function OrderDetailPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Phí vận chuyển</span>
-                <span>{formatPrice(order.shippingFee || (order as any).shipping_fee || 0)}</span>
+                <span>{formatPrice(shippingFee)}</span>
               </div>
               {order.discount > 0 && (
                 <div className="flex justify-between text-foreground">
@@ -240,15 +252,15 @@ export default function OrderDetailPage() {
             <div className="space-y-3 text-sm">
               <div>
                 <span className="text-muted-foreground block mb-1">Người nhận:</span>
-                <p className="font-medium">{(order.address || order as any).fullName || order.user?.name}</p>
-                <p>{(order.address || order as any).phone || order.user?.phone}</p>
+                <p className="font-medium">{shippingAddress.fullName || shippingAddress.full_name || order.user?.name}</p>
+                <p>{shippingAddress.phone || order.user?.phone}</p>
               </div>
               <div>
                 <span className="text-muted-foreground block mb-1">Địa chỉ giao hàng:</span>
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <p className="leading-relaxed">
-                    {(order.address || order as any).street}, {(order.address || order as any).ward}, {(order.address || order as any).district}, {(order.address || order as any).province}
+                    {shippingAddress.street}, {shippingAddress.ward}, {shippingAddress.district}, {shippingAddress.province}
                   </p>
                 </div>
               </div>
@@ -264,23 +276,23 @@ export default function OrderDetailPage() {
             <div className="space-y-4 text-sm">
               <div>
                 <span className="text-muted-foreground block mb-1">Phương thức thanh toán:</span>
-                <p className="font-medium">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
+                <p className="font-medium">{paymentMethodLabels[paymentMethod] || paymentMethod}</p>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Trạng thái:</span>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${paymentStatusColors[order.paymentStatus] || 'bg-gray-100 text-gray-700'}`}>
-                  {paymentStatusLabels[order.paymentStatus] || order.paymentStatus}
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${paymentStatusColors[paymentStatus] || 'bg-gray-100 text-gray-700'}`}>
+                  {paymentStatusLabels[paymentStatus] || paymentStatus}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Internal Note */}
-          {(order.note || (order as any).customer_note) && (
+          {(order.note || displayOrder.customer_note) && (
             <div className="overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-6">
               <h2 className="mb-2 text-lg font-semibold">Ghi chú của khách</h2>
               <p className="text-sm text-muted-foreground">
-                {order.note || (order as any).customer_note}
+                {order.note || displayOrder.customer_note}
               </p>
             </div>
           )}

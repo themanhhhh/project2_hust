@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, 
@@ -23,9 +24,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useBrands, useCategories } from '@/hooks/useApi';
-import { api } from '@/lib/api';
+import { api, type ProductMutationInput } from '@/lib/api';
 import { uploadFileToPinata } from '@/lib/pinata';
+import type { Brand, Category } from '@/lib/types';
 import { toast } from 'sonner';
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -105,8 +111,8 @@ export default function AddProductPage() {
       
       const uploadedUrls = await Promise.all(uploadPromises);
       setImages(prev => [...prev, ...uploadedUrls].slice(0, 5));
-    } catch (err: any) {
-      toast.error(err?.message || 'Không thể tải ảnh lên. Vui lòng thử lại.');
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, 'Không thể tải ảnh lên. Vui lòng thử lại.'));
       console.error('Upload error:', err);
     } finally {
       setIsUploading(false);
@@ -121,7 +127,7 @@ export default function AddProductPage() {
     setIsSubmitting(true);
     
     try {
-      await api.products.create({
+      const productData: ProductMutationInput = {
         name: formData.name,
         slug: formData.slug || generateSlug(formData.name),
         description: formData.description || undefined,
@@ -132,12 +138,14 @@ export default function AddProductPage() {
         brand_id: formData.brand_id || undefined,
         category_id: formData.category_id || undefined,
         badge: formData.badge,
-        images: images.map((url, index) => ({ url, display_order: index })) as any,
-      });
+        images: images.map((url, index) => ({ url, display_order: index })),
+      };
+
+      await api.products.create(productData);
       toast.success('Tạo sản phẩm thành công.');
       router.push('/seller/products');
-    } catch (err: any) {
-      toast.error(err.message || 'Không thể tạo sản phẩm');
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, 'Không thể tạo sản phẩm'));
     } finally {
       setIsSubmitting(false);
     }
@@ -235,7 +243,7 @@ export default function AddProductPage() {
                       <SelectValue placeholder="Chọn thương hiệu" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(brands || []).map((brand: any) => (
+                      {(brands || []).map((brand: Brand) => (
                         <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
                       ))}
                     </SelectContent>
@@ -251,7 +259,7 @@ export default function AddProductPage() {
                       <SelectValue placeholder="Chọn danh mục" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(categories || []).map((cat: any) => (
+                      {(categories || []).map((cat: Category) => (
                         <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                       ))}
                     </SelectContent>
@@ -291,7 +299,7 @@ export default function AddProductPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {images.map((img, index) => (
                   <div key={index} className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden group">
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <Image src={img} alt="" fill sizes="(min-width: 640px) 25vw, 50vw" className="object-cover" unoptimized />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}

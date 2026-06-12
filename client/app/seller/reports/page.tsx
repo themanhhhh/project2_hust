@@ -9,15 +9,32 @@ import {
   Users, 
   Package,
   Calendar,
-  Download,
-  Loader2
+  Download
 } from 'lucide-react';
 import { useSellerOrders, useProducts, useUsers } from '@/hooks/useApi';
 import { formatPrice } from '@/lib/productMapper';
 import { AdminSelect } from '@/components/admin/AdminSelect';
 import { AdminLoading } from '@/components/admin/AdminLoading';
+import type { Order, Product } from '@/lib/types';
 
 type PeriodType = 'week' | 'month' | 'year';
+
+type ReportOrder = Order & {
+  created_at?: string;
+  order_number?: string;
+};
+
+type ReportProduct = Product & {
+  brand?: Product['brand'] | string;
+};
+
+function getOrderDate(order: ReportOrder) {
+  return new Date(order.created_at || order.createdAt);
+}
+
+function getOrderTotal(order: Pick<ReportOrder, 'total'>) {
+  return Number(order.total || 0);
+}
 
 function getDateRange(period: PeriodType, year: number, month: number): { start: Date; end: Date } {
   const now = new Date();
@@ -61,15 +78,15 @@ function getPeriodLabel(period: PeriodType, year: number, month: number): string
 }
 
 // Generate chart data based on period
-function getChartData(orders: any[], period: PeriodType, year: number, month: number) {
+function getChartData(orders: ReportOrder[], period: PeriodType, year: number, month: number) {
   if (period === 'year') {
     // Monthly breakdown
     const months = Array.from({ length: 12 }, (_, i) => {
-      const monthOrders = orders.filter((o: any) => {
-        const d = new Date(o.created_at || o.createdAt);
+      const monthOrders = orders.filter((o) => {
+        const d = getOrderDate(o);
         return d.getMonth() === i;
       });
-      const revenue = monthOrders.reduce((sum: number, o: any) => sum + parseFloat(o.total || 0), 0);
+      const revenue = monthOrders.reduce((sum, o) => sum + getOrderTotal(o), 0);
       return { label: `T${i + 1}`, revenue, orders: monthOrders.length };
     });
     return months;
@@ -79,11 +96,11 @@ function getChartData(orders: any[], period: PeriodType, year: number, month: nu
     // Daily breakdown
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const days = Array.from({ length: daysInMonth }, (_, i) => {
-      const dayOrders = orders.filter((o: any) => {
-        const d = new Date(o.created_at || o.createdAt);
+      const dayOrders = orders.filter((o) => {
+        const d = getOrderDate(o);
         return d.getDate() === i + 1;
       });
-      const revenue = dayOrders.reduce((sum: number, o: any) => sum + parseFloat(o.total || 0), 0);
+      const revenue = dayOrders.reduce((sum, o) => sum + getOrderTotal(o), 0);
       return { label: `${i + 1}`, revenue, orders: dayOrders.length };
     });
     return days;
@@ -101,13 +118,13 @@ function getChartData(orders: any[], period: PeriodType, year: number, month: nu
     const targetDate = new Date(monday);
     targetDate.setDate(monday.getDate() + i);
     
-    const dayOrders = orders.filter((o: any) => {
-      const d = new Date(o.created_at || o.createdAt);
+    const dayOrders = orders.filter((o) => {
+      const d = getOrderDate(o);
       return d.getFullYear() === targetDate.getFullYear() && 
              d.getMonth() === targetDate.getMonth() && 
              d.getDate() === targetDate.getDate();
     });
-    const revenue = dayOrders.reduce((sum: number, o: any) => sum + parseFloat(o.total || 0), 0);
+    const revenue = dayOrders.reduce((sum, o) => sum + getOrderTotal(o), 0);
     return { label: dayNames[i], revenue, orders: dayOrders.length };
   });
   return days;
@@ -118,7 +135,10 @@ export default function AdminReportsPage() {
   const { data: products, loading: productsLoading } = useProducts();
   const { data: usersResponse, loading: usersLoading } = useUsers();
   const users = usersResponse?.data || [];
-  const orders = sellerOrdersResult?.data || [];
+  const orders = useMemo(
+    () => (sellerOrdersResult?.data || []) as ReportOrder[],
+    [sellerOrdersResult?.data]
+  );
 
   const now = new Date();
   const [period, setPeriod] = useState<PeriodType>('year');
@@ -130,15 +150,15 @@ export default function AdminReportsPage() {
   // Filter orders by date range
   const filteredOrders = useMemo(() => {
     const { start, end } = getDateRange(period, selectedYear, selectedMonth);
-    return orders.filter((order: any) => {
-      const orderDate = new Date(order.created_at || order.createdAt);
+    return orders.filter((order) => {
+      const orderDate = getOrderDate(order);
       return orderDate >= start && orderDate <= end;
     });
   }, [orders, period, selectedYear, selectedMonth]);
 
   // Calculate stats from filtered orders
   const totalRevenue = filteredOrders.reduce(
-    (sum: number, order: any) => sum + parseFloat(order.total || 0), 0
+    (sum, order) => sum + getOrderTotal(order), 0
   );
 
   // Calculate previous period stats to compute growth
@@ -161,13 +181,13 @@ export default function AdminReportsPage() {
       prevEnd.setMilliseconds(-1);
     }
     
-    const prevOrders = orders.filter((order: any) => {
-      const orderDate = new Date(order.created_at || order.createdAt);
+    const prevOrders = orders.filter((order) => {
+      const orderDate = getOrderDate(order);
       return orderDate >= prevStart && orderDate <= prevEnd;
     });
     
     return {
-      revenue: prevOrders.reduce((sum: number, o: any) => sum + parseFloat(o.total || 0), 0),
+      revenue: prevOrders.reduce((sum, o) => sum + getOrderTotal(o), 0),
       orders: prevOrders.length,
     };
   }, [orders, period, selectedYear, selectedMonth]);
@@ -201,7 +221,7 @@ export default function AdminReportsPage() {
   // Category sales (simplified)
   const categorySales = useMemo(() => {
     const catMap = new Map<string, number>();
-    (products || []).forEach((p: any) => {
+    (products || []).forEach((p: Product) => {
       const catName = p.category?.name || 'Khác';
       catMap.set(catName, (catMap.get(catName) || 0) + 1);
     });
@@ -218,7 +238,7 @@ export default function AdminReportsPage() {
   }, [products]);
 
   // Display data
-  const displayProducts = products || [];
+  const displayProducts = (products || []) as ReportProduct[];
   const displayOrders = filteredOrders;
 
   // Year options
@@ -429,7 +449,7 @@ export default function AdminReportsPage() {
          <div className="rounded-2xl border border-border bg-card p-6 dark:border-slate-800 dark:bg-slate-950">
           <h2 className="text-lg font-semibold mb-4">Sản phẩm bán chạy</h2>
           <div className="space-y-4">
-            {displayProducts.slice(0, 5).map((product: any, i: number) => (
+            {displayProducts.slice(0, 5).map((product, i) => (
               <div key={product.id} className="flex items-center gap-4">
                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold ${
                    i === 0 ? 'bg-black text-white dark:bg-white dark:text-black' :
@@ -441,7 +461,7 @@ export default function AdminReportsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{product.name}</p>
-                  <p className="text-sm text-muted-foreground">{product.brand?.name || product.brand || ''}</p>
+                  <p className="text-sm text-muted-foreground">{typeof product.brand === 'string' ? product.brand : product.brand?.name || ''}</p>
                 </div>
                 <div className="text-right">
                   <p className="font-medium">{formatPrice(product.price)}</p>
@@ -466,7 +486,7 @@ export default function AdminReportsPage() {
                 Không có đơn hàng trong khoảng thời gian này
               </p>
             ) : (
-              displayOrders.slice(0, 5).map((order: any) => (
+              displayOrders.slice(0, 5).map((order) => (
                  <div key={order.id || order.order_number} className="flex items-start gap-4">
                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-800">
                      <ShoppingCart className="h-4 w-4 text-black dark:text-white" aria-hidden="true" />

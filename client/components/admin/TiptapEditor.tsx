@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -25,6 +26,31 @@ import {
 interface TiptapEditorProps {
   content: string;
   onChange: (content: string) => void;
+}
+
+function ToolbarButton({
+  onClick,
+  active,
+  children,
+  title,
+}: {
+  onClick: () => void;
+  active?: boolean;
+  children: ReactNode;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className={`p-2 rounded hover:bg-gray-100 transition-colors ${
+        active ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-slate-300'
+      }`}
+    >
+      {children}
+    </button>
+  );
 }
 
 export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
@@ -76,29 +102,6 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
       editor.chain().focus().setLink({ href: url }).run();
     }
   };
-
-  const ToolbarButton = ({ 
-    onClick, 
-    active, 
-    children, 
-    title 
-  }: { 
-    onClick: () => void; 
-    active?: boolean; 
-    children: React.ReactNode; 
-    title: string;
-  }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title}
-      className={`p-2 rounded hover:bg-gray-100 transition-colors ${
-        active ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-slate-300'
-      }`}
-    >
-      {children}
-    </button>
-  );
 
   return (
     <div className="border border-input rounded-lg overflow-hidden bg-white">

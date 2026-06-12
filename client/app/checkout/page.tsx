@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, CreditCard, Truck, Wallet, Building2, Loader2, ShoppingBag } from 'lucide-react';
+import { vnpayApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,8 +43,21 @@ interface Ward {
   name: string;
 }
 
+interface CreatedCheckoutOrder {
+  id: string;
+  orderNumber: string;
+  allocatedShipping: number;
+}
+
+type CreatedOrderResponse = {
+  id?: string;
+  order_number?: string;
+  orderNumber?: string;
+};
+
 const paymentMethods = [
   { id: 'cod', name: 'Thanh toán khi nhận hàng (COD)', icon: Truck },
+  { id: 'vnpay', name: 'Thanh toán qua VNPay', icon: CreditCard, description: 'ATM / Visa / MasterCard / QR Pay' },
   { id: 'banking', name: 'Chuyển khoản ngân hàng', icon: Building2 },
 ];
 
@@ -95,7 +110,7 @@ export default function CheckoutPage() {
         ...prev,
         name: prev.name || user.name || '',
         email: prev.email || user.email || '',
-        phone: prev.phone || (user as any).phone || '',
+        phone: prev.phone || user.phone || '',
       }));
     }
   }, [user]);
@@ -234,11 +249,11 @@ export default function CheckoutPage() {
         group.reduce((sum, item) => sum + item.price * item.quantity, 0)
       );
 
-      const createdOrders = [];
+      const createdOrders: CreatedCheckoutOrder[] = [];
 
       for (const [index, group] of itemGroups.entries()) {
         const groupSubtotal = subtotalByGroup[index];
-        const allocatedShipping = shipping === 0
+        const allocatedShipping: number = shipping === 0
           ? 0
           : index === itemGroups.length - 1
             ? shipping - createdOrders.reduce((sum, order) => sum + order.allocatedShipping, 0)
@@ -256,16 +271,34 @@ export default function CheckoutPage() {
           })),
         };
 
-        const createdOrder = await orderApi.create(orderData as any);
+        const createdOrder = await orderApi.create(orderData as unknown as Parameters<typeof orderApi.create>[0]) as CreatedOrderResponse;
         createdOrders.push({
-          id: (createdOrder as any)?.id || '',
-          orderNumber: (createdOrder as any)?.order_number || '',
+          id: createdOrder.id || '',
+          orderNumber: createdOrder.order_number || createdOrder.orderNumber || '',
           allocatedShipping,
         });
       }
 
       setOrderPlaced(true);
       await clearCart();
+
+      // If VNPay payment method, redirect to VNPay gateway
+      if (paymentMethod === 'vnpay') {
+        // For VNPay, we use the first order (or the only order)
+        const firstOrder = createdOrders[0];
+        if (firstOrder?.id) {
+          try {
+            const { paymentUrl } = await vnpayApi.createPayment(firstOrder.id);
+            // Redirect to VNPay payment gateway
+            window.location.href = paymentUrl;
+            return;
+          } catch (vnpayError) {
+            console.error('VNPay payment URL creation failed:', vnpayError);
+            toast.error('Không thể tạo liên kết thanh toán VNPay. Đơn hàng đã được tạo, vui lòng thử thanh toán lại.');
+            // Fall through to OTP verification
+          }
+        }
+      }
 
       const orderIds = createdOrders.map((order) => order.id).filter(Boolean).join(',');
       const orderNumbers = createdOrders.map((order) => order.orderNumber).filter(Boolean).join(',');
@@ -473,7 +506,12 @@ export default function CheckoutPage() {
                         )}
                       </div>
                       <method.icon className="h-5 w-5 text-muted-foreground" />
-                      <span className="text-sm font-medium">{method.name}</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{method.name}</span>
+                        {'description' in method && method.description && (
+                          <span className="text-xs text-muted-foreground">{method.description}</span>
+                        )}
+                      </div>
                     </label>
                   ))}
                 </CardContent>
@@ -493,9 +531,9 @@ export default function CheckoutPage() {
                   <div className="space-y-4">
                     {items.map((item) => (
                       <div key={item.id} className="flex gap-3">
-                        <div className="w-16 h-16 bg-muted rounded flex items-center justify-center shrink-0 overflow-hidden">
+                        <div className="relative w-16 h-16 bg-muted rounded flex items-center justify-center shrink-0 overflow-hidden">
                           {item.image && item.image.startsWith('http') ? (
-                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                            <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" unoptimized />
                           ) : (
                             <ShoppingBag className="h-6 w-6 text-muted-foreground" />
                           )}

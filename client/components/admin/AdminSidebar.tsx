@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  type LucideIcon,
   LayoutDashboard,
   Package,
   PackageCheck,
@@ -37,7 +38,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 
 interface MenuItem {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   href?: string;
   children?: { label: string; href: string }[];

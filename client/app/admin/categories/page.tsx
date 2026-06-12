@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { 
   Plus, 
   Pencil, 
@@ -235,10 +236,13 @@ export default function AdminCategoriesPage() {
           )}
           
           {category.image_url ? (
-            <img
+            <Image
               src={category.image_url}
               alt={category.name}
-              className="w-10 h-10 rounded object-cover"
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded object-cover"
+              unoptimized
             />
           ) : (
             <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center">
@@ -433,7 +437,7 @@ export default function AdminCategoriesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc muốn xóa danh mục "{deletingCategory?.name}"? 
+              Bạn có chắc muốn xóa danh mục &quot;{deletingCategory?.name}&quot;? 
               Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>

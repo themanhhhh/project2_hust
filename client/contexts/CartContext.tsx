@@ -19,6 +19,39 @@ export interface CartItem {
   quantity: number;
 }
 
+interface ApiProductImage {
+  image_url?: string;
+  url?: string;
+  is_primary?: boolean;
+}
+
+interface ApiCartProduct {
+  name?: string;
+  price?: number | string;
+  product_images?: ApiProductImage[];
+  brand?: { name?: string };
+  seller?: { id?: string };
+}
+
+interface ApiCartItem {
+  id: string;
+  product_id: string;
+  quantity: number;
+  is_delete?: boolean;
+  product?: ApiCartProduct;
+}
+
+interface ApiCartResponse {
+  id?: string;
+  cart_items?: ApiCartItem[];
+}
+
+interface ApiEnvelope<T> {
+  data?: T;
+  message?: string;
+  error?: { message?: string };
+}
+
 interface CartContextType {
   items: CartItem[];
   loading: boolean;
@@ -37,14 +70,14 @@ interface CartProviderProps {
 }
 
 // Map API cart response to CartItem[]
-function mapCartItems(cart: any): CartItem[] {
+function mapCartItems(cart: ApiCartResponse): CartItem[] {
   if (!cart?.cart_items) return [];
   return cart.cart_items
-    .filter((item: any) => !item.is_delete)
-    .map((item: any) => {
+    .filter((item) => !item.is_delete)
+    .map((item) => {
       const product = item.product || {};
       const images = product.product_images || [];
-      const primaryImage = images.find((img: any) => img.is_primary) || images[0];
+      const primaryImage = images.find((img) => img.is_primary) || images[0];
       const imageUrl = primaryImage?.image_url || primaryImage?.url || '/products/placeholder.jpg';
 
         return {
@@ -61,7 +94,7 @@ function mapCartItems(cart: any): CartItem[] {
 }
 
 // Helper for authenticated API calls
-async function cartFetch(url: string, options: RequestInit = {}): Promise<any> {
+async function cartFetch<T>(url: string, options: RequestInit = {}): Promise<ApiEnvelope<T>> {
   const token = getToken();
   if (!token) throw new Error('Not authenticated');
 
@@ -79,7 +112,7 @@ async function cartFetch(url: string, options: RequestInit = {}): Promise<any> {
     throw new Error(error.message || error.error?.message || 'Cart API error');
   }
 
-  return response.json();
+  return response.json() as Promise<ApiEnvelope<T>>;
 }
 
 export function CartProvider({ children }: CartProviderProps) {
@@ -106,9 +139,9 @@ export function CartProvider({ children }: CartProviderProps) {
 
       if (isAuthenticated && user?.id) {
         try {
-          const result = await cartFetch(`/carts/user/${user.id}`, { method: 'POST' });
+          const result = await cartFetch<ApiCartResponse>(`/carts/user/${user.id}`, { method: 'POST' });
           if (result.data) {
-            setCartId(result.data.id);
+            setCartId(result.data.id || null);
             setItems(mapCartItems(result.data));
           }
         } catch (error) {
@@ -143,12 +176,12 @@ export function CartProvider({ children }: CartProviderProps) {
 
     if (!activeCartId) {
       try {
-        const cartResult = await cartFetch(`/carts/user/${user.id}`, { method: 'POST' });
+        const cartResult = await cartFetch<ApiCartResponse>(`/carts/user/${user.id}`, { method: 'POST' });
         if (!cartResult.data?.id) {
           throw new Error('Không thể khởi tạo giỏ hàng.');
         }
         activeCartId = cartResult.data.id;
-        setCartId(cartResult.data.id);
+        setCartId(cartResult.data.id || null);
         setItems(mapCartItems(cartResult.data));
       } catch (error) {
         console.error('Failed to initialize cart:', error);
@@ -171,7 +204,7 @@ export function CartProvider({ children }: CartProviderProps) {
     });
 
     try {
-      const result = await cartFetch(`/carts/${activeCartId}/items`, {
+      const result = await cartFetch<ApiCartResponse>(`/carts/${activeCartId}/items`, {
         method: 'POST',
         body: JSON.stringify({
           productId: item.productId,
@@ -189,7 +222,7 @@ export function CartProvider({ children }: CartProviderProps) {
       toast.error(error instanceof Error ? error.message : 'Không thể thêm sản phẩm vào giỏ hàng.');
       // Revert on error — reload cart
       try {
-        const result = await cartFetch(`/carts/user/${user?.id}`, { method: 'POST' });
+        const result = await cartFetch<ApiCartResponse>(`/carts/user/${user?.id}`, { method: 'POST' });
         if (result.data) setItems(mapCartItems(result.data));
       } catch { /* ignore */ }
       return false;
@@ -204,7 +237,7 @@ export function CartProvider({ children }: CartProviderProps) {
     setItems(prev => prev.filter(i => !matchCartItem(i, identifier)));
 
     try {
-      const result = await cartFetch(`/carts/${cartId}/items/${identifier}`, {
+      const result = await cartFetch<ApiCartResponse>(`/carts/${cartId}/items/${identifier}`, {
         method: 'DELETE',
       });
       if (result.data) {
@@ -232,7 +265,7 @@ export function CartProvider({ children }: CartProviderProps) {
     );
 
     try {
-      const result = await cartFetch(`/carts/${cartId}/items/${identifier}`, {
+      const result = await cartFetch<ApiCartResponse>(`/carts/${cartId}/items/${identifier}`, {
         method: 'PUT',
         body: JSON.stringify({ quantity }),
       });
@@ -252,7 +285,7 @@ export function CartProvider({ children }: CartProviderProps) {
     setItems([]);
 
     try {
-      const result = await cartFetch(`/carts/${cartId}/items`, {
+      const result = await cartFetch<ApiCartResponse>(`/carts/${cartId}/items`, {
         method: 'DELETE',
       });
       if (result.data) {

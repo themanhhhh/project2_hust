@@ -23,7 +23,21 @@ import { useSellerOrders, useShipmentByOrder } from '@/hooks/useApi';
 import { fulfillmentApi } from '@/lib/api';
 import { formatPrice } from '@/lib/productMapper';
 import { cn } from '@/lib/utils';
-import type { Order, Shipment } from '@/lib/types';
+import type { Order, Shipment, ShipmentTrackingEvent } from '@/lib/types';
+
+type FulfillmentOrder = Omit<Order, 'orderNumber' | 'items' | 'paymentStatus'> & {
+  orderNumber?: string;
+  order_number?: string;
+  items?: Order['items'];
+  order_items?: Order['items'];
+  paymentStatus?: Order['paymentStatus'];
+  payment_status?: Order['paymentStatus'];
+};
+
+type ShipmentStatusPayload = Partial<Shipment> & {
+  status: Shipment['status'];
+  tracking_event: ShipmentTrackingEvent;
+};
 
 type ShipmentFormState = {
   carrier: string;
@@ -81,17 +95,17 @@ const shipmentActions: Array<{
   { key: 'cancelShipment', label: 'Hủy shipment', icon: XCircle, destructive: true },
 ] as const;
 
-function getOrderNumber(order: Partial<Order> & Record<string, any>) {
+function getOrderNumber(order: FulfillmentOrder) {
   return order.orderNumber || order.order_number || order.id;
 }
 
-function parseTrackingHistory(trackingHistory: Shipment['tracking_history']) {
+function parseTrackingHistory(trackingHistory: Shipment['tracking_history']): ShipmentTrackingEvent[] {
   if (!trackingHistory) return [];
   if (Array.isArray(trackingHistory)) return trackingHistory;
 
   try {
-    const parsed = JSON.parse(trackingHistory);
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed: unknown = JSON.parse(trackingHistory);
+    return Array.isArray(parsed) ? parsed as ShipmentTrackingEvent[] : [];
   } catch {
     return [];
   }
@@ -127,11 +141,11 @@ export default function AdminFulfillmentPage() {
 
   const normalizedOrders = useMemo(() => {
     const items = Array.isArray(ordersResult?.data) ? ordersResult.data : [];
-    return items.filter(Boolean);
+    return items.filter(Boolean) as FulfillmentOrder[];
   }, [ordersResult]);
 
   const filteredOrders = useMemo(() => {
-    return normalizedOrders.filter((order: any) => {
+    return normalizedOrders.filter((order) => {
       const orderNumber = getOrderNumber(order).toLowerCase();
       const customer = (order.user?.name || '').toLowerCase();
       const status = (order.status || '').toLowerCase();
@@ -141,7 +155,7 @@ export default function AdminFulfillmentPage() {
   }, [normalizedOrders, query]);
 
   const selectedOrder = useMemo(() => {
-    return filteredOrders.find((order: any) => order.id === selectedOrderId) || normalizedOrders[0] || null;
+    return filteredOrders.find((order) => order.id === selectedOrderId) || normalizedOrders[0] || null;
   }, [filteredOrders, normalizedOrders, selectedOrderId]);
 
   const { data: shipment, loading: shipmentLoading, refetch: refetchShipment } = useShipmentByOrder(selectedOrder?.id || '');
@@ -178,10 +192,10 @@ export default function AdminFulfillmentPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { label: 'Đơn có thể ship', value: normalizedOrders.filter((o: any) => ['paid', 'awaiting_shipment'].includes(o.status)).length },
-              { label: 'Đang pick/pack', value: normalizedOrders.filter((o: any) => ['awaiting_shipment', 'awaiting_collection'].includes(o.status)).length },
-              { label: 'In transit', value: normalizedOrders.filter((o: any) => o.status === 'in_transit').length },
-              { label: 'Completed', value: normalizedOrders.filter((o: any) => o.status === 'completed').length },
+              { label: 'Đơn có thể ship', value: normalizedOrders.filter((o) => ['paid', 'awaiting_shipment'].includes(o.status)).length },
+              { label: 'Đang pick/pack', value: normalizedOrders.filter((o) => ['awaiting_shipment', 'awaiting_collection'].includes(o.status)).length },
+              { label: 'In transit', value: normalizedOrders.filter((o) => o.status === 'in_transit').length },
+              { label: 'Completed', value: normalizedOrders.filter((o) => o.status === 'completed').length },
             ].map((item) => (
               <div key={item.label} className="rounded-2xl border border-border bg-background px-4 py-3">
                 <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{item.label}</div>
@@ -216,7 +230,7 @@ export default function AdminFulfillmentPage() {
             </div>
 
             <div className="space-y-3">
-              {filteredOrders.map((order: any) => {
+              {filteredOrders.map((order) => {
                 const isActive = selectedOrder?.id === order.id;
                 const itemCount = (order.items || order.order_items || []).length;
 
@@ -264,14 +278,14 @@ export default function AdminFulfillmentPage() {
               <CardHeader>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div>
-                    <CardTitle className="text-xl">{getOrderNumber(selectedOrder as any)}</CardTitle>
+                    <CardTitle className="text-xl">{getOrderNumber(selectedOrder)}</CardTitle>
                     <CardDescription className="mt-2">
                       {selectedOrder.user?.name || 'Khach hang'} - {selectedOrder.user?.email || 'chua co email'}
                     </CardDescription>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">{orderStageLabel[(selectedOrder as any).status] || (selectedOrder as any).status}</Badge>
-                    <Badge variant="outline">Thanh toan: {(selectedOrder as any).payment_status || (selectedOrder as any).paymentStatus || 'pending'}</Badge>
+                    <Badge variant="secondary">{orderStageLabel[selectedOrder.status] || selectedOrder.status}</Badge>
+                    <Badge variant="outline">Thanh toan: {selectedOrder.payment_status || selectedOrder.paymentStatus || 'pending'}</Badge>
                   </div>
                 </div>
               </CardHeader>
@@ -280,7 +294,7 @@ export default function AdminFulfillmentPage() {
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div className="rounded-2xl bg-muted/50 p-4">
                       <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Tổng giá trị</div>
-                      <div className="mt-2 text-lg font-semibold text-foreground">{formatPrice((selectedOrder as any).total || 0)}</div>
+                      <div className="mt-2 text-lg font-semibold text-foreground">{formatPrice(selectedOrder.total || 0)}</div>
                     </div>
                     <div className="rounded-2xl bg-muted/50 p-4">
                       <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Shipment</div>
@@ -438,16 +452,20 @@ export default function AdminFulfillmentPage() {
                     </Button>
                     <Button
                       disabled={busyAction === 'updateShipmentStatus'}
-                      onClick={() => runAction('updateShipmentStatus', () => fulfillmentApi.updateShipmentStatus(selectedOrder.id, {
-                        status: trackingForm.status as Shipment['status'],
-                        tracking_number: trackingForm.tracking_number || shipment?.tracking_number,
-                        carrier: trackingForm.carrier,
-                        tracking_event: {
-                          status: trackingForm.status,
-                          note: trackingForm.tracking_note,
-                          location: 'seller-dashboard',
-                        },
-                      } as any))}
+                      onClick={() => {
+                        const payload: ShipmentStatusPayload = {
+                          status: trackingForm.status as Shipment['status'],
+                          tracking_number: trackingForm.tracking_number || shipment?.tracking_number,
+                          carrier: trackingForm.carrier,
+                          tracking_event: {
+                            status: trackingForm.status,
+                            note: trackingForm.tracking_note,
+                            location: 'seller-dashboard',
+                            timestamp: new Date().toISOString(),
+                          },
+                        };
+                        return runAction('updateShipmentStatus', () => fulfillmentApi.updateShipmentStatus(selectedOrder.id, payload));
+                      }}
                     >
                       {busyAction === 'updateShipmentStatus' ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                       Push event trang thai
@@ -458,10 +476,10 @@ export default function AdminFulfillmentPage() {
 
                   <div className="space-y-3">
                     <div className="text-sm font-medium text-foreground">Lich su tracking</div>
-                    {trackingHistory.length ? trackingHistory.map((event: any, index: number) => (
+                    {trackingHistory.length ? trackingHistory.map((event, index) => (
                       <div key={`${event.timestamp || index}-${index}`} className="rounded-2xl border border-border bg-card p-3">
                         <div className="flex items-center justify-between gap-4">
-                          <div className="font-medium text-foreground">{shipmentStageLabel[event.status] || event.status || 'Tracking event'}</div>
+                          <div className="font-medium text-foreground">{event.status ? shipmentStageLabel[event.status] || event.status : 'Tracking event'}</div>
                           <div className="text-xs text-muted-foreground">{event.timestamp ? new Date(event.timestamp).toLocaleString('vi-VN') : '--'}</div>
                         </div>
                         {(event.note || event.location) && (

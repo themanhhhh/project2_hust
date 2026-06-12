@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Plus, Search, Edit, Trash2, Eye, Star, Loader2, Image as ImageIcon, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { useSellerProducts, useBrands, useCategories } from '@/hooks/useApi';
 import { useSellerAuth } from '@/contexts/SellerAuthContext';
@@ -27,7 +28,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { sellerApi } from '@/lib/api';
-import type { Product } from '@/lib/types';
+import type { Brand, Category, Product } from '@/lib/types';
 import { AdminLoading } from '@/components/admin/AdminLoading';
 
 export default function SellerProductsPage() {
@@ -134,7 +135,7 @@ export default function SellerProductsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả danh mục</SelectItem>
-                {(categories || []).map((cat: any) => (
+                {(categories || []).map((cat: Category) => (
                   <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                 ))}
               </SelectContent>
@@ -145,7 +146,7 @@ export default function SellerProductsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả thương hiệu</SelectItem>
-                {(brands || []).map((brand: any) => (
+                {(brands || []).map((brand: Brand) => (
                   <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
                 ))}
               </SelectContent>
@@ -185,7 +186,7 @@ export default function SellerProductsPage() {
                           {(() => {
                             const primaryImg = product.product_images?.find(img => img.is_primary) || product.product_images?.[0];
                             return primaryImg?.image_url ? (
-                              <img src={primaryImg.image_url} alt={product.name} className="w-12 h-12 object-cover rounded-lg" />
+                              <Image src={primaryImg.image_url} alt={product.name} width={48} height={48} className="h-12 w-12 rounded-lg object-cover" unoptimized />
                             ) : (
                               <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
                                 <ImageIcon className="h-5 w-5 text-muted-foreground" />
@@ -281,7 +282,7 @@ export default function SellerProductsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc muốn xóa sản phẩm "{deleteProduct?.name}"? Hành động này không thể hoàn tác.
+              Bạn có chắc muốn xóa sản phẩm &quot;{deleteProduct?.name}&quot;? Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
@@ -33,32 +34,34 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <CartProvider>
-            {children}
-            <Toaster
-              position="top-right"
-              closeButton
-              toastOptions={{
-                unstyled: false,
-                classNames: {
-                  toast:
-                    'group border border-black/10 bg-white text-black shadow-lg',
-                  title: 'text-sm font-medium text-black',
-                  description: 'text-sm text-black/70',
-                  actionButton:
-                    'bg-black text-white hover:bg-gray-800',
-                  cancelButton:
-                    'border border-black/10 bg-white text-black hover:bg-gray-100',
-                  closeButton:
-                    'border border-black/10 bg-white text-black hover:bg-gray-100',
-                  success: '!border-black/10 !bg-white !text-black',
-                  error: '!border-black/10 !bg-white !text-black',
-                  warning: '!border-black/10 !bg-white !text-black',
-                  info: '!border-black/10 !bg-white !text-black',
-                },
-              }}
-            />
-          </CartProvider>
+          <Suspense fallback={null}>
+            <CartProvider>
+              {children}
+              <Toaster
+                position="top-right"
+                closeButton
+                toastOptions={{
+                  unstyled: false,
+                  classNames: {
+                    toast:
+                      'group border border-black/10 bg-white text-black shadow-lg',
+                    title: 'text-sm font-medium text-black',
+                    description: 'text-sm text-black/70',
+                    actionButton:
+                      'bg-black text-white hover:bg-gray-800',
+                    cancelButton:
+                      'border border-black/10 bg-white text-black hover:bg-gray-100',
+                    closeButton:
+                      'border border-black/10 bg-white text-black hover:bg-gray-100',
+                    success: '!border-black/10 !bg-white !text-black',
+                    error: '!border-black/10 !bg-white !text-black',
+                    warning: '!border-black/10 !bg-white !text-black',
+                    info: '!border-black/10 !bg-white !text-black',
+                  },
+                }}
+              />
+            </CartProvider>
+          </Suspense>
         </AuthProvider>
       </body>
     </html>

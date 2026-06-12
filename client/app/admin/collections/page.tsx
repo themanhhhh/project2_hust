@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { 
   Plus, 
   Pencil, 
@@ -212,10 +213,13 @@ export default function AdminCollectionsPage() {
       <div key={collection.id} className="relative flex items-center gap-4 border-b p-4 transition-colors hover:bg-gray-50 dark:border-slate-800 dark:hover:bg-slate-900/60">
         {/* Avatar/Thumbnail */}
         {collection.thumbnail ? (
-          <img
+          <Image
             src={collection.thumbnail}
             alt={collection.name}
+            width={48}
+            height={48}
             className="h-12 w-12 rounded-full border-2 border-gray-100 object-cover shadow-sm dark:border-slate-700"
+            unoptimized
           />
         ) : (
           <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-gradient-to-br from-gray-100 to-gray-50 text-lg font-bold text-gray-700 shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-700 dark:text-white">
@@ -325,7 +329,7 @@ export default function AdminCollectionsPage() {
           ) : filteredCollections.length === 0 ? (
             <div className="flex flex-col items-center p-12 text-center text-muted-foreground dark:text-slate-300">
               <Trophy className="mb-4 h-12 w-12 text-gray-300 dark:text-slate-500" />
-              <p>Chưa có bộ sưu tập nào. Nhấn "Thêm bộ sưu tập" để tạo mới.</p>
+              <p>Chưa có bộ sưu tập nào. Nhấn &quot;Thêm bộ sưu tập&quot; để tạo mới.</p>
             </div>
           ) : (
             <div className="divide-y dark:divide-slate-800">
@@ -422,7 +426,7 @@ export default function AdminCollectionsPage() {
               {formData.thumbnail && (
                 <div className="mt-2">
                   <p className="text-xs text-muted-foreground mb-1">Xem trước:</p>
-                   <img src={formData.thumbnail} alt="Preview" className="h-16 w-16 rounded-full border object-cover dark:border-slate-700" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                   <Image src={formData.thumbnail} alt="Preview" width={64} height={64} className="h-16 w-16 rounded-full border object-cover dark:border-slate-700" onError={(e) => (e.currentTarget.style.display = 'none')} unoptimized />
                 </div>
               )}
             </div>
@@ -491,7 +495,7 @@ export default function AdminCollectionsPage() {
                       className="flex cursor-pointer items-center gap-3 rounded border bg-white p-2 shadow-sm transition-colors hover:bg-gray-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
                     >
                       {p.images && p.images[0] ? (
-                        <img src={p.images[0].url} className="h-8 w-8 shrink-0 rounded object-cover" />
+                        <Image src={p.images[0].url} alt={p.name} width={32} height={32} className="h-8 w-8 shrink-0 rounded object-cover" unoptimized />
                       ) : (
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-slate-800">
                           <Package className="h-4 w-4 text-gray-400 dark:text-slate-400" />
@@ -537,7 +541,7 @@ export default function AdminCollectionsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa bộ sưu tập</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc muốn xóa bộ sưu tập "{deletingCollection?.name}"? 
+              Bạn có chắc muốn xóa bộ sưu tập &quot;{deletingCollection?.name}&quot;? 
               Hành động này không thể hoàn tác nhưng các sản phẩm trong bộ sưu tập vẫn sẽ được giữ lại.
             </AlertDialogDescription>
           </AlertDialogHeader>

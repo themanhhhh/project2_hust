@@ -1,0 +1,1370 @@
+\documentclass[13pt]{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[T5]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{vntex}
+\usepackage{float}
+\usepackage{temple}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{array}
+\usepackage{blindtext}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{hyperref} 
+\usepackage{listings}
+\usepackage{times} % Sử dụng font Times cho văn bản
+\usepackage[a4paper, left=3cm, right=2cm]{geometry}
+\usepackage{chngcntr}
+\counterwithin{table}{section}
+\counterwithin{figure}{section}
+\usepackage[labelfont=bf,labelsep=period]{caption}
+\usepackage{titlesec}
+
+
+\usepackage{tocloft}
+\renewcommand{\cftsecpresnum}{Chương\,}
+\renewcommand{\cftsecaftersnum}{:}
+\setlength{\cftsecnumwidth}{6em}
+\renewcommand{\cftfigpresnum}{Hình\,}
+\renewcommand{\cfttabpresnum}{Bảng\,}
+\setlength{\cftfignumwidth}{6em}
+\setlength{\cfttabnumwidth}{6em}
+%---------------
+\title{BÁO CÁO ĐỒ ÁN I}
+\subtitle{Đồ án I}
+\author{
+   Ninh Thế Mạnh & 20227182\\  
+}
+
+\info{
+\textbf{Giảng viên hướng dẫn \hspace{0.7cm}:\hspace{0.3cm} TS. Ngô Thị Hiền\\ } 
+Sinh viên thực hiện : }
+\date{\today}
+\usecolor{Bluee}
+\logo[scale=0.5]{123.png}
+\titleformat{\section}
+  {\normalfont\Large\bfseries}
+  {Chương \thesection:}{1em}{}
+\begin{document}
+\newpage
+\newenvironment{coverpage}
+\thispagestyle{empty}
+\begin{titlepage}
+	\begin{center}
+		\vspace*{15pt}
+		\Large{\textbf{ĐẠI HỌC BÁCH KHOA HÀ NỘI \\}}
+        \Large{\textbf{KHOA TOÁN - TIN}}
+		\vspace*{25pt}
+		\centering
+		\begin{figure}[h!]	
+
+		\end{figure}
+		\vspace*{150pt}
+	
+			{\fontsize{30pt}{36pt}\selectfont\textbf{ĐỒ ÁN II}}\\
+			
+            {\fontsize{18pt}{24pt}\selectfont\textbf{Tên đề tài: Xây dựng sàn hệ thống thương mại điện tử bán đồ cầu lông SmashX tối ưu hóa chuẩn SEO GEO }} \\
+                \vspace{25pt}
+
+                \textbf{ Ninh Thế Mạnh}
+                \par Email: Manh.NT227182@sis.hust.edu.vn\\
+                \par Mã sinh viên : 20227182\\
+                \textbf{Chuyên ngành Hệ thống thông tin quản lý}
+	\end{center}
+	\vspace*{75pt}
+\textcolor{white}{áda}\textbf{Giảng viên hướng dẫn} \textcolor{white}{ádass}: TS.Ngô Thị Hiền \textcolor{white}{sss}
+\begin{minipage}[t]{0.3\textwidth}
+    \centering
+    \rule{5cm}{0.4pt} \\ % Đường kẻ ngang để ký
+    Chữ ký của GVHD
+\end{minipage}\\
+
+
+		\vspace{40pt}
+		\begin{center}
+		    	\large{\textbf{Ha Noi, March 16 2026}}
+		\end{center}
+	
+
+
+\end{titlepage}
+\newpage
+\begin{center}
+    \par \Large\textbf{Nhận xét của giảng viên}\\
+
+\end{center}
+\vspace{550pt}
+\begin{flushright}
+    \begin{minipage}{5cm} % đúng bằng chiều dài của \rule
+        \centering
+        \rule{5cm}{0.4pt} \\
+        Chữ ký của GVHD
+    \end{minipage}
+\end{flushright}
+
+
+\newpage
+\begin{center}
+    \par \Large\textbf{Lời cảm ơn}
+\end{center}
+\par Em xin gửi lời tri ân sâu sắc tới Cô Ngô Thị Hiền – người đã tận tình hướng dẫn, động viên và chia sẻ kinh nghiệm quý báu trong suốt quá trình thực hiện đề tài. Nhờ sự hỗ trợ của cô, em đã xác định rõ mục tiêu nghiên cứu và tìm ra hướng giải quyết kịp thời cho nhiều vướng mắc phát sinh. Tuy đã nỗ lực học hỏi và áp dụng kiến thức, em vẫn nhận thấy đề tài còn một số hạn chế và bất cập. Rất mong nhận được ý kiến đóng góp từ cô để khắc phục điểm yếu, hoàn thiện nội dung và nâng cao chất lượng kết quả nghiên cứu. Một lần nữa, em xin chân thành cảm ơn cô đã dành thời gian và tâm huyết giúp đỡ!
+\par Trong bối cảnh chuyển đổi số diễn ra mạnh mẽ, thương mại điện tử đã trở thành một trong những lĩnh vực phát triển nhanh và có tác động sâu rộng đến hành vi tiêu dùng. 
+Không chỉ dừng ở việc số hóa quy trình mua bán, các nền tảng thương mại điện tử hiện đại còn đặt ra yêu cầu cao về kiến trúc hệ thống, khả năng mở rộng, tối ưu trải nghiệm người dùng và năng lực tiếp cận khách hàng trên môi trường số. 
+Xuất phát từ thực tế đó, em lựa chọn xây dựng và nghiên cứu một hệ thống thương mại điện tử theo hướng đa tác nhân, bao gồm khách hàng, người bán và quản trị viên, nhằm mô phỏng tương đối đầy đủ quy trình vận hành của một nền tảng bán hàng trực tuyến.
+
+Mục tiêu của đề tài là thiết kế và hiện thực một hệ thống có tính thực tiễn, đáp ứng các chức năng cốt lõi như quản lý tài khoản, quản lý sản phẩm, giỏ hàng, đơn hàng, vận chuyển, khuyến mãi và nội dung truyền thông. 
+Bên cạnh đó, đề tài còn chú trọng đến các yếu tố chất lượng như bảo mật, tính nhất quán dữ liệu, khả năng bảo trì và mở rộng trong tương lai. 
+Việc kết hợp giữa nền tảng công nghệ web hiện đại và phương pháp phân tích -- thiết kế hệ thống bài bản giúp em từng bước hoàn thiện sản phẩm theo đúng định hướng đã đề ra.
+
+Về mặt cấu trúc, báo cáo được xây dựng theo trình tự từ cơ sở lý thuyết đến triển khai thực nghiệm. 
+Trước hết, em trình bày các khái niệm nền tảng liên quan đến phân tích, thiết kế hệ thống, tối ưu tìm kiếm và tổ chức kiến trúc dữ liệu. 
+Tiếp theo, báo cáo đi sâu vào mô hình hóa hệ thống thông qua xác định tác nhân, use case, kịch bản nghiệp vụ, biểu đồ tuần tự, biểu đồ lớp và thiết kế bảng dữ liệu. 
+Cuối cùng, em thực hiện cài đặt, chạy thử nghiệm, demo chức năng và đánh giá kết quả đạt được, đồng thời chỉ ra những hạn chế còn tồn tại và định hướng cải tiến trong giai đoạn sau.
+
+Trong quá trình thực hiện đề tài, dù đã cố gắng hoàn thiện cả về nội dung kỹ thuật lẫn hình thức trình bày, báo cáo khó tránh khỏi những thiếu sót nhất định. 
+Em rất mong nhận được ý kiến góp ý từ giảng viên và các bạn để tiếp tục hoàn thiện hệ thống cũng như nâng cao chất lượng nghiên cứu trong các giai đoạn tiếp theo.
+
+Em xin chân thành cảm ơn sự hướng dẫn và hỗ trợ quý báu của giảng viên trong suốt quá trình thực hiện đề tài.
+\newpage
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{fancy}} 
+\thispagestyle{fancy}  % Đặt lại style cho trang hiện tại
+\pagestyle{fancy} 
+\newpage
+\listoffigures 
+\thispagestyle{fancy}  % Đặt lại style cho trang hiện tại
+\pagestyle{fancy} 
+\newpage
+\listoftables
+\thispagestyle{fancy}  % Đặt lại style cho trang hiện tại
+\pagestyle{fancy} 
+\newpage
+\section*{Lời mở đầu}
+\addcontentsline{toc}{section}{Lời mở đầu}
+Trong bối cảnh chuyển đổi số diễn ra mạnh mẽ, thương mại điện tử đã trở thành một trong những lĩnh vực phát triển nhanh và có tác động sâu rộng đến hành vi tiêu dùng. Không chỉ dừng ở việc số hóa quy trình mua bán, các nền tảng thương mại điện tử hiện đại còn đặt ra yêu cầu cao về kiến trúc hệ thống, khả năng mở rộng, tối ưu trải nghiệm người dùng và năng lực tiếp cận khách hàng trên môi trường số.
+
+Xuất phát từ thực tế đó, em lựa chọn xây dựng và nghiên cứu một hệ thống thương mại điện tử theo hướng đa tác nhân, bao gồm khách hàng, người bán và quản trị viên, nhằm mô phỏng tương đối đầy đủ quy trình vận hành của một nền tảng bán hàng trực tuyến.
+
+\newpage
+\section{Kiến thức cơ sở}
+
+\subsection{Giới thiệu}
+Phần này trình bày nền tảng lý thuyết phục vụ phân tích, thiết kế và triển khai hệ thống, gồm:
+(i) phân tích hệ thống, (ii) thiết kế hệ thống, (iii) SEO, (iv) GEO, và (v) khung SMASHX.
+
+\subsection{Phân tích hệ thống}
+\subsubsection{Khái niệm}
+Phân tích hệ thống là quá trình khảo sát bài toán, xác định yêu cầu, mô hình hóa nghiệp vụ
+và đặc tả hệ thống cần xây dựng.
+
+\subsubsection{Nội dung chính}
+\begin{itemize}
+    \item Khảo sát hiện trạng và xác định phạm vi.
+    \item Xác định yêu cầu chức năng (FR) và phi chức năng (NFR).
+    \item Mô hình hóa nghiệp vụ bằng Use Case/Activity/BPMN.
+    \item Đặc tả yêu cầu phần mềm (SRS).
+\end{itemize}
+
+\subsection{Thiết kế hệ thống}
+\subsubsection{Khái niệm}
+Thiết kế hệ thống là quá trình chuyển yêu cầu sang kiến trúc và mô hình triển khai cụ thể.
+
+\subsubsection{Các mức thiết kế}
+\begin{itemize}
+    \item Thiết kế kiến trúc tổng thể (frontend, backend, database, external services).
+    \item Thiết kế chi tiết (module, API contract, schema dữ liệu, xử lý lỗi).
+\end{itemize}
+
+\subsubsection{Nguyên tắc}
+\begin{itemize}
+    \item Tính mô-đun, dễ mở rộng, dễ bảo trì.
+    \item Bảo mật theo lớp: xác thực, phân quyền, kiểm soát dữ liệu.
+    \item Tối ưu hiệu năng và khả năng đáp ứng tải.
+\end{itemize}
+
+\subsection{SEO (Search Engine Optimization)}
+\subsubsection{Khái niệm}
+SEO (Search Engine Optimization) là quá trình tối ưu hóa website để giúp trang web hiển thị ở vị trí cao hơn trên các công cụ tìm kiếm như Google Search, Bing hoặc Yahoo Search — từ đó tăng lượng truy cập tự nhiên (organic traffic) mà không cần trả tiền quảng cáo.
+
+\subsubsection{Thành phần cốt lõi của SEO}
+
+SEO (Search Engine Optimization) bao gồm ba thành phần cốt lõi chính, đóng vai trò quyết định đến khả năng hiển thị và xếp hạng của website trên các công cụ tìm kiếm. Ba thành phần này bao gồm: On-page SEO, Off-page SEO và Technical SEO.
+
+\paragraph{On-page SEO}
+On-page SEO là quá trình tối ưu hóa các yếu tố bên trong website nhằm giúp công cụ tìm kiếm hiểu rõ nội dung và nâng cao trải nghiệm người dùng. Các yếu tố chính của On-page SEO bao gồm tối ưu từ khóa, cấu trúc tiêu đề (title, heading), thẻ mô tả (meta description), nội dung chất lượng, liên kết nội bộ (internal link) và tối ưu hình ảnh. Việc tối ưu tốt On-page SEO giúp website dễ dàng được lập chỉ mục và cải thiện thứ hạng trên trang kết quả tìm kiếm.
+
+\paragraph{Off-page SEO}
+Off-page SEO là các hoạt động tối ưu diễn ra bên ngoài website nhằm nâng cao độ uy tín và mức độ tin cậy của website đối với công cụ tìm kiếm. Thành phần quan trọng nhất của Off-page SEO là xây dựng hệ thống liên kết ngược (backlinks) từ các website khác. Ngoài ra, các yếu tố như tín hiệu mạng xã hội (social signals), độ nhận diện thương hiệu (brand awareness) và mức độ nhắc đến website trên Internet cũng góp phần quan trọng trong việc cải thiện thứ hạng SEO.
+
+\paragraph{Technical SEO}
+Technical SEO tập trung vào việc tối ưu các yếu tố kỹ thuật của website nhằm giúp công cụ tìm kiếm thu thập dữ liệu (crawl) và lập chỉ mục (index) một cách hiệu quả. Các yếu tố chính bao gồm tốc độ tải trang (page speed), khả năng tương thích trên thiết bị di động (mobile-friendly), cấu trúc URL, sitemap, bảo mật HTTPS và tối ưu Core Web Vitals. Technical SEO đảm bảo website hoạt động ổn định, thân thiện với công cụ tìm kiếm và mang lại trải nghiệm tốt cho người dùng.
+
+\paragraph{Tổng kết}
+Ba thành phần On-page SEO, Off-page SEO và Technical SEO có mối quan hệ chặt chẽ và bổ trợ lẫn nhau. Trong đó, On-page SEO giúp tối ưu nội dung và trải nghiệm người dùng, Off-page SEO xây dựng độ uy tín cho website, còn Technical SEO đảm bảo nền tảng kỹ thuật vững chắc. Việc kết hợp đồng bộ cả ba yếu tố này là điều kiện cần thiết để đạt hiệu quả SEO bền vững.
+\subsubsection{Các chỉ số đánh giá SEO}
+
+Để đánh giá hiệu quả của hoạt động tối ưu hóa công cụ tìm kiếm (SEO), cần sử dụng một số chỉ số quan trọng nhằm đo lường mức độ hiển thị, khả năng thu hút người dùng và hiệu quả chuyển đổi của website. Các chỉ số này không chỉ phản ánh chất lượng tối ưu SEO mà còn cho thấy mức độ đóng góp của SEO vào mục tiêu kinh doanh của doanh nghiệp.
+\begin{itemize}
+    \item \textbf{Organic Traffic:}
+Organic Traffic là lượng truy cập tự nhiên đến từ các công cụ tìm kiếm như Google, Bing hoặc Yahoo mà không thông qua quảng cáo trả phí. Đây là một trong những chỉ số quan trọng nhất để đánh giá hiệu quả SEO, bởi mục tiêu cốt lõi của SEO là gia tăng lượng người dùng truy cập website một cách tự nhiên.
+
+\item \textbf{Keyword Ranking:}
+Keyword Ranking là thứ hạng của website trên trang kết quả tìm kiếm đối với các từ khóa mục tiêu. Chỉ số này cho biết website đang đứng ở vị trí nào khi người dùng tìm kiếm các từ khóa liên quan đến sản phẩm hoặc dịch vụ. Thứ hạng càng cao thì khả năng tiếp cận người dùng càng lớn, từ đó góp phần tăng lưu lượng truy cập và nâng cao nhận diện thương hiệu.
+
+\item \textbf{Bounce Rate: }
+Bounce Rate là tỷ lệ người dùng truy cập vào website nhưng rời đi ngay sau khi chỉ xem một trang mà không thực hiện thêm bất kỳ hành động nào khác. Chỉ số này giúp đánh giá mức độ hấp dẫn của nội dung và trải nghiệm người dùng trên website. Tỷ lệ thoát cao có thể cho thấy nội dung chưa đáp ứng nhu cầu tìm kiếm hoặc giao diện website chưa đủ thu hút.
+
+\item \textbf{Average Session Duration: }
+Average Session Duration là thời gian trung bình mà người dùng ở lại trên website trong một phiên truy cập. Thời gian này càng cao thì càng chứng tỏ nội dung website có giá trị, thu hút và đáp ứng tốt nhu cầu của người dùng. Đây cũng là tín hiệu tích cực đối với công cụ tìm kiếm trong việc đánh giá chất lượng trang web.
+
+\item \textbf{Pages per Session: }
+Pages per Session là số lượng trang trung bình mà người dùng xem trong một phiên truy cập. Chỉ số này phản ánh mức độ quan tâm của người dùng đối với nội dung trên website cũng như khả năng điều hướng hiệu quả giữa các trang. Nếu người dùng xem nhiều trang trong cùng một phiên, điều đó cho thấy website có cấu trúc nội dung hợp lý và hấp dẫn.
+
+\item \textbf{Conversion Rate: }
+Conversion Rate là tỷ lệ người dùng thực hiện hành động mong muốn sau khi truy cập website, chẳng hạn như mua hàng, đăng ký tài khoản, điền biểu mẫu hoặc liên hệ tư vấn. Đây là chỉ số rất quan trọng vì SEO không chỉ nhằm mục đích tăng traffic mà còn phải hỗ trợ doanh nghiệp đạt được mục tiêu kinh doanh cụ thể.
+
+\item \textbf{Backlinks: }
+Backlinks là các liên kết từ website khác trỏ về website của doanh nghiệp. Số lượng và chất lượng backlink ảnh hưởng lớn đến độ uy tín của website trong mắt công cụ tìm kiếm. Một website có nhiều backlink chất lượng từ các nguồn đáng tin cậy thường có khả năng đạt thứ hạng cao hơn trên kết quả tìm kiếm.
+
+\item \textbf{Referring Domains: }
+Referring Domains là số lượng tên miền khác nhau trỏ liên kết về website. Chỉ số này có giá trị hơn so với chỉ đếm tổng số backlink, bởi nhiều liên kết từ nhiều domain uy tín khác nhau sẽ giúp website tăng độ tin cậy và cải thiện hiệu quả SEO tốt hơn.
+
+\item \textbf{Page Speed: }
+Page Speed là tốc độ tải trang của website. Đây là yếu tố quan trọng cả về mặt trải nghiệm người dùng lẫn xếp hạng SEO. Nếu website tải chậm, người dùng có xu hướng rời đi sớm, đồng thời công cụ tìm kiếm cũng có thể đánh giá thấp chất lượng trang web.
+
+\item \textbf{Core Web Vitals: }
+Core Web Vitals là tập hợp các chỉ số do Google đề xuất để đo lường trải nghiệm thực tế của người dùng trên website, bao gồm tốc độ tải nội dung chính, độ ổn định bố cục và khả năng phản hồi của trang. Đây là nhóm chỉ số kỹ thuật quan trọng trong SEO hiện đại, góp phần cải thiện trải nghiệm người dùng và nâng cao thứ hạng tìm kiếm.
+
+\item \textbf{Indexing and Crawl Errors: }
+Indexing and Crawl Errors là các lỗi liên quan đến quá trình công cụ tìm kiếm thu thập và lập chỉ mục dữ liệu website. Nếu website gặp lỗi ở bước này, một số trang có thể không xuất hiện trên kết quả tìm kiếm, từ đó làm giảm hiệu quả SEO tổng thể. Do đó, việc thường xuyên kiểm tra và khắc phục các lỗi lập chỉ mục là rất cần thiết.
+\end{itemize}
+
+\subsection{GEO (Generative Engine Optimization)}
+\subsubsection{Khái niệm GEO}
+
+Trong bối cảnh phát triển của công nghệ tìm kiếm và trí tuệ nhân tạo khái niệm  GEO (Generative Engine Optimization) ngày càng đóng vai trò quan trọng trong việc nâng cao khả năng hiển thị nội dung trên môi trường số.
+
+\paragraph{Khái niệm GEO}
+GEO (Generative Engine Optimization) là quá trình tối ưu nội dung nhằm tăng khả năng được các hệ thống trí tuệ nhân tạo tạo sinh (Generative AI) lựa chọn, tổng hợp và sử dụng trong các câu trả lời cho người dùng. Không giống như SEO tập trung vào việc xếp hạng website, GEO hướng đến việc nội dung được tích hợp trực tiếp vào các phản hồi do AI tạo ra. Điều này đòi hỏi nội dung phải rõ ràng, chính xác, có cấu trúc tốt và mang tính chuyên môn cao.
+
+
+\subsubsection{Sự khác biệt giữa SEO và GEO}
+
+Trong lĩnh vực tối ưu hóa tìm kiếm hiện đại, bên cạnh SEO (Search Engine Optimization), khái niệm GEO (Generative Engine Optimization) đang dần xuất hiện và trở nên quan trọng trong bối cảnh các công cụ tìm kiếm tích hợp trí tuệ nhân tạo (AI). Mặc dù cả hai đều hướng tới mục tiêu tăng khả năng hiển thị nội dung, nhưng SEO và GEO có những điểm khác biệt rõ rệt về mục tiêu, phương pháp và cơ chế hoạt động.
+
+\paragraph{Khái niệm}
+SEO là quá trình tối ưu hóa website nhằm cải thiện thứ hạng trên trang kết quả của các công cụ tìm kiếm truyền thống như Google, Bing. Trong khi đó, GEO là quá trình tối ưu nội dung để được các hệ thống AI sinh nội dung (Generative AI) lựa chọn, trích dẫn hoặc tổng hợp khi trả lời câu hỏi của người dùng.
+
+\paragraph{Mục tiêu}
+Mục tiêu của SEO là đưa website lên vị trí cao trong danh sách kết quả tìm kiếm (SERP) để thu hút lượt truy cập. Ngược lại, GEO hướng tới việc nội dung được AI sử dụng trực tiếp trong câu trả lời, từ đó tăng mức độ nhận diện thương hiệu mà không nhất thiết cần người dùng truy cập vào website.
+
+\paragraph{Cách thức hoạt động}
+SEO dựa trên các thuật toán xếp hạng của công cụ tìm kiếm, bao gồm các yếu tố như từ khóa, backlink, trải nghiệm người dùng và kỹ thuật website. GEO lại dựa trên cách các mô hình AI hiểu, tổng hợp và sinh ra nội dung, do đó yêu cầu nội dung phải rõ ràng, có cấu trúc tốt, mang tính chuyên môn cao và đáng tin cậy.
+
+\paragraph{Hình thức hiển thị}
+Trong SEO, kết quả hiển thị dưới dạng danh sách các liên kết (links) trên trang kết quả tìm kiếm. Trong khi đó, GEO hiển thị nội dung dưới dạng câu trả lời trực tiếp do AI tạo ra, có thể trích dẫn hoặc tóm tắt từ nhiều nguồn khác nhau.
+
+\paragraph{Yếu tố tối ưu}
+SEO tập trung vào tối ưu từ khóa, liên kết và cấu trúc website. Ngược lại, GEO chú trọng vào chất lượng nội dung, ngữ cảnh, tính chính xác và khả năng được AI hiểu và sử dụng.
+
+\paragraph{Tổng kết}
+Có thể thấy rằng SEO và GEO không thay thế lẫn nhau mà bổ sung cho nhau trong chiến lược tối ưu hóa hiện đại. Nếu SEO giúp website tiếp cận người dùng thông qua công cụ tìm kiếm truyền thống, thì GEO giúp nội dung tiếp cận người dùng thông qua các hệ thống AI. Do đó, việc kết hợp cả hai phương pháp sẽ mang lại hiệu quả tối ưu trong việc nâng cao khả năng hiển thị và giá trị nội dung trong môi trường số.
+\subsubsection{Nguyên tắc GEO}
+\begin{itemize}
+    \item Nội dung có cấu trúc rõ ràng, dễ trích xuất.
+    \item Thông tin có kiểm chứng, nhất quán thuật ngữ.
+    \item Tăng tín hiệu tin cậy: tác giả, ngày cập nhật, nguồn tham khảo.
+\end{itemize}
+
+
+\subsection{Các công cụ, ngôn ngữ lập trình và nền tảng để xây dựng hệ thống}
+
+\subsubsection{Tổng quan lựa chọn công nghệ}
+Hệ thống được xây dựng theo kiến trúc tách lớp giữa giao diện người dùng (frontend),
+dịch vụ xử lý nghiệp vụ (backend) và cơ sở dữ liệu (database). 
+Cách tiếp cận này giúp hệ thống dễ mở rộng, dễ bảo trì và thuận lợi khi triển khai thực tế.
+
+\subsubsection{Ngôn ngữ lập trình sử dụng}
+\paragraph{TypeScript}
+TypeScript được sử dụng làm ngôn ngữ chính cho cả frontend và backend.
+Ưu điểm:
+\begin{itemize}
+    \item Kiểm tra kiểu dữ liệu tĩnh, giảm lỗi runtime.
+    \item Dễ quản lý codebase lớn, tăng tính nhất quán.
+    \item Hỗ trợ tốt cho phát triển theo mô hình module.
+\end{itemize}
+
+\subsubsection{Công nghệ phía frontend}
+\paragraph{Next.js (React)}
+Frontend được phát triển bằng Next.js trên nền React nhằm xây dựng giao diện hiện đại,
+tương tác tốt và hỗ trợ tối ưu hiệu năng hiển thị.
+\begin{itemize}
+    \item Tổ chức dự án theo cấu trúc component rõ ràng.
+    \item Hỗ trợ định tuyến thuận tiện, phù hợp ứng dụng nhiều trang chức năng.
+    \item Dễ tích hợp các kỹ thuật tối ưu SEO/GEO ở tầng giao diện.
+\end{itemize}
+
+\paragraph{Tailwind CSS}
+Tailwind CSS được dùng để xây dựng giao diện nhanh, nhất quán và responsive trên nhiều kích thước màn hình.
+
+\subsubsection{Công nghệ phía backend}
+\paragraph{Node.js + Express}
+Backend được xây dựng bằng Express chạy trên môi trường Node.js.
+\begin{itemize}
+    \item Xây dựng RESTful API cho các nghiệp vụ chính của hệ thống.
+    \item Tách rõ route, controller, service giúp tăng khả năng bảo trì.
+    \item Dễ tích hợp middleware cho xác thực, xử lý lỗi và logging.
+\end{itemize}
+
+\paragraph{Prisma ORM}
+Prisma được sử dụng để thao tác cơ sở dữ liệu theo hướng mô hình hóa schema rõ ràng,
+hạn chế lỗi truy vấn thủ công và tăng năng suất phát triển.
+
+\subsubsection{Cơ sở dữ liệu}
+\paragraph{PostgreSQL}
+Hệ quản trị cơ sở dữ liệu PostgreSQL được lựa chọn nhờ:
+\begin{itemize}
+    \item Độ tin cậy cao, phù hợp hệ thống giao dịch.
+    \item Hỗ trợ tốt quan hệ dữ liệu phức tạp.
+    \item Khả năng mở rộng và tối ưu truy vấn tốt.
+\end{itemize}
+
+\subsubsection{Xác thực và bảo mật}
+Hệ thống áp dụng cơ chế xác thực dựa trên token (JWT), kết hợp phân quyền theo vai trò người dùng.
+Ngoài ra, dữ liệu nhạy cảm (như mật khẩu) được mã hóa trước khi lưu trữ.
+
+\subsubsection{Nền tảng triển khai và vận hành}
+\paragraph{Môi trường triển khai}
+Hệ thống có thể triển khai trên các nền tảng cloud hỗ trợ dịch vụ web Node.js
+(ví dụ Render, Vercel cho frontend, hoặc các nền tảng tương đương).
+Việc tách frontend/backend giúp linh hoạt khi cấu hình CI/CD và mở rộng theo tải thực tế.
+
+\paragraph{Quản lý mã nguồn}
+Mã nguồn được quản lý bằng Git, hỗ trợ làm việc qua branch, pull request và kiểm soát phiên bản.
+
+\subsubsection{Công cụ hỗ trợ phát triển}
+\begin{itemize}
+    \item \textbf{npm}: quản lý thư viện và scripts dự án.
+    \item \textbf{ESLint}: kiểm tra quy tắc code, tăng tính nhất quán.
+    \item \textbf{Postman/Insomnia}: kiểm thử API trong giai đoạn phát triển.
+    \item \textbf{Prisma Studio}: quan sát và kiểm tra dữ liệu trực quan.
+\end{itemize}
+
+\section{Phân tích, thiết kế hệ thống thương mại điện tử}
+
+\subsection{Khảo sát thực tế}
+
+\subsubsection{Bối cảnh thị trường thương mại điện tử}
+
+Thương mại điện tử tại Việt Nam đang phát triển mạnh mẽ với tốc độ tăng trưởng cao qua từng năm. Sự phổ biến của Internet, thiết bị di động và thanh toán điện tử đã thúc đẩy hành vi mua sắm trực tuyến của người tiêu dùng. Các nền tảng thương mại điện tử không chỉ đóng vai trò là kênh bán hàng mà còn trở thành hệ sinh thái tích hợp nhiều dịch vụ như thanh toán, vận chuyển và chăm sóc khách hàng.
+
+Bên cạnh đó, xu hướng mua sắm đa kênh (Omnichannel) ngày càng phổ biến, khi người dùng có thể tiếp cận sản phẩm thông qua website, sàn thương mại điện tử và mạng xã hội. Điều này đặt ra yêu cầu đối với các hệ thống TMĐT phải có khả năng tích hợp linh hoạt và tối ưu trải nghiệm người dùng.
+
+\subsubsection{Khảo sát các hệ thống TMĐT hiện tại}
+
+Hiện nay, thị trường TMĐT Việt Nam có sự tham gia của nhiều nền tảng lớn như Shopee, Lazada, Tiki và TikTok Shop. Các hệ thống này đều cung cấp các chức năng cơ bản như:
+
+\begin{itemize}
+    \item Quản lý sản phẩm và danh mục sản phẩm
+    \item Hệ thống giỏ hàng và đặt hàng
+    \item Thanh toán trực tuyến
+    \item Quản lý vận chuyển và giao hàng
+    \item Đánh giá và phản hồi của khách hàng
+    \item Quản lý khuyến mãi và chiến dịch marketing
+\end{itemize}
+
+Các nền tảng này thường hướng đến mô hình marketplace (đa nhà bán), cho phép nhiều người bán tham gia và cạnh tranh trên cùng một hệ thống.
+
+\subsubsection{Ưu điểm của các hệ thống TMĐT hiện tại}
+
+Các hệ thống TMĐT hiện tại có nhiều ưu điểm nổi bật như:
+
+\begin{itemize}
+    \item Sở hữu lượng người dùng lớn, giúp tăng khả năng tiếp cận khách hàng
+    \item Hạ tầng kỹ thuật và hệ sinh thái hoàn thiện (thanh toán, vận chuyển, chăm sóc khách hàng)
+    \item Quy trình vận hành được chuẩn hóa
+    \item Hỗ trợ các công cụ marketing và phân tích dữ liệu
+\end{itemize}
+
+Những ưu điểm này giúp giảm chi phí triển khai ban đầu và hỗ trợ doanh nghiệp nhanh chóng tham gia vào thị trường.
+
+\subsubsection{Hạn chế của các hệ thống TMĐT hiện tại}
+
+Bên cạnh những ưu điểm, các hệ thống TMĐT hiện tại cũng tồn tại một số hạn chế:
+
+\begin{itemize}
+    \item Thiếu khả năng cá nhân hóa cho từng ngành hàng chuyên biệt
+    \item Cạnh tranh về giá cao, khó xây dựng thương hiệu riêng
+    \item Phụ thuộc vào nền tảng trung gian
+    \item Khó kiểm soát chất lượng sản phẩm và vấn đề hàng giả
+\end{itemize}
+
+Đặc biệt, đối với các ngành hàng mang tính chuyên môn cao như thể thao, các sàn TMĐT tổng quát chưa đáp ứng tốt nhu cầu thông tin chi tiết và tư vấn chuyên sâu.
+
+\subsubsection{Đặc trưng của ngành hàng cầu lông}
+
+Ngành hàng cầu lông có những đặc điểm riêng biệt, tạo ra yêu cầu cao hơn đối với hệ thống thương mại điện tử:
+
+\begin{itemize}
+    \item Sản phẩm có nhiều thông số kỹ thuật (trọng lượng, độ cứng, điểm cân bằng, kích thước cán vợt)
+    \item Tính cá nhân hóa cao (phù hợp với từng trình độ và phong cách chơi)
+    \item Yêu cầu thông tin chi tiết và tư vấn lựa chọn sản phẩm
+    \item Khách hàng quan tâm đến thương hiệu và tính chính hãng
+\end{itemize}
+
+Do đó, hệ thống TMĐT cần hỗ trợ quản lý sản phẩm theo nhiều biến thể và cung cấp thông tin đầy đủ để hỗ trợ người dùng ra quyết định mua hàng.
+
+\subsubsection{Nhận xét và vấn đề đặt ra}
+
+Từ kết quả khảo sát, có thể nhận thấy rằng các hệ thống TMĐT hiện tại tuy mạnh về hạ tầng và quy mô, nhưng chưa tối ưu cho các ngành hàng chuyên biệt như cầu lông.
+
+Vì vậy, việc xây dựng một hệ thống TMĐT chuyên cho ngành cầu lông là cần thiết, với các yêu cầu:
+
+\begin{itemize}
+    \item Quản lý sản phẩm theo biến thể kỹ thuật chi tiết
+    \item Hỗ trợ tìm kiếm và lọc sản phẩm theo tiêu chí chuyên ngành
+    \item Tích hợp nội dung tư vấn và đánh giá chuyên sâu
+    \item Tối ưu SEO để thu hút người dùng
+    \item Đảm bảo quy trình mua hàng, thanh toán và vận chuyển hiệu quả
+\end{itemize}
+
+Những vấn đề trên sẽ là cơ sở cho việc phân tích và thiết kế hệ thống trong các phần tiếp theo.
+\subsection{Phân tích hệ thống}
+
+Dựa trên kết quả khảo sát thực tế về các hệ thống thương mại điện tử hiện tại và đặc thù của ngành hàng cầu lông, có thể xác định các vấn đề tồn tại cũng như yêu cầu cần thiết để xây dựng một hệ thống TMĐT chuyên biệt. Phần này tập trung phân tích các yêu cầu hệ thống dưới góc độ chức năng và phi chức năng.
+
+\subsubsection{Xác định vấn đề}
+
+Từ quá trình khảo sát, có thể nhận thấy một số vấn đề chính như sau:
+
+\begin{itemize}
+    \item Các sàn TMĐT hiện tại chưa hỗ trợ tốt việc hiển thị thông tin kỹ thuật chuyên sâu của sản phẩm cầu lông.
+    \item Người dùng gặp khó khăn trong việc lựa chọn sản phẩm phù hợp do thiếu công cụ tư vấn và so sánh.
+    \item Hệ thống chưa tối ưu cho việc xây dựng thương hiệu riêng và nội dung chuyên ngành.
+    \item Khó kiểm soát chất lượng sản phẩm và thông tin chính hãng.
+\end{itemize}
+
+Những vấn đề này đặt ra yêu cầu cần xây dựng một hệ thống TMĐT chuyên biệt, tập trung vào trải nghiệm người dùng và khả năng hỗ trợ ra quyết định mua hàng.
+
+\subsubsection{Phân tích yêu cầu chức năng}
+
+Dựa trên các vấn đề đã xác định, hệ thống cần đáp ứng các yêu cầu chức năng chính sau:
+
+\paragraph{Quản lý sản phẩm}
+\begin{itemize}
+    \item Quản lý danh mục sản phẩm (vợt, giày, cầu, phụ kiện)
+    \item Quản lý biến thể sản phẩm theo thông số kỹ thuật (trọng lượng, độ cứng, size, thương hiệu)
+    \item Hiển thị thông tin chi tiết sản phẩm
+\end{itemize}
+
+\paragraph{Tìm kiếm và lọc sản phẩm}
+\begin{itemize}
+    \item Tìm kiếm theo từ khóa
+    \item Lọc sản phẩm theo tiêu chí chuyên ngành (loại vợt, độ cứng, trình độ người chơi)
+    \item So sánh các sản phẩm
+\end{itemize}
+
+\paragraph{Quản lý người dùng}
+\begin{itemize}
+    \item Đăng ký, đăng nhập tài khoản
+    \item Quản lý thông tin cá nhân
+    \item Theo dõi lịch sử mua hàng
+\end{itemize}
+
+\paragraph{Quản lý đơn hàng}
+\begin{itemize}
+    \item Thêm sản phẩm vào giỏ hàng
+    \item Đặt hàng và thanh toán
+    \item Theo dõi trạng thái đơn hàng
+\end{itemize}
+
+\paragraph{Nội dung và tư vấn}
+\begin{itemize}
+    \item Hiển thị bài viết hướng dẫn, review sản phẩm
+    \item Gợi ý sản phẩm phù hợp với người dùng
+\end{itemize}
+
+\subsubsection{Phân tích yêu cầu phi chức năng}
+
+Bên cạnh các chức năng chính, hệ thống cần đảm bảo các yêu cầu phi chức năng sau:
+
+\begin{itemize}
+    \item \textbf{Hiệu năng:} Hệ thống phải đảm bảo tốc độ tải trang nhanh và xử lý đồng thời nhiều người dùng.
+    \item \textbf{Khả năng mở rộng:} Có thể mở rộng khi số lượng người dùng và sản phẩm tăng.
+    \item \textbf{Bảo mật:} Đảm bảo an toàn thông tin người dùng và giao dịch.
+    \item \textbf{Khả dụng:} Hệ thống hoạt động ổn định, dễ sử dụng.
+    \item \textbf{SEO:} Tối ưu hóa nội dung và cấu trúc để tăng khả năng hiển thị trên công cụ tìm kiếm.
+\end{itemize}
+
+\subsubsection{Phân tích tác nhân hệ thống}
+
+Các tác nhân chính tham gia vào hệ thống bao gồm:
+
+\begin{itemize}
+    \item \textbf{Khách hàng:} tìm kiếm, xem và mua sản phẩm
+    \item \textbf{Quản trị viên:} quản lý sản phẩm, đơn hàng và nội dung
+    \item \textbf{Hệ thống thanh toán:} xử lý giao dịch
+    \item \textbf{Đơn vị vận chuyển:} giao hàng cho khách
+\end{itemize}
+
+\subsubsection{Phân tích đối tượng người dùng theo độ tuổi}
+
+Việc phân tích đối tượng người dùng theo độ tuổi đóng vai trò quan trọng trong quá trình thiết kế hệ thống thương mại điện tử, bởi mỗi nhóm tuổi có hành vi mua sắm, kỳ vọng về giao diện và mức độ thành thạo công nghệ khác nhau. Phần này kết hợp phân tích hai chiều: (i) độ tuổi người dùng thương mại điện tử tại Việt Nam và (ii) độ tuổi người chơi cầu lông, nhằm xác định chính xác nhóm khách hàng mục tiêu cho hệ thống SmashX.
+
+\paragraph{Độ tuổi người dùng thương mại điện tử tại Việt Nam}
+
+Theo các báo cáo nghiên cứu thị trường năm 2024 từ YouNet ECI, VECOM và NielsenIQ, cơ cấu độ tuổi người mua sắm trực tuyến tại Việt Nam có thể phân thành các nhóm chính sau:
+
+\begin{itemize}
+    \item \textbf{Gen Z (15--27 tuổi):} Đây là nhóm tiêu dùng trực tuyến năng động nhất, chiếm khoảng 53,4\% thị phần mua sắm hàng tuần trên các sàn TMĐT. Khoảng 70\% người mua sắm trực tuyến ít nhất 1 lần/tuần thuộc thế hệ Gen Z. Nhóm này chịu ảnh hưởng mạnh từ mạng xã hội (khoảng 51\% cho biết bị ảnh hưởng bởi xu hướng trên mạng xã hội khi quyết định mua hàng) và ưa thích trải nghiệm mua sắm kết hợp giải trí (shoppertainment) như livestream bán hàng \textit{(Nguồn: YouNet ECI, 2024; VOV, 2024)}.
+    
+    \item \textbf{Millennials -- Thế hệ Y (28--43 tuổi):} Nhóm này chiếm khoảng 46,6\% thị phần mua sắm hàng tuần, có sức mua cao hơn Gen Z và thường ưu tiên chất lượng sản phẩm, dịch vụ chuyên nghiệp. Độ tuổi trung bình của người mua hàng trực tuyến tại Việt Nam được ghi nhận khoảng 31 tuổi, thuộc nhóm Millennials. Nhóm này đánh giá cao thông tin sản phẩm chi tiết, đánh giá từ người dùng khác và chính sách bảo hành rõ ràng \textit{(Nguồn: NielsenIQ; Báo Mới, 2024)}.
+    
+    \item \textbf{Gen X (44--59 tuổi) và các thế hệ lớn tuổi hơn:} Mặc dù chiếm tỷ trọng nhỏ hơn, nhóm này đang gia tăng nhanh chóng trong hoạt động TMĐT. Họ thường mua sắm trực tuyến các mặt hàng liên quan đến sức khỏe, thể thao và gia đình. Giao diện đơn giản, dễ sử dụng và hỗ trợ thanh toán COD là các yếu tố quan trọng để thu hút nhóm đối tượng này \textit{(Nguồn: CafeF, 2024)}.
+\end{itemize}
+
+Ngoài ra, theo DataReportal (2025), độ tuổi trung vị (median age) của dân số Việt Nam là 33,4 tuổi, cho thấy nền tảng dân số trẻ, tiếp cận công nghệ tốt và có tiềm năng lớn cho TMĐT. Về đặc điểm chung, khoảng 92--96\% người mua sắm trực tuyến sử dụng điện thoại thông minh, 72\% là nhân viên văn phòng, 58\% là nữ giới và 73\% đã lập gia đình.
+
+\paragraph{Độ tuổi người chơi cầu lông tại Việt Nam}
+
+Cầu lông là một trong những môn thể thao phổ cập nhất tại Việt Nam, thu hút người chơi ở mọi lứa tuổi. Dựa trên thực tế phong trào và các giải đấu quốc gia, có thể phân nhóm người chơi theo độ tuổi như sau:
+
+\begin{itemize}
+    \item \textbf{Trẻ em và thanh thiếu niên (6--17 tuổi):} Đây là nhóm đang được đầu tư mạnh trong phong trào đào tạo trẻ. Các giải đấu thiếu niên quốc gia thường tổ chức cho nhóm tuổi 9--17. Tuy nhiên, nhóm này ít tham gia trực tiếp vào hoạt động mua sắm trực tuyến; quyết định mua hàng thường do phụ huynh thực hiện \textit{(Nguồn: Dân Trí, 2025)}.
+    
+    \item \textbf{Sinh viên và người đi làm trẻ (18--35 tuổi):} Đây là nhóm chiếm số lượng lớn nhất tại các sân cầu lông phong trào, đặc biệt ở các thành phố lớn như Hà Nội, TP.HCM và Đà Nẵng. Nhóm này vừa là người chơi tích cực, vừa có khả năng tự ra quyết định mua sắm thiết bị trực tuyến. Họ quan tâm đến thông số kỹ thuật, so sánh sản phẩm và đánh giá từ cộng đồng \textit{(Nguồn: Thanh Niên, 2024; WSport, 2024)}.
+    
+    \item \textbf{Người trung niên và cao tuổi (trên 35 tuổi):} Cầu lông cũng được nhiều người trung niên và cao tuổi lựa chọn để rèn luyện sức khỏe, với các giải đấu riêng biệt như ``Giải Cầu lông trung cao tuổi toàn quốc''. Nhóm này thường ưu tiên sản phẩm tốt cho sức khỏe, thương hiệu uy tín và cần giao diện mua hàng rõ ràng, dễ hiểu \textit{(Nguồn: Liên đoàn Cầu lông Việt Nam, 2024)}.
+\end{itemize}
+
+\paragraph{Xác định nhóm khách hàng mục tiêu cho hệ thống SmashX}
+
+Từ phân tích giao nhau giữa hai tập đối tượng trên, có thể xác định nhóm khách hàng mục tiêu chính của hệ thống SmashX như sau:
+
+\begin{itemize}
+    \item \textbf{Nhóm mục tiêu chính (18--35 tuổi):} Đây là giao điểm lớn nhất giữa người chơi cầu lông tích cực và người dùng TMĐT thường xuyên. Nhóm này bao gồm sinh viên và người đi làm trẻ, có thói quen mua sắm trực tuyến, thành thạo công nghệ và sẵn sàng chi tiêu cho đam mê thể thao. Hệ thống cần tối ưu trải nghiệm mobile, tích hợp nội dung review/so sánh sản phẩm và hỗ trợ thanh toán trực tuyến nhanh chóng.
+    
+    \item \textbf{Nhóm mục tiêu phụ (35--55 tuổi):} Nhóm người chơi cầu lông trung niên, có thu nhập ổn định và sức mua cao hơn. Hệ thống cần đảm bảo giao diện trực quan, thông tin sản phẩm rõ ràng, hỗ trợ tư vấn chuyên sâu và đa dạng hình thức thanh toán (bao gồm COD và chuyển khoản).
+    
+    \item \textbf{Nhóm gián tiếp (phụ huynh mua cho con 6--17 tuổi):} Phụ huynh mua thiết bị cầu lông cho con em. Hệ thống cần hỗ trợ phân loại sản phẩm theo lứa tuổi và trình độ người chơi, giúp phụ huynh dễ dàng chọn sản phẩm phù hợp.
+\end{itemize}
+
+Việc xác định rõ nhóm khách hàng mục tiêu theo độ tuổi sẽ định hướng cho các quyết định thiết kế giao diện, chiến lược nội dung, hình thức thanh toán và phương thức tiếp cận khách hàng ở các phần tiếp theo.
+
+\subsubsection{Phân tích nghiệp vụ thanh toán và khuyến mãi}
+
+Bên cạnh các yêu cầu chức năng cốt lõi đã nêu ở trên, hệ thống thương mại điện tử cần đáp ứng đầy đủ các nghiệp vụ liên quan đến thanh toán, chương trình khuyến mãi và mã giảm giá. Đây là nhóm chức năng ảnh hưởng trực tiếp đến trải nghiệm mua sắm, tỷ lệ chuyển đổi đơn hàng và chiến lược kinh doanh của hệ thống.
+
+\paragraph{Hình thức thanh toán}
+Hệ thống cần hỗ trợ nhiều hình thức thanh toán nhằm đáp ứng nhu cầu đa dạng của người dùng:
+
+\begin{itemize}
+    \item \textbf{Thanh toán khi nhận hàng (COD -- Cash On Delivery):} Đây là hình thức phổ biến nhất tại thị trường Việt Nam, phù hợp với nhóm khách hàng chưa quen thanh toán trực tuyến. Hệ thống cần ghi nhận trạng thái thanh toán riêng biệt với trạng thái đơn hàng, cho phép xác nhận thu tiền khi giao hàng thành công.
+    \item \textbf{Thanh toán trực tuyến qua cổng thanh toán:} Hệ thống tích hợp các cổng thanh toán trung gian (như VNPay, MoMo, ZaloPay) để hỗ trợ thanh toán bằng thẻ ngân hàng, ví điện tử hoặc QR Code. Quy trình thanh toán cần đảm bảo: chuyển hướng người dùng đến cổng thanh toán, xác nhận kết quả giao dịch (thành công/thất bại), cập nhật trạng thái đơn hàng tương ứng và xử lý trường hợp giao dịch bị gián đoạn.
+    \item \textbf{Chuyển khoản ngân hàng:} Hệ thống tạo thông tin chuyển khoản (số tài khoản, nội dung chuyển khoản có mã đơn hàng) để khách hàng thực hiện thanh toán thủ công. Quản trị viên hoặc hệ thống tự động đối soát xác nhận giao dịch sau khi nhận được tiền.
+\end{itemize}
+
+Về mặt thiết kế, hệ thống cần lưu trữ thông tin phương thức thanh toán đã chọn, trạng thái thanh toán (chưa thanh toán, đã thanh toán, hoàn tiền) và lịch sử giao dịch thanh toán cho mỗi đơn hàng, tách biệt với trạng thái xử lý đơn hàng để đảm bảo tính rõ ràng trong quản lý.
+
+\paragraph{Chương trình khuyến mãi}
+Hệ thống cần hỗ trợ quản trị viên tạo và quản lý các chương trình khuyến mãi nhằm thúc đẩy doanh số và thu hút khách hàng. Các loại chương trình khuyến mãi bao gồm:
+
+\begin{itemize}
+    \item \textbf{Flash Sale (giảm giá theo thời gian):} Quản trị viên thiết lập danh sách sản phẩm tham gia, mức giá giảm, thời gian bắt đầu và kết thúc, số lượng giới hạn cho mỗi sản phẩm. Hệ thống tự động áp dụng giá flash sale trong khung thời gian hiệu lực và trở về giá gốc khi hết hạn.
+    \item \textbf{Giảm giá theo danh mục hoặc thương hiệu:} Áp dụng mức chiết khấu cho toàn bộ sản phẩm thuộc một danh mục hoặc thương hiệu nhất định trong khoảng thời gian xác định.
+    \item \textbf{Chương trình combo/mua kèm:} Khuyến khích khách hàng mua nhiều sản phẩm bằng cách giảm giá khi mua theo bộ (ví dụ: mua vợt kèm bao vợt được giảm giá).
+    \item \textbf{Ưu đãi cho khách hàng mới:} Tự động áp dụng giảm giá hoặc miễn phí vận chuyển cho đơn hàng đầu tiên của khách hàng vừa đăng ký.
+\end{itemize}
+
+Về mặt nghiệp vụ, mỗi chương trình khuyến mãi cần có các thuộc tính: tên chương trình, loại khuyến mãi, giá trị giảm, thời gian hiệu lực, điều kiện áp dụng, trạng thái (đang hoạt động/tạm dừng/hết hạn) và giới hạn sử dụng. Hệ thống cần kiểm tra và đảm bảo không có xung đột giữa các chương trình khuyến mãi cùng áp dụng trên một sản phẩm.
+
+\paragraph{Mã khuyến mãi (Coupon/Voucher)}
+Mã khuyến mãi là công cụ marketing quan trọng cho phép khách hàng nhập mã tại bước thanh toán để nhận ưu đãi. Hệ thống cần phân tích và hỗ trợ các loại mã khuyến mãi sau:
+
+\begin{itemize}
+    \item \textbf{Mã giảm giá theo phần trăm:} Giảm một tỷ lệ phần trăm trên tổng giá trị đơn hàng hoặc trên từng sản phẩm, có giới hạn mức giảm tối đa (ví dụ: giảm 10\%, tối đa 50.000 VNĐ).
+    \item \textbf{Mã giảm giá theo số tiền cố định:} Giảm trực tiếp một số tiền cố định trên tổng đơn hàng (ví dụ: giảm 100.000 VNĐ cho đơn từ 500.000 VNĐ).
+    \item \textbf{Mã miễn phí vận chuyển:} Miễn hoặc giảm phí vận chuyển cho đơn hàng đạt điều kiện.
+\end{itemize}
+
+Mỗi mã khuyến mãi cần được quản lý với các thuộc tính nghiệp vụ:
+\begin{itemize}
+    \item \textbf{Mã code:} chuỗi ký tự duy nhất để nhận diện mã (ví dụ: WELCOME10, FREESHIP).
+    \item \textbf{Loại giảm giá:} phần trăm hoặc số tiền cố định.
+    \item \textbf{Giá trị giảm:} mức giảm cụ thể.
+    \item \textbf{Giá trị đơn hàng tối thiểu:} điều kiện áp dụng mã.
+    \item \textbf{Giới hạn số lần sử dụng:} tổng số lần sử dụng tối đa và số lần sử dụng tối đa cho mỗi khách hàng.
+    \item \textbf{Thời gian hiệu lực:} ngày bắt đầu và kết thúc.
+    \item \textbf{Phạm vi áp dụng:} toàn bộ đơn hàng, danh mục sản phẩm cụ thể hoặc sản phẩm chỉ định.
+\end{itemize}
+
+Khi khách hàng nhập mã khuyến mãi, hệ thống cần thực hiện kiểm tra: (i) mã có tồn tại và đang trong thời gian hiệu lực không, (ii) đơn hàng có đạt giá trị tối thiểu không, (iii) mã đã vượt giới hạn sử dụng chưa, (iv) khách hàng đã sử dụng mã này trước đó chưa (nếu giới hạn mỗi người), và (v) sản phẩm trong đơn có thuộc phạm vi áp dụng của mã không. Chỉ khi tất cả điều kiện đều thỏa mãn, hệ thống mới áp dụng mức giảm giá vào tổng đơn hàng.
+
+\paragraph{Tổng kết nghiệp vụ thanh toán và khuyến mãi}
+Việc phân tích chi tiết các nghiệp vụ thanh toán, chương trình khuyến mãi và mã giảm giá cho thấy đây là nhóm chức năng có độ phức tạp cao, đòi hỏi thiết kế dữ liệu chặt chẽ và quy trình xử lý nghiệp vụ rõ ràng. Các yêu cầu này sẽ được phản ánh trong thiết kế bảng dữ liệu (bảng campaigns, flash\_sales, flash\_sale\_products) và các use case liên quan ở phần thiết kế hệ thống.
+
+\subsubsection{Tổng kết phân tích và mục tiêu dự án}
+
+Qua quá trình phân tích hệ thống một cách toàn diện, có thể tổng hợp các kết quả chính như sau:
+
+\paragraph{Tổng hợp kết quả phân tích}
+
+\begin{itemize}
+    \item \textbf{Về vấn đề:} Các sàn TMĐT hiện tại (Shopee, Lazada, Tiki) chưa đáp ứng tốt nhu cầu của ngành hàng cầu lông do thiếu khả năng hiển thị thông số kỹ thuật chuyên sâu, thiếu công cụ tư vấn/so sánh sản phẩm và khó kiểm soát chất lượng hàng chính hãng.
+    
+    \item \textbf{Về yêu cầu chức năng:} Hệ thống cần đáp ứng 5 nhóm chức năng cốt lõi gồm quản lý sản phẩm theo biến thể kỹ thuật, tìm kiếm/lọc chuyên ngành, quản lý người dùng đa vai trò, quản lý đơn hàng toàn diện và nội dung tư vấn chuyên sâu.
+    
+    \item \textbf{Về yêu cầu phi chức năng:} Hệ thống phải đảm bảo hiệu năng cao, khả năng mở rộng, bảo mật thông tin giao dịch, tính khả dụng và tối ưu SEO/GEO.
+    
+    \item \textbf{Về tác nhân:} Hệ thống phục vụ 4 nhóm tác nhân chính gồm khách hàng, quản trị viên, hệ thống thanh toán và đơn vị vận chuyển.
+    
+    \item \textbf{Về đối tượng người dùng:} Nhóm khách hàng mục tiêu chính là người chơi cầu lông trong độ tuổi 18--35 (giao điểm giữa người chơi tích cực và người dùng TMĐT thường xuyên), nhóm mục tiêu phụ là người trung niên 35--55 tuổi có thu nhập ổn định, và nhóm gián tiếp là phụ huynh mua thiết bị cho con em.
+    
+    \item \textbf{Về nghiệp vụ thanh toán và khuyến mãi:} Hệ thống cần hỗ trợ đa hình thức thanh toán (COD, cổng thanh toán trực tuyến, chuyển khoản), quản lý chương trình khuyến mãi (flash sale, giảm giá theo danh mục, combo, ưu đãi khách mới) và hệ thống mã giảm giá với quy trình kiểm tra nghiệp vụ chặt chẽ.
+\end{itemize}
+
+\paragraph{Mục tiêu dự án}
+
+Từ các kết quả phân tích trên, dự án xây dựng hệ thống thương mại điện tử SmashX được xác định với các mục tiêu cụ thể sau:
+
+\begin{enumerate}
+    \item \textbf{Xây dựng nền tảng TMĐT chuyên biệt cho ngành cầu lông:} Phát triển hệ thống hỗ trợ quản lý sản phẩm theo nhiều biến thể kỹ thuật (trọng lượng, độ cứng, điểm cân bằng, kích thước), giúp người dùng dễ dàng tra cứu, so sánh và lựa chọn sản phẩm phù hợp với trình độ và phong cách chơi.
+    
+    \item \textbf{Thiết kế hệ thống đa tác nhân:} Xây dựng kiến trúc phân quyền rõ ràng cho các vai trò Guest, Customer, Seller, Admin và Fulfillment, đảm bảo mỗi tác nhân có phạm vi trách nhiệm và quyền truy cập phù hợp.
+    
+    \item \textbf{Tối ưu trải nghiệm người dùng theo nhóm tuổi mục tiêu:} Thiết kế giao diện responsive, ưu tiên trải nghiệm mobile cho nhóm 18--35 tuổi; đồng thời đảm bảo tính trực quan, dễ sử dụng cho nhóm trung niên và phụ huynh. Tích hợp nội dung review, bài viết tư vấn chuyên sâu để hỗ trợ ra quyết định mua hàng.
+    
+    \item \textbf{Hoàn thiện quy trình thanh toán và khuyến mãi:} Tích hợp đa hình thức thanh toán phù hợp với thị trường Việt Nam (COD, VNPay, MoMo, chuyển khoản), xây dựng hệ thống quản lý chương trình khuyến mãi và mã giảm giá linh hoạt, hỗ trợ chiến lược tăng trưởng doanh số.
+    
+    \item \textbf{Tối ưu hóa SEO và GEO:} Áp dụng các kỹ thuật tối ưu SEO (cấu trúc URL thân thiện, meta tags, schema markup, tốc độ tải trang) và GEO (nội dung có cấu trúc rõ ràng, đáng tin cậy) nhằm tăng khả năng hiển thị trên công cụ tìm kiếm truyền thống và các hệ thống AI sinh nội dung.
+    
+    \item \textbf{Đảm bảo chất lượng kỹ thuật:} Xây dựng hệ thống với kiến trúc tách lớp (frontend -- backend -- database), áp dụng cơ chế xác thực JWT, mã hóa dữ liệu nhạy cảm, đảm bảo tính toàn vẹn dữ liệu và khả năng mở rộng khi quy mô hệ thống tăng.
+\end{enumerate}
+
+Những mục tiêu trên sẽ là kim chỉ nam cho quá trình thiết kế chi tiết và triển khai hệ thống ở các phần tiếp theo của báo cáo.
+\subsection{Thiết kế hệ thống}
+\subsubsection{Xác nhận tác nhân hệ thống}
+
+Trong giai đoạn thiết kế hệ thống, việc xác nhận tác nhân nhằm nhận diện đầy đủ các đối tượng có tương tác với hệ thống và làm cơ sở xây dựng use case tổng quát ở bước tiếp theo. 
+Tác nhân được xác định dựa trên các tiêu chí: có tương tác trực tiếp qua giao diện hoặc API, có mục tiêu nghiệp vụ rõ ràng, có quyền hạn khác biệt, hoặc là dịch vụ tích hợp có trao đổi dữ liệu với hệ thống. 
+Kết quả xác nhận cho thấy hệ thống gồm các tác nhân chính và tác nhân phụ như sau: \\
+(1) \textbf{Guest (khách vãng lai)} là người dùng chưa đăng nhập, có nhu cầu xem sản phẩm, tìm kiếm/lọc thông tin, xem bài viết và thực hiện đăng ký/đăng nhập; \\
+(2) \textbf{Customer (khách hàng)} là người mua đã xác thực, thực hiện các nghiệp vụ quản lý hồ sơ, địa chỉ, giỏ hàng, đặt hàng, theo dõi đơn, tra cứu vận đơn và đánh giá sản phẩm; \\
+(3) \textbf{Seller (người bán)} là tài khoản kinh doanh độc lập, chịu trách nhiệm quản lý gian hàng, sản phẩm, hình ảnh, tồn kho, đơn hàng thuộc phạm vi gian hàng và báo cáo bán hàng;\\ 
+(4) \textbf{Admin (quản trị viên)} là tác nhân quản trị toàn cục, thực hiện quản lý người dùng, người bán, duyệt hồ sơ KYB, quản lý danh mục/brand/collection, chiến dịch, flash sale, bài viết và theo dõi thống kê hệ thống; \\
+(5) \textbf{Fulfillment/Operations (vận hành giao nhận)} là tác nhân phụ trách tạo và cập nhật thông tin vận chuyển, mã tracking và trạng thái giao hàng; \\
+(6) \textbf{External Services (dịch vụ ngoài hệ thống)} là các dịch vụ tích hợp như lưu trữ ảnh/tệp và gửi email thông báo, hỗ trợ hệ thống vận hành ổn định và mở rộng linh hoạt. \\
+Việc xác nhận các tác nhân trên giúp phân định rõ ràng phạm vi trách nhiệm, mức quyền truy cập và luồng tương tác nghiệp vụ, từ đó bảo đảm rằng mô hình use case tổng quát ở phần sau phản ánh đúng thực tế vận hành của hệ thống thương mại điện tử.
+\subsubsection{ Use Case tổng quát}
+
+Hệ thống SmashX được xây dựng theo mô hình \textbf{B2C (Business-to-Consumer)}, trong đó một công ty tư nhân đóng vai trò là đơn vị kinh doanh duy nhất, trực tiếp cung cấp sản phẩm đến tay người tiêu dùng cuối cùng. Khác với mô hình marketplace (C2C hoặc B2B2C) như Shopee hay Lazada -- nơi nhiều nhà bán cùng hoạt động trên một sàn chung, mô hình B2C của SmashX cho phép doanh nghiệp toàn quyền kiểm soát chất lượng sản phẩm, chính sách giá, thương hiệu và trải nghiệm khách hàng. Điều này đặc biệt phù hợp với ngành hàng cầu lông, nơi tính chính hãng, tư vấn chuyên sâu và uy tín thương hiệu là yếu tố then chốt ảnh hưởng đến quyết định mua hàng.
+
+Với mô hình B2C, hệ thống tập trung vào hai nhóm tác nhân chính: (i) \textbf{phía doanh nghiệp} gồm quản trị viên (Admin) quản lý toàn bộ hệ thống, nhân viên bán hàng (Seller) quản lý sản phẩm và đơn hàng, bộ phận vận hành giao nhận (Fulfillment); và (ii) \textbf{phía khách hàng} gồm khách vãng lai (Guest) và khách hàng đã đăng ký (Customer). Sơ đồ use case tổng quát dưới đây mô tả các kịch bản tương tác quan trọng giữa các tác nhân và hệ thống.\\ \textit{Kịch bản use case chi tiết} được trình bày ở phần sau.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 231334.png}
+\caption{Minh hoạ Usecase tổng quát}
+\end{figure}
+\subsubsection{Kịch bản Use Case chi tiết}
+
+Phần này mô tả các use case quan trọng của hệ thống ở mức chi tiết gồm mục tiêu, tiền điều kiện,
+hậu điều kiện, luồng chính, luồng thay thế và ngoại lệ. 
+Hình minh họa use case cho từng trường hợp sẽ được bổ sung tương ứng.
+
+%========================
+\textbf{UseCase-01: Đăng ký tài khoản khách hàng}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Đăng ký tài khoản khách hàng \\ \hline
+Tác nhân chính & Guest \\ \hline
+Người chịu trách nhiệm & Hệ thống \\ \hline
+Tiền điều kiện & Người dùng chưa đăng nhập; email chưa tồn tại trong hệ thống. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Tài khoản mới được tạo.
+\item Có thể đăng nhập bằng tài khoản vừa đăng ký.
+\end{itemize} \\ \hline
+Kích hoạt & Người dùng chọn chức năng ``Đăng ký''. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Email đã tồn tại.
+\item Dữ liệu không hợp lệ.
+\item Lỗi kết nối máy chủ/CSDL.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Người dùng mở trang đăng ký.
+\item Nhập họ tên, email, mật khẩu.
+\item Hệ thống kiểm tra hợp lệ dữ liệu.
+\item Hệ thống tạo tài khoản.
+\item Hệ thống trả thông báo thành công.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [3a.] Email đã tồn tại $\rightarrow$ yêu cầu email khác.
+\item [3b.] Dữ liệu sai định dạng $\rightarrow$ hiển thị lỗi từng trường.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-01: Đăng ký tài khoản khách hàng}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc01.png}
+\caption{Minh hoạ UseCase-01}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-02: Đăng nhập hệ thống}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Đăng nhập hệ thống \\ \hline
+Tác nhân chính & Guest / Customer / Seller / Admin \\ \hline
+Người chịu trách nhiệm & Hệ thống \\ \hline
+Tiền điều kiện & Tài khoản tồn tại và chưa bị khóa. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Người dùng đăng nhập thành công.
+\item Hệ thống cấp phiên đăng nhập/token hợp lệ.
+\end{itemize} \\ \hline
+Kích hoạt & Người dùng nhấn ``Đăng nhập''. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Sai email/mật khẩu.
+\item Tài khoản bị vô hiệu hóa.
+\item Lỗi máy chủ.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Người dùng nhập email và mật khẩu.
+\item Hệ thống xác thực thông tin.
+\item Hệ thống tạo phiên đăng nhập/token.
+\item Chuyển đến giao diện theo vai trò.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [2a.] Sai thông tin $\rightarrow$ thông báo đăng nhập thất bại.
+\item [2b.] Tài khoản bị khóa $\rightarrow$ từ chối truy cập.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả Use Case UC-02: Đăng nhập hệ thống}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc02.png}
+\caption{Minh hoạ Use Case UC-02}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-03: Xem và tìm kiếm sản phẩm}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Xem và tìm kiếm sản phẩm \\ \hline
+Tác nhân chính & Guest / Customer \\ \hline
+Người chịu trách nhiệm & Hệ thống \\ \hline
+Tiền điều kiện & Dữ liệu sản phẩm đã tồn tại. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Danh sách sản phẩm hiển thị theo bộ lọc/từ khóa.
+\item Người dùng xem được chi tiết sản phẩm.
+\end{itemize} \\ \hline
+Kích hoạt & Người dùng truy cập trang sản phẩm hoặc nhập từ khóa tìm kiếm. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Không có sản phẩm phù hợp.
+\item Lỗi tải dữ liệu.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Mở trang danh sách sản phẩm.
+\item Nhập từ khóa/chọn lọc theo danh mục, giá, thương hiệu.
+\item Hệ thống truy vấn và trả kết quả.
+\item Người dùng chọn một sản phẩm để xem chi tiết.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [3a.] Không có kết quả $\rightarrow$ hiển thị thông báo và gợi ý lọc khác.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-03: Xem và tìm kiếm sản phẩm}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc03.png}
+\caption{Minh hoạ UseCase-03}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-04: Thêm sản phẩm vào giỏ hàng}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Thêm sản phẩm vào giỏ hàng \\ \hline
+Tác nhân chính & Customer \\ \hline
+Người chịu trách nhiệm & Hệ thống \\ \hline
+Tiền điều kiện & Customer đã đăng nhập; sản phẩm còn hàng. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Sản phẩm được thêm vào giỏ.
+\item Tổng tiền/số lượng giỏ được cập nhật.
+\end{itemize} \\ \hline
+Kích hoạt & Người dùng nhấn ``Thêm vào giỏ hàng'' trên trang chi tiết sản phẩm. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Vượt quá tồn kho.
+\item Sản phẩm ngừng kinh doanh.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Chọn sản phẩm và số lượng.
+\item Nhấn ``Thêm vào giỏ hàng''.
+\item Hệ thống kiểm tra tồn kho.
+\item Hệ thống tạo/cập nhật cart item.
+\item Hiển thị thông báo thành công.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [3a.] Tồn kho không đủ $\rightarrow$ thông báo số lượng tối đa cho phép.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-04: Thêm sản phẩm vào giỏ hàng}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc04.png}
+\caption{Minh hoạ UseCase-04}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-05: Tạo đơn hàng}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Tạo đơn hàng \\ \hline
+Tác nhân chính & Customer \\ \hline
+Người chịu trách nhiệm & Hệ thống \\ \hline
+Tiền điều kiện & Giỏ hàng có sản phẩm; có địa chỉ giao hàng hợp lệ. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Đơn hàng và chi tiết đơn hàng được tạo.
+\item Trạng thái đơn ban đầu được thiết lập.
+\end{itemize} \\ \hline
+Kích hoạt & Người dùng nhấn ``Đặt hàng'' tại trang thanh toán. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Sản phẩm hết hàng tại thời điểm xác nhận.
+\item Mã giảm giá không hợp lệ/hết hạn.
+\item Lỗi tạo đơn.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Người dùng mở trang thanh toán.
+\item Chọn địa chỉ nhận hàng và thông tin liên quan.
+\item Hệ thống kiểm tra giỏ hàng, tồn kho, giá và ưu đãi.
+\item Người dùng xác nhận đặt hàng.
+\item Hệ thống tạo order và order items.
+\item Hệ thống trả mã đơn hàng.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [3a.] Mã giảm giá không hợp lệ $\rightarrow$ yêu cầu xác nhận lại tổng tiền.
+\item [3b.] Hết hàng $\rightarrow$ yêu cầu cập nhật lại giỏ.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả Use Case UseCase-05: Tạo đơn hàng}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc05.png}
+\caption{Minh hoạ UseCase-05}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-06: Theo dõi đơn hàng / Tracking}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Theo dõi đơn hàng / Tracking \\ \hline
+Tác nhân chính & Customer (phối hợp Seller/Fulfillment) \\ \hline
+Người chịu trách nhiệm & Hệ thống \\ \hline
+Tiền điều kiện & Đơn hàng đã được tạo; có thông tin shipment hoặc trạng thái xử lý. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Hiển thị trạng thái đơn và vận chuyển mới nhất.
+\item Người dùng tra cứu được theo mã tracking (nếu có).
+\end{itemize} \\ \hline
+Kích hoạt & Người dùng mở trang ``Đơn hàng của tôi'' hoặc nhập mã tracking. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Không tìm thấy mã tracking.
+\item Dữ liệu shipment chưa được cập nhật.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Người dùng chọn đơn hàng cần theo dõi.
+\item Hệ thống truy vấn order và shipment.
+\item Hệ thống hiển thị tiến trình xử lý/giao hàng.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [2a.] Chưa có tracking $\rightarrow$ hiển thị ``đang chuẩn bị hàng''.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-06: Theo dõi đơn hàng / Tracking}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc06.png}
+\caption{Minh hoạ UseCase-06}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-07: Seller quản lý sản phẩm}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Seller quản lý sản phẩm \\ \hline
+Tác nhân chính & Seller \\ \hline
+Người chịu trách nhiệm & Seller và Hệ thống \\ \hline
+Tiền điều kiện & Seller đã đăng nhập và có quyền quản lý gian hàng. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Sản phẩm được tạo/cập nhật thành công.
+\item Dữ liệu tồn kho, ảnh, giá được đồng bộ.
+\end{itemize} \\ \hline
+Kích hoạt & Seller chọn chức năng ``Quản lý sản phẩm''. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Thiếu dữ liệu bắt buộc.
+\item SKU/slug bị trùng.
+\item Lỗi upload ảnh.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Seller mở danh sách sản phẩm.
+\item Chọn thêm mới hoặc chỉnh sửa.
+\item Nhập/chỉnh sửa thông tin sản phẩm.
+\item Tải ảnh sản phẩm.
+\item Hệ thống kiểm tra hợp lệ và lưu dữ liệu.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [4a.] Upload ảnh thất bại $\rightarrow$ cho phép tải lại.
+\item [5a.] SKU trùng $\rightarrow$ yêu cầu đổi SKU.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-07: Seller quản lý sản phẩm}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc07.png}
+\caption{Minh hoạ UseCase-07}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-08: Admin duyệt hồ sơ KYB của Seller}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Admin duyệt hồ sơ KYB của Seller \\ \hline
+Tác nhân chính & Admin \\ \hline
+Người chịu trách nhiệm & Admin và Hệ thống \\ \hline
+Tiền điều kiện & Có hồ sơ KYB ở trạng thái chờ duyệt. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Trạng thái KYB được cập nhật (Approved/Rejected/Pending bổ sung).
+\item Trạng thái Seller thay đổi tương ứng quy định.
+\end{itemize} \\ \hline
+Kích hoạt & Admin mở màn hình ``Quản lý KYB''. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Hồ sơ thiếu tài liệu.
+\item Tài liệu không hợp lệ/không đọc được.
+\item Lỗi cập nhật trạng thái.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Admin xem danh sách hồ sơ KYB.
+\item Chọn hồ sơ cần xử lý.
+\item Kiểm tra thông tin doanh nghiệp và tài liệu.
+\item Chọn duyệt hoặc từ chối, nhập ghi chú.
+\item Hệ thống lưu kết quả xử lý.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [3a.] Thiếu tài liệu $\rightarrow$ yêu cầu Seller bổ sung.
+\item [4a.] Từ chối hồ sơ $\rightarrow$ cập nhật lý do từ chối.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-08: Admin duyệt hồ sơ KYB}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc08.png}
+\caption{Minh hoạ UseCase-08}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-09: Admin quản lý Campaign / Flash Sale}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Admin quản lý Campaign / Flash Sale \\ \hline
+Tác nhân chính & Admin \\ \hline
+Người chịu trách nhiệm & Admin và Hệ thống \\ \hline
+Tiền điều kiện & Admin đã đăng nhập; có quyền quản trị marketing. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Campaign/Flash sale được tạo hoặc cập nhật hợp lệ.
+\item Áp dụng đúng thời gian hiệu lực và giới hạn sử dụng.
+\end{itemize} \\ \hline
+Kích hoạt & Admin chọn chức năng ``Quản lý khuyến mãi''. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Mã campaign bị trùng.
+\item Thời gian hiệu lực không hợp lệ.
+\item Lỗi lưu dữ liệu.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Admin tạo mới/chỉnh sửa chương trình.
+\item Nhập mã, loại giảm giá, giá trị, thời gian, giới hạn.
+\item Chọn sản phẩm áp dụng (nếu là flash sale).
+\item Hệ thống kiểm tra và lưu cấu hình.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [2a.] Mã trùng $\rightarrow$ yêu cầu mã mới.
+\item [2b.] Thời gian sai $\rightarrow$ yêu cầu cấu hình lại.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-09: Admin quản lý Campaign / Flash Sale}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc09.png}
+\caption{Minh hoạ Use Case UC-09}
+\end{figure}
+
+% ----------------------------------------------------
+
+\textbf{UseCase-10: Khách hàng đánh giá sản phẩm}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\bfseries}p{0.28\textwidth}|p{0.67\textwidth}|}
+\hline
+Tên usecase & Khách hàng đánh giá sản phẩm \\ \hline
+Tác nhân chính & Customer \\ \hline
+Người chịu trách nhiệm & Customer và Hệ thống \\ \hline
+Tiền điều kiện & Customer đã mua sản phẩm; đơn đủ điều kiện đánh giá. \\ \hline
+Đảm bảo thành công &
+\begin{itemize}[leftmargin=*,nosep]
+\item Đánh giá được lưu thành công.
+\item Điểm rating trung bình sản phẩm được cập nhật.
+\end{itemize} \\ \hline
+Kích hoạt & Customer nhấn ``Đánh giá'' tại đơn hàng/chi tiết sản phẩm. \\ \hline
+Ngoại lệ &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Chưa đủ điều kiện đánh giá (chưa mua/chưa hoàn tất đơn).
+\item Nội dung vi phạm quy định.
+\item Lỗi lưu đánh giá.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện chính &
+\begin{enumerate}[leftmargin=*,nosep]
+\item Customer chọn sản phẩm cần đánh giá.
+\item Nhập số sao và nội dung nhận xét.
+\item Gửi đánh giá.
+\item Hệ thống kiểm tra điều kiện và nội dung.
+\item Hệ thống lưu review và cập nhật rating.
+\end{enumerate} \\ \hline
+Chuỗi sự kiện thay thế &
+\begin{enumerate}[leftmargin=*,nosep]
+\item [4a.] Không đủ điều kiện $\rightarrow$ từ chối và thông báo lý do.
+\item [4b.] Nội dung không hợp lệ $\rightarrow$ yêu cầu chỉnh sửa.
+\end{enumerate} \\ \hline
+\caption{Bảng mô tả UseCase-10: Khách hàng đánh giá sản phẩm}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/uc10.png}
+\caption{Minh hoạ UseCase-10}
+\end{figure}
+\subsubsection{Biểu đồ tuần tự}
+
+Phần này trình bày các biểu đồ tuần tự tương ứng với những use case trọng tâm của hệ thống nhằm mô tả rõ luồng tương tác theo thời gian giữa các thành phần: tác nhân, giao diện người dùng (Frontend), API xử lý nghiệp vụ (Backend) và cơ sở dữ liệu (Database). 
+Thông qua các biểu đồ tuần tự, tiến trình xử lý của từng chức năng được thể hiện theo thứ tự thông điệp gửi/nhận, giúp làm rõ trách nhiệm của mỗi thành phần, điều kiện rẽ nhánh, cũng như các trường hợp thành công hoặc thất bại trong quá trình thực thi nghiệp vụ.
+
+Trong phạm vi hệ thống, các biểu đồ tuần tự được xây dựng cho 10 use case chính gồm: đăng ký tài khoản, đăng nhập, xem/tìm kiếm sản phẩm, thêm sản phẩm vào giỏ hàng, tạo đơn hàng, theo dõi đơn hàng (tracking), người bán quản lý sản phẩm, quản trị viên duyệt hồ sơ KYB, quản trị viên quản lý campaign/flash sale và khách hàng đánh giá sản phẩm. 
+Mỗi biểu đồ đều bám sát kịch bản use case đã mô tả ở phần trước, đồng thời thể hiện đầy đủ các bước kiểm tra điều kiện nghiệp vụ như xác thực người dùng, kiểm tra dữ liệu đầu vào, kiểm tra tồn kho, kiểm tra trạng thái đơn hàng và cập nhật dữ liệu sau xử lý.
+
+Về cấu trúc tương tác, hầu hết các luồng nghiệp vụ đều bắt đầu từ hành động của tác nhân tại giao diện người dùng, sau đó frontend gửi yêu cầu đến API thích hợp. 
+Backend tiếp nhận yêu cầu, kiểm tra quyền truy cập, xác minh điều kiện dữ liệu và thực hiện truy vấn/ghi dữ liệu vào database. 
+Kết quả xử lý được trả ngược về frontend để hiển thị cho người dùng dưới dạng thông báo thành công, cảnh báo hoặc lỗi. 
+Đối với các nghiệp vụ có tích hợp dịch vụ ngoài (ví dụ lưu trữ ảnh hoặc gửi thông báo), biểu đồ tuần tự cũng thể hiện rõ điểm mở rộng tương tác giữa hệ thống chính và dịch vụ bên thứ ba.
+
+Ý nghĩa của phần biểu đồ tuần tự không chỉ dừng ở mô tả trực quan luồng xử lý mà còn hỗ trợ kiểm chứng tính đúng đắn của thiết kế hệ thống trước khi triển khai chi tiết. 
+Nhờ đó, nhóm phát triển có thể phát hiện sớm các điểm nghẽn như bước kiểm tra thiếu, luồng xử lý chưa đầy đủ ngoại lệ, hoặc sự phụ thuộc chưa hợp lý giữa các thành phần. 
+Đây cũng là cơ sở quan trọng để đối chiếu với phần thiết kế lớp và thiết kế cơ sở dữ liệu ở các mục tiếp theo, bảo đảm tính nhất quán giữa phân tích nghiệp vụ và hiện thực kỹ thuật.
+
+\textbf{Danh mục hình minh họa (tự chèn):}
+\begin{itemize}
+    \item Hình 4.1: Biểu đồ tuần tự Use Case đăng ký tài khoản.
+    \item Hình 4.2: Biểu đồ tuần tự Use Case đăng nhập hệ thống.
+    \item Hình 4.3: Biểu đồ tuần tự Use Case xem/tìm kiếm sản phẩm.
+    \item Hình 4.4: Biểu đồ tuần tự Use Case thêm sản phẩm vào giỏ hàng.
+    \item Hình 4.5: Biểu đồ tuần tự Use Case tạo đơn hàng.
+    \item Hình 4.6: Biểu đồ tuần tự Use Case theo dõi đơn hàng (tracking).
+    \item Hình 4.7: Biểu đồ tuần tự Use Case người bán quản lý sản phẩm.
+    \item Hình 4.8: Biểu đồ tuần tự Use Case quản trị viên duyệt hồ sơ KYB.
+    \item Hình 4.9: Biểu đồ tuần tự Use Case quản trị viên quản lý campaign/flash sale.
+    \item Hình 4.10: Biểu đồ tuần tự Use Case khách hàng đánh giá sản phẩm.
+\end{itemize}
+\subsubsection{Thiết kế bảng dữ liệu}
+
+Thiết kế bảng dữ liệu của hệ thống được xây dựng theo mô hình cơ sở dữ liệu quan hệ, bảo đảm ba mục tiêu chính: (i) phản ánh đúng miền nghiệp vụ thương mại điện tử đa nhà bán, (ii) duy trì tính toàn vẹn và nhất quán dữ liệu trong các giao dịch, và (iii) tạo nền tảng mở rộng linh hoạt khi quy mô hệ thống tăng. 
+Về phương pháp, các lớp nghiệp vụ ở phần thiết kế lớp được ánh xạ thành các bảng vật lý trong cơ sở dữ liệu; mỗi bảng được xác định khóa chính, khóa ngoại, ràng buộc duy nhất, miền giá trị và các thuộc tính kiểm soát trạng thái/vòng đời dữ liệu.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.05\textwidth]{Screenshot 2026-04-20 225839.png}
+    \includegraphics[width=1.05\textwidth]{Screenshot 2026-04-20 225917.png}
+    \caption{Sơ đồ tổng quan thiết kế bảng dữ liệu của hệ thống}
+\end{figure}
+
+Trong miền tài khoản và phân quyền, các bảng trung tâm gồm \texttt{users}, \texttt{sellers}, \texttt{kyb} và \texttt{addresses}. 
+Bảng \texttt{users} lưu thông tin định danh của người mua, phục vụ xác thực và quản lý hồ sơ cá nhân; bảng \texttt{sellers} biểu diễn thực thể người bán với thông tin gian hàng và trạng thái hoạt động; bảng \texttt{kyb} lưu hồ sơ xác minh pháp lý, giúp kiểm soát điều kiện tham gia kinh doanh của seller; bảng \texttt{addresses} cho phép một người dùng quản lý nhiều địa chỉ nhận hàng. 
+Thiết kế này bảo đảm tách biệt rõ vai trò mua hàng và bán hàng, đồng thời hỗ trợ quy trình kiểm duyệt seller theo chuẩn vận hành thực tế.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.05\textwidth]{Screenshot 2026-04-20 230317.png}
+    \caption{Thiết kế bảng dữ liệu miền tài khoản: users, sellers, kyb, addresses}
+\end{figure}
+
+Trong miền danh mục và sản phẩm, cấu trúc dữ liệu được tổ chức quanh bảng \texttt{products} với các liên kết đến \texttt{categories}, \texttt{brands}, \texttt{product\_images} và \texttt{collections}. 
+Bảng \texttt{categories} hỗ trợ phân cấp cha--con để biểu diễn cây danh mục; bảng \texttt{brands} chuẩn hóa thông tin thương hiệu; bảng \texttt{product\_images} quản lý nhiều ảnh cho một sản phẩm; bảng \texttt{collections} phục vụ nhóm sản phẩm theo chủ đề kinh doanh. 
+Đáng chú ý, các thuộc tính duy nhất như \texttt{slug} và \texttt{sku} được sử dụng nhằm bảo đảm định danh sản phẩm ổn định, hỗ trợ tốt cho truy vấn, hiển thị URL thân thiện và đồng bộ dữ liệu liên hệ thống.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{Screenshot 2026-04-20 230510.png}
+    \caption{Thiết kế bảng dữ liệu miền sản phẩm: categories, brands, products, product\_images, collections}
+\end{figure}
+
+Miền giao dịch được hiện thực thông qua các bảng \texttt{carts}, \texttt{cart\_items}, \texttt{orders}, \texttt{order\_items} và \texttt{shipments}. 
+Trong đó, \texttt{carts} và \texttt{cart\_items} lưu trạng thái lựa chọn trước mua; khi khách hàng xác nhận thanh toán, dữ liệu được chuyển sang \texttt{orders} và \texttt{order\_items} để cố định lịch sử giao dịch. 
+Bảng \texttt{shipments} được tách riêng nhằm quản lý chuyên biệt tiến trình giao nhận, mã vận đơn và trạng thái vận chuyển, từ đó giúp hệ thống hiển thị tracking minh bạch mà không làm phức tạp trạng thái đơn hàng tổng quát. 
+Cách tổ chức này tăng khả năng truy vết, hỗ trợ đối soát và phù hợp với yêu cầu mở rộng tích hợp vận chuyển trong tương lai.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{Screenshot 2026-04-20 230638.png}
+    \caption{Thiết kế bảng dữ liệu miền giao dịch: carts, cart\_items, orders, order\_items, shipments}
+\end{figure}
+
+Ở miền marketing và nội dung, các bảng \texttt{campaigns}, \texttt{flash\_sales}, \\ \texttt{flash\_sale\_products}, \texttt{posts} và \texttt{reviews} đảm nhiệm chức năng tăng trưởng và tối ưu trải nghiệm người dùng. 
+\texttt{campaigns} quản lý ưu đãi theo mã và chính sách áp dụng; \texttt{flash\_sales} cùng bảng liên kết \texttt{flash\_sale\_products} quản lý giảm giá theo khung thời gian và danh mục sản phẩm áp dụng; \texttt{posts} hỗ trợ chiến lược nội dung SEO/GEO; \texttt{reviews} lưu phản hồi người dùng sau mua hàng. 
+Sự kết hợp của nhóm bảng này giúp hệ thống vừa đáp ứng nghiệp vụ bán hàng, vừa nâng cao năng lực truyền thông số và chất lượng ra quyết định của khách hàng.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 230915.png}
+    \caption{Thiết kế bảng dữ liệu miền marketing và nội dung}
+\end{figure}
+
+Về ràng buộc toàn vẹn, hệ thống áp dụng khóa chính định danh duy nhất cho từng bảng, khóa ngoại để bảo đảm liên kết tham chiếu, ràng buộc duy nhất cho các trường nghiệp vụ quan trọng (ví dụ email, slug, sku, mã campaign), cùng các trường trạng thái để kiểm soát vòng đời bản ghi. 
+Bên cạnh đó, các trường thời gian tạo/cập nhật được sử dụng như một cơ chế audit cơ bản, phục vụ truy vết thay đổi và hỗ trợ phân tích vận hành. 
+Cách thiết kế này giúp giảm dữ liệu mồ côi, hạn chế bất nhất nghiệp vụ, đồng thời tăng độ tin cậy cho các báo cáo thống kê.
+
+
+Tổng kết lại, thiết kế bảng dữ liệu của hệ thống đạt được sự cân bằng giữa chuẩn hóa dữ liệu, hiệu quả truy vấn và khả năng mở rộng. 
+Mô hình hiện tại đủ năng lực phục vụ các nghiệp vụ cốt lõi của nền tảng thương mại điện tử đa tác nhân, đồng thời tạo tiền đề thuận lợi cho các cải tiến tiếp theo như tối ưu chỉ mục theo tải thực tế, phân tách dữ liệu theo miền dịch vụ và mở rộng tích hợp với các nền tảng vận hành bên ngoài.
+\section{ Thực nghiệm}
+
+\subsection{Mục tiêu thực nghiệm}
+Chương này trình bày quá trình triển khai và kiểm chứng hệ thống trong môi trường thực tế mô phỏng. 
+Nội dung thực nghiệm tập trung vào ba phần chính: (i) cài đặt sản phẩm, (ii) demo các chức năng cốt lõi, và (iii) đánh giá chất lượng sản phẩm theo tiêu chí kỹ thuật và nghiệp vụ. 
+Kết quả của chương là cơ sở để xác nhận mức độ đáp ứng yêu cầu đã đặt ra trong các chương phân tích và thiết kế.
+
+\subsection{Cài đặt sản phẩm}
+
+\subsubsection{Môi trường cài đặt}
+Hệ thống được triển khai theo mô hình client--server, bao gồm frontend, backend và cơ sở dữ liệu. 
+Môi trường cài đặt sử dụng nền tảng phát triển web hiện đại với TypeScript cho cả hai phía, kết hợp PostgreSQL làm hệ quản trị dữ liệu. 
+Các tham số môi trường được cấu hình thông qua tệp biến môi trường nhằm tách biệt thông tin nhạy cảm khỏi mã nguồn.
+
+\subsubsection{Các bước cài đặt}
+Quy trình cài đặt được thực hiện tuần tự như sau:
+\begin{enumerate}
+    \item Tải mã nguồn dự án và cài đặt thư viện phụ thuộc cho từng thành phần (\href{https://github.com/themanhhhh/project2_hust.git}{Link git của dự án}).
+    \item Cấu hình biến môi trường cho backend, frontend và kết nối cơ sở dữ liệu theo như mẫu trong file .env.example ở trong thư mục của dự án.
+    \item Khởi tạo lược đồ dữ liệu bằng công cụ migration.
+    \item Nạp dữ liệu mẫu (nếu có) để phục vụ kiểm thử chức năng.
+    \item Khởi chạy backend để cung cấp API nghiệp vụ.
+    \item Khởi chạy frontend và kết nối tới API backend.
+\end{enumerate}
+Sau khi hoàn tất các bước trên, hệ thống có thể truy cập qua trình duyệt để tiến hành chạy thử và kiểm chứng chức năng.
+
+\subsubsection{Kết quả cài đặt}
+Kết quả triển khai cho thấy hệ thống hoạt động ổn định ở các nhóm chức năng chính: xác thực người dùng, quản lý sản phẩm, giỏ hàng, đơn hàng, vận chuyển và quản trị nội dung/khuyến mãi. 
+Quá trình cài đặt không phát sinh lỗi nghiêm trọng; các lỗi cấu hình nhỏ (nếu có) chủ yếu liên quan đến biến môi trường và được xử lý trong giai đoạn chuẩn bị.
+
+\subsection{Demo sản phẩm}
+
+\subsubsection{Kịch bản demo tổng quát}
+Kịch bản demo được xây dựng theo luồng nghiệp vụ thực tế của nền tảng thương mại điện tử:
+\begin{enumerate}
+    \item Người dùng truy cập trang chủ, tìm kiếm và xem chi tiết sản phẩm.
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 231859.png}
+    \caption{Giao diện người dùng truy cập trang chủ và tìm kiếm sản phẩm}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 231935.png}
+    \caption{Giao diện người dùng truy cập trang chủ và tìm kiếm sản phẩm theo nhu cầu của mình}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 232000.png}
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 232019.png}
+    \caption{Giao diện người dùng xem chi tiết sản phẩm }
+    \end{figure}
+    \item Người dùng đăng ký/đăng nhập và thêm sản phẩm vào giỏ hàng.
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 231714.png}
+    \caption{Giao diện người đăng nhập}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 231741.png}
+    \caption{Giao diện thông tin cài đặt của người dùng}
+    \end{figure}
+    \item Người dùng thực hiện đặt hàng, theo dõi trạng thái đơn.
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234726.png}
+    \caption{Giao diện người dùng ở giỏ hàng thanh toán}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234735.png}
+    \caption{Giao diện người nhập mã xác nhận order được gửi về mail}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234801.png}
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234832.png}
+    \caption{Giao diện xác nhận order thành công}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234902.png}
+    \caption{Giao diện theo giõi đơn hàng của người dùng}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234841.png}
+    \caption{Giao diện quản lý đơn hàng của seller}
+    \end{figure}
+    \item Người bán đăng nhập khu vực seller, quản lý sản phẩm và xử lý đơn.
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234133.png}
+    \caption{Trang quản lý của seller }
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234201.png}
+    \caption{Giao diện quản lý đơn hàng của seller}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234215.png}
+    \caption{Giao diện quản lý sản phẩm}
+    \end{figure}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Screenshot 2026-04-20 234227.png}
+    \caption{Giao diện thêm sản phẩm }
+    \end{figure}
+    \item Quản trị viên duyệt hồ sơ seller (KYB), quản lý campaign/flash sale và nội dung.
+\end{enumerate}
+Kịch bản trên bảo đảm bao phủ toàn bộ hành trình chính từ phía khách hàng, người bán và quản trị viên.
+
+\subsubsection{Minh họa demo}
+
+\subsection{Đánh giá sản phẩm}
+
+\subsubsection{Tiêu chí đánh giá}
+Sản phẩm được đánh giá theo ba nhóm tiêu chí:
+\begin{itemize}
+    \item \textbf{Đúng chức năng nghiệp vụ}: mức độ đáp ứng các yêu cầu đã phân tích (FR).
+    \item \textbf{Chất lượng kỹ thuật}: hiệu năng phản hồi, ổn định, bảo mật và khả năng mở rộng.
+    \item \textbf{Trải nghiệm người dùng}: tính trực quan giao diện, thao tác dễ hiểu, độ mượt trong hành trình sử dụng.
+\end{itemize}
+
+\subsubsection{Kết quả đánh giá chức năng}
+% Kết quả kiểm thử cho thấy phần lớn chức năng cốt lõi hoạt động đúng theo đặc tả use case: đăng ký/đăng nhập, duyệt sản phẩm, giỏ hàng, tạo đơn, theo dõi đơn, quản lý sản phẩm seller và các chức năng quản trị. 
+% Dữ liệu được đồng bộ nhất quán giữa giao diện và cơ sở dữ liệu, các trạng thái nghiệp vụ được cập nhật đúng vòng đời xử lý.
+
+\subsubsection{Kết quả đánh giá kỹ thuật}
+Về kỹ thuật, hệ thống đạt mức phản hồi tốt trong điều kiện tải thử nghiệm thông thường, kiến trúc tách lớp giúp dễ bảo trì và mở rộng. 
+Cơ chế xác thực và phân quyền được áp dụng cho các chức năng cần bảo vệ, góp phần nâng cao an toàn hệ thống. 
+Ngoài ra, việc sử dụng ORM giúp giảm sai sót truy vấn thủ công và tăng độ tin cậy khi thao tác dữ liệu.
+
+\subsubsection{Ưu điểm, hạn chế và hướng cải tiến}
+% \textbf{Ưu điểm:}
+% \begin{itemize}
+%     \item Kiến trúc rõ ràng, dễ mở rộng theo mô-đun.
+%     \item Bao phủ tốt nghiệp vụ thương mại điện tử đa vai trò.
+%     \item Dễ tích hợp nội dung SEO/GEO và tính năng marketing.
+% \end{itemize}
+
+% \textbf{Hạn chế:}
+% \begin{itemize}
+%     \item Chưa tối ưu sâu cho tải lớn và kịch bản đồng thời cao.
+%     \item Một số chức năng phân tích nâng cao (dashboard chuyên sâu) còn ở mức cơ bản.
+% \end{itemize}
+
+% \textbf{Hướng cải tiến:}
+% \begin{itemize}
+%     \item Bổ sung chiến lược cache và tối ưu truy vấn theo hành vi thực tế.
+%     \item Mở rộng kiểm thử tự động (unit/integration/end-to-end).
+%     \item Tăng cường quan sát hệ thống (logging, monitoring, alerting).
+%     \item Hoàn thiện báo cáo thống kê kinh doanh và vận hành theo thời gian thực.
+% \end{itemize}
+\section*{Kết luận}
+\addcontentsline{toc}{section}{Kết luận}
+Trong quá trình thực hiện đề tài, dù đã cố gắng hoàn thiện cả về nội dung kỹ thuật lẫn hình thức trình bày, báo cáo khó tránh khỏi những thiếu sót nhất định. 
+Em rất mong nhận được ý kiến góp ý từ giảng viên và các bạn để tiếp tục hoàn thiện hệ thống cũng như nâng cao chất lượng nghiên cứu trong các giai đoạn tiếp theo.
+
+Em xin chân thành cảm ơn sự hướng dẫn và hỗ trợ quý báu của giảng viên trong suốt quá trình thực hiện đề tài.
+
+\end{document}

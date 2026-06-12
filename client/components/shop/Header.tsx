@@ -11,7 +11,11 @@ import { useAuth } from '@/contexts/AuthContext';
 export function Header() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    const url = new URL(window.location.href);
+    return url.pathname === '/products' ? url.searchParams.get('q') || '' : '';
+  });
   const { itemCount } = useCart();
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
@@ -26,17 +30,6 @@ export function Header() {
     { href: '/products?category=bag', label: 'TÚI' },
     { href: '/products?sale=true', label: 'SALE OFF' },
   ];
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const url = new URL(window.location.href);
-    if (url.pathname === '/products') {
-      setSearchQuery(url.searchParams.get('q') || '');
-    } else {
-      setSearchQuery('');
-    }
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

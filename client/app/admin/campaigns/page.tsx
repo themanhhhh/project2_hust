@@ -380,7 +380,7 @@ export default function AdminCampaignsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa chiến dịch</AlertDialogTitle>
             <AlertDialogDescription>
-              {deletingCampaign?.name ? `Chiến dịch "${deletingCampaign.name}" sẽ bị xóa vĩnh viễn.` : 'Chiến dịch này sẽ bị xóa vĩnh viễn.'}
+              {deletingCampaign?.name ? `Chiến dịch “${deletingCampaign.name}” sẽ bị xóa vĩnh viễn.` : 'Chiến dịch này sẽ bị xóa vĩnh viễn.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

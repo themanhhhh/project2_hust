@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Store, FileText, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+import { Loader2, Store, FileText, CheckCircle, Clock, XCircle, AlertCircle, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSellerAuth } from '@/contexts/SellerAuthContext';
 import { useSellerKyb } from '@/hooks/useApi';
@@ -11,8 +11,12 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AdminLoading } from '@/components/admin/AdminLoading';
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 function KybStatusBadge({ status }: { status: string }) {
-  const config: Record<string, { icon: any; label: string; className: string }> = {
+  const config: Record<string, { icon: LucideIcon; label: string; className: string }> = {
     pending:  { icon: Clock,        label: 'Đang chờ duyệt',   className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' },
     approved: { icon: CheckCircle,  label: 'Đã được duyệt',   className: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' },
     rejected: { icon: XCircle,      label: 'Bị từ chối',       className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' },
@@ -49,8 +53,8 @@ export default function SellerSettingsPage() {
       await sellerApi.updateProfile({ store_name: storeName, description });
       await refreshSeller();
       toast.success('Cập nhật thông tin gian hàng thành công!');
-    } catch (err: any) {
-      toast.error(err.message || 'Cập nhật thất bại.');
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, 'Cập nhật thất bại.'));
     } finally {
       setSavingProfile(false);
     }
@@ -71,8 +75,8 @@ export default function SellerSettingsPage() {
       });
       toast.success('Nộp hồ sơ KYB thành công! Hồ sơ đang chờ Admin xét duyệt.');
       refetchKyb();
-    } catch (err: any) {
-      toast.error(err.message || 'Nộp hồ sơ thất bại.');
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, 'Nộp hồ sơ thất bại.'));
     } finally {
       setSubmittingKyb(false);
     }
@@ -143,7 +147,7 @@ export default function SellerSettingsPage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Trạng thái hồ sơ</span>
-                <KybStatusBadge status={kyb.status} />
+                <KybStatusBadge status={kyb.status || 'pending'} />
               </div>
 
               <div className="rounded-lg border border-border p-4 space-y-2 text-sm">
@@ -157,7 +161,7 @@ export default function SellerSettingsPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Ngày nộp</span>
-                  <span className="font-medium">{new Date(kyb.created_at).toLocaleDateString('vi-VN')}</span>
+                  <span className="font-medium">{kyb.created_at ? new Date(kyb.created_at).toLocaleDateString('vi-VN') : 'Chưa có'}</span>
                 </div>
               </div>
 
@@ -210,7 +214,18 @@ export default function SellerSettingsPage() {
   );
 }
 
-function KybForm({ businessName, taxId, docUrl, setBusinessName, setTaxId, setDocUrl, onSubmit, loading }: any) {
+interface KybFormProps {
+  businessName: string;
+  taxId: string;
+  docUrl: string;
+  setBusinessName: (value: string) => void;
+  setTaxId: (value: string) => void;
+  setDocUrl: (value: string) => void;
+  onSubmit: (event: React.FormEvent) => void;
+  loading: boolean;
+}
+
+function KybForm({ businessName, taxId, docUrl, setBusinessName, setTaxId, setDocUrl, onSubmit, loading }: KybFormProps) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>

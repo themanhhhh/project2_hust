@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserOrders } from '@/hooks/useApi';
 import { formatPrice } from '@/lib/productMapper';
+import type { LegacyOrder } from '@/lib/types';
 
 const statusMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   pending_payment: { label: 'Chờ thanh toán', variant: 'secondary' },
@@ -39,7 +40,7 @@ export default function OrdersPage() {
     return null;
   }
 
-  const displayOrders = Array.isArray(orders) ? orders : [];
+  const displayOrders = (Array.isArray(orders) ? orders : []) as LegacyOrder[];
 
   return (
     <>
@@ -86,7 +87,7 @@ export default function OrdersPage() {
 
           {!loading && !authLoading && (displayOrders.length > 0 ? (
             <div className="space-y-4">
-              {displayOrders.map((order: any) => {
+              {displayOrders.map((order) => {
                 const orderNumber = order.orderNumber || order.order_number || order.id;
                 const items = order.items || order.order_items || [];
                 const status = statusMap[order.status] || { label: order.status, variant: 'outline' as const };
@@ -116,7 +117,7 @@ export default function OrdersPage() {
                           <div className="min-w-0 flex-1 space-y-2">
                             <p className="text-sm text-slate-700">
                               {items.length > 0
-                                ? items.map((item: any, i: number) => (
+                                ? items.map((item, i) => (
                                     <span key={item.id || i}>
                                       {item.product?.name || 'Sản phẩm'} x{item.quantity || 1}
                                       {i < items.length - 1 && ', '}

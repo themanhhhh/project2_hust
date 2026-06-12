@@ -1,9 +1,20 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import { useCollections } from '@/hooks/useApi';
 import type { Collection } from '@/lib/types';
+
+interface ProductImageLike {
+  url?: string;
+  image_url?: string;
+}
+
+interface ProductWithImages {
+  images?: ProductImageLike[];
+  product_images?: ProductImageLike[];
+}
 
 export function AthleteSpotlight() {
   const { data: collections, loading } = useCollections();
@@ -31,8 +42,8 @@ export function AthleteSpotlight() {
     <section className="bg-white flex flex-col space-y-24 md:space-y-32 py-16 md:py-24">
       {activeCollections.map((collection: Collection, index: number) => {
         // Hàm trợ giúp để đọc hình ảnh từ API do relation trả về snake_case
-        const getImages = (p: any) => p?.images || p?.product_images || [];
-        const getUrl = (img: any) => img?.url || img?.image_url;
+        const getImages = (p?: ProductWithImages) => p?.images || p?.product_images || [];
+        const getUrl = (img?: ProductImageLike) => img?.url || img?.image_url;
 
         // Lấy 2 sản phẩm đầu tiên có hình ảnh để làm hai ảnh nhỏ bên phải
         const showcaseProducts = (collection.products || [])
@@ -52,13 +63,14 @@ export function AthleteSpotlight() {
             <div className={`w-full md:w-1/2 flex flex-col order-first ${isReversed ? 'md:order-last' : ''}`}>
               <Link href={`/products?collection=${collection.slug}`} className="w-full group block overflow-hidden">
                 <div className="relative w-full aspect-[4/5] bg-gray-100 overflow-hidden">
-                  <picture>
-                    <img 
-                      src={collection.thumbnail || FALLBACK_1} 
-                      alt={collection.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[800ms] ease-out"
-                    />
-                  </picture>
+                  <Image
+                    src={collection.thumbnail || FALLBACK_1}
+                    alt={collection.name}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-105"
+                    unoptimized
+                  />
                 </div>
               </Link>
             </div>
@@ -70,24 +82,26 @@ export function AthleteSpotlight() {
               <div className="flex gap-4 md:gap-[20px] mb-10 md:mb-16">
                 <Link href={`/products?collection=${collection.slug}`} className="w-1/2 group block overflow-hidden">
                   <div className="relative w-full aspect-[3/4] bg-gray-100 overflow-hidden">
-                    <picture>
-                      <img 
-                        src={img1} 
-                        alt="Collection Details 1"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[800ms] ease-out"
-                      />
-                    </picture>
+                    <Image
+                      src={img1}
+                      alt="Collection Details 1"
+                      fill
+                      sizes="(min-width: 768px) 25vw, 50vw"
+                      className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-105"
+                      unoptimized
+                    />
                   </div>
                 </Link>
                 <Link href={`/products?collection=${collection.slug}`} className="w-1/2 group block overflow-hidden">
                   <div className="relative w-full aspect-[3/4] bg-gray-100 overflow-hidden">
-                    <picture>
-                      <img 
-                        src={img2} 
-                        alt="Collection Details 2"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[800ms] ease-out"
-                      />
-                    </picture>
+                    <Image
+                      src={img2}
+                      alt="Collection Details 2"
+                      fill
+                      sizes="(min-width: 768px) 25vw, 50vw"
+                      className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-105"
+                      unoptimized
+                    />
                   </div>
                 </Link>
               </div>

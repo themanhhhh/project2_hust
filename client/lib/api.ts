@@ -12,6 +12,11 @@ import {
   Post,
   Shipment,
   Collection,
+  PaginatedApiResult,
+  SellerKyb,
+  SellerKybSubmitInput,
+  SellerProfile,
+  SellerProfileUpdateInput,
 } from './types';
 import { getToken } from './auth';
 import { getSellerToken } from './seller-auth';
@@ -128,7 +133,7 @@ export const uploadApi = {
 // USER API
 // ============================================
 export const userApi = {
-  getAll: async (page: number = 1, limit: number = 1000): Promise<{ data: User[]; pagination: any }> => {
+  getAll: async (page: number = 1, limit: number = 1000): Promise<PaginatedApiResult<User>> => {
     const response = await fetch(`${API_BASE_URL}/users?page=${page}&limit=${limit}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -181,6 +186,15 @@ export interface ProductFilters {
   maxPrice?: number;
 }
 
+export type ProductMutationInput = Omit<Partial<Product>, 'images'> & {
+  description?: string;
+  original_price?: number;
+  stock_quantity?: number;
+  brand_id?: string;
+  category_id?: string;
+  images?: Array<{ url: string; display_order?: number }>;
+};
+
 export const productApi = {
   getAll: (limit?: number): Promise<Product[]> => 
     // Use a high limit to fetch all products (server default is 100)
@@ -217,13 +231,13 @@ export const productApi = {
   getBySlug: (slug: string): Promise<Product> => 
     fetchApi(`/products/slug/${slug}`),
   
-  create: (data: Partial<Product>): Promise<Product> => 
+  create: (data: ProductMutationInput): Promise<Product> => 
     fetchApi('/products', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
   
-  update: (id: string, data: Partial<Product>): Promise<Product> => 
+  update: (id: string, data: ProductMutationInput): Promise<Product> => 
     fetchApi(`/products/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -306,7 +320,7 @@ export interface OrderFilters {
 }
 
 export const orderApi = {
-  getWithFilters: async (filters: OrderFilters): Promise<{ data: Order[]; pagination: any }> => {
+  getWithFilters: async (filters: OrderFilters): Promise<PaginatedApiResult<Order>> => {
     const params = new URLSearchParams();
     if (filters.page) params.append('page', filters.page.toString());
     if (filters.limit) params.append('limit', filters.limit.toString());
@@ -612,7 +626,7 @@ export const statsApi = {
 // POST API
 // ============================================
 export const postApi = {
-  getAll: async (page: number = 1, limit: number = 10): Promise<{ data: Post[]; pagination: any }> => {
+  getAll: async (page: number = 1, limit: number = 10): Promise<PaginatedApiResult<Post>> => {
     const response = await fetch(`${API_BASE_URL}/posts?page=${page}&limit=${limit}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -632,7 +646,7 @@ export const postApi = {
     };
   },
   
-  getPublished: async (page: number = 1, limit: number = 10): Promise<{ data: Post[]; pagination: any }> => {
+  getPublished: async (page: number = 1, limit: number = 10): Promise<PaginatedApiResult<Post>> => {
     const response = await fetch(`${API_BASE_URL}/posts/published?page=${page}&limit=${limit}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -737,20 +751,20 @@ async function fetchSellerApi<T>(
 }
 
 export const sellerApi = {
-  getProfile: (): Promise<any> => fetchSellerApi('/sellers/profile'),
+  getProfile: (): Promise<SellerProfile> => fetchSellerApi('/sellers/profile'),
 
-  updateProfile: (data: any): Promise<any> =>
+  updateProfile: (data: SellerProfileUpdateInput): Promise<SellerProfile> =>
     fetchSellerApi('/sellers/profile', { method: 'PUT', body: JSON.stringify(data) }),
 
   getMyProducts: (sellerId: string): Promise<Product[]> =>
     fetchSellerApi(`/sellers/${sellerId}/products`),
 
-  getMyKyb: (): Promise<any> => fetchSellerApi('/kyb/my-kyb'),
+  getMyKyb: (): Promise<SellerKyb> => fetchSellerApi('/kyb/my-kyb'),
 
-  submitKyb: (data: any): Promise<any> =>
+  submitKyb: (data: SellerKybSubmitInput): Promise<SellerKyb> =>
     fetchSellerApi('/kyb/submit', { method: 'POST', body: JSON.stringify(data) }),
 
-  getMyOrders: (filters: { page?: number; limit?: number; search?: string; status?: string; date?: string }): Promise<{ data: Order[]; pagination: any }> => {
+  getMyOrders: (filters: { page?: number; limit?: number; search?: string; status?: string; date?: string }): Promise<PaginatedApiResult<Order>> => {
     const params = new URLSearchParams();
     if (filters.page) params.append('page', filters.page.toString());
     if (filters.limit) params.append('limit', filters.limit.toString());
@@ -765,6 +779,17 @@ export const sellerApi = {
 
   deleteMyOrder: (orderId: string): Promise<void> =>
     fetchSellerApi(`/sellers/profile/orders/${orderId}`, { method: 'DELETE' }),
+};
+
+// ============================================
+// VNPAY API
+// ============================================
+export const vnpayApi = {
+  createPayment: (orderId: string): Promise<{ paymentUrl: string }> =>
+    fetchApi('/vnpay/create-payment', {
+      method: 'POST',
+      body: JSON.stringify({ orderId }),
+    }),
 };
 
 // Export all APIs as a single object for convenience
@@ -783,6 +808,7 @@ export const api = {
   posts: postApi,
   fulfillment: fulfillmentApi,
   collections: collectionApi,
+  vnpay: vnpayApi,
 };
 
 export default api;

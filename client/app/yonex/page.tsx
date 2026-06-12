@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 
 // Dynamic import with SSR disabled to prevent hydration issues with Framer Motion
 const YonexScroll = dynamic(
@@ -73,9 +74,9 @@ export default function YonexLandingPage() {
                 <p className="text-sm text-white/60 mb-4">Maximum power for aggressive attackers</p>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold text-white/90">$299</span>
-                  <a href="/products" className="text-sm text-white/60 hover:text-white transition-colors">
+                  <Link href="/products" className="text-sm text-white/60 hover:text-white transition-colors">
                     View Details →
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>
@@ -94,9 +95,9 @@ export default function YonexLandingPage() {
                 <p className="text-sm text-white/60 mb-4">Lightning speed for quick exchanges</p>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold text-white/90">$279</span>
-                  <a href="/products" className="text-sm text-white/60 hover:text-white transition-colors">
+                  <Link href="/products" className="text-sm text-white/60 hover:text-white transition-colors">
                     View Details →
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>
@@ -115,17 +116,17 @@ export default function YonexLandingPage() {
                 <p className="text-sm text-white/60 mb-4">Perfect balance of power and control</p>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold text-white/90">$259</span>
-                  <a href="/products" className="text-sm text-white/60 hover:text-white transition-colors">
+                  <Link href="/products" className="text-sm text-white/60 hover:text-white transition-colors">
                     View Details →
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>
           </div>
 
           <div className="text-center">
-            <a 
-              href="/products" 
+            <Link
+              href="/products"
               className="inline-flex items-center px-8 py-4 border border-white/20 text-white/90 
                        hover:bg-white hover:text-black transition-all duration-300 rounded-full"
             >
@@ -133,7 +134,7 @@ export default function YonexLandingPage() {
               <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -144,10 +145,10 @@ export default function YonexLandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="text-2xl font-bold tracking-tighter text-white/90">YONEX</div>
             <div className="flex gap-8 text-sm text-white/60">
-              <a href="/products" className="hover:text-white transition-colors">Products</a>
-              <a href="/about" className="hover:text-white transition-colors">About</a>
-              <a href="/contact" className="hover:text-white transition-colors">Contact</a>
-              <a href="/faq" className="hover:text-white transition-colors">FAQ</a>
+              <Link href="/products" className="hover:text-white transition-colors">Products</Link>
+              <Link href="/about" className="hover:text-white transition-colors">About</Link>
+              <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+              <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
             </div>
             <div className="text-sm text-white/40">© 2026 Yonex. All rights reserved.</div>
           </div>

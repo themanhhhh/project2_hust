@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ArrowRight, Zap, Calendar, Tag, Package } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import { mapProductsForDisplay } from '@/lib/productMapper';
+import type { Product } from '@/lib/types';
 
 interface CampaignProduct {
   id: string;
@@ -60,7 +61,7 @@ export function CampaignSection({ campaign }: CampaignSectionProps) {
 
   // Map products for display
   const displayProducts = campaign.products 
-    ? mapProductsForDisplay(campaign.products as any) 
+    ? mapProductsForDisplay(campaign.products as unknown as Product[])
     : [];
 
   if (displayProducts.length === 0) {

@@ -18,6 +18,7 @@ import fulfillmentRoutes from './fulfillment.routes';
 import collectionRoutes from './collection.routes';
 import sellerRoutes from './seller.routes';
 import kybRoutes from './kyb.routes';
+import vnpayRoutes from './vnpay.routes';
 
 const router = Router();
 
@@ -43,6 +44,7 @@ router.use('/fulfillment', fulfillmentRoutes);
 router.use('/collections', collectionRoutes);
 router.use('/sellers', sellerRoutes);
 router.use('/kyb', kybRoutes);
+router.use('/vnpay', vnpayRoutes);
 
 export default router;
 

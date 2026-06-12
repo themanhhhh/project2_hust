@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Search, Filter, Eye, Download, Loader2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { Search, Filter, Eye, Loader2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSellerOrders } from '@/hooks/useApi';
 import { useSellerAuth } from '@/contexts/SellerAuthContext';
@@ -11,6 +11,7 @@ import { formatPrice } from '@/lib/productMapper';
 import { AdminLoading } from '@/components/admin/AdminLoading';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { LegacyOrder, Order } from '@/lib/types';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,14 +74,17 @@ export default function SellerOrdersPage() {
     date: filters.date,
   });
 
-  const displayOrders = data?.data || [];
+  const displayOrders = useMemo(
+    () => (data?.data || []) as LegacyOrder[],
+    [data?.data]
+  );
   const pagination = data?.pagination || { total: 0, totalPages: 1 };
   const filteredOrdersCount = pagination.total;
   const totalPages = pagination.totalPages;
 
   useEffect(() => {
     const nextState: Record<string, string> = {};
-    displayOrders.forEach((order: any) => {
+    displayOrders.forEach((order) => {
       nextState[order.id] = order.status;
     });
     setStatusState(prev => {
@@ -104,7 +108,7 @@ export default function SellerOrdersPage() {
     setStatusState(prev => ({ ...prev, [orderId]: nextStatus }));
     setUpdatingOrderId(orderId);
     try {
-      await sellerApi.updateMyOrder(orderId, { status: nextStatus } as any);
+      await sellerApi.updateMyOrder(orderId, { status: nextStatus as Order['status'] });
       await refetch();
     } catch {
       setStatusState(prev => ({ ...prev, [orderId]: previousStatus }));
@@ -232,7 +236,7 @@ export default function SellerOrdersPage() {
                     Gian hàng chưa có đơn hàng nào.
                   </td>
                 </tr>
-              ) : displayOrders.map((order: any) => (
+              ) : displayOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-muted/50 transition-colors">
                   <td className="px-6 py-4">
                     <span className="font-mono text-sm font-medium">{order.id}</span>
@@ -245,7 +249,7 @@ export default function SellerOrdersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="font-medium">
-                      {(order.order_items || order.items || []).reduce((acc: number, item: any) => acc + (item.quantity || 1), 0)} sản phẩm
+                      {(order.order_items || order.items || []).reduce((acc, item) => acc + (item.quantity || 1), 0)} sản phẩm
                     </span>
                   </td>
                   <td className="px-6 py-4">

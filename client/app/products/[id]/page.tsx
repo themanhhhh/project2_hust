@@ -2,6 +2,7 @@
 
 import { useState, use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Minus, Plus, Heart, Truck, Shield, RotateCcw, Loader2, Zap } from 'lucide-react';
 import { Header } from '@/components/shop/Header';
@@ -145,11 +146,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </Badge>
                 )}
                 {mainImageUrl ? (
-                  <img
-                    src={mainImageUrl}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <Image src={mainImageUrl} alt={product.name} fill sizes="(min-width: 640px) 50vw, 100vw" className="object-cover" unoptimized />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="w-32 h-32 bg-muted-foreground/10 rounded-full flex items-center justify-center">
@@ -169,17 +166,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       <button
                         key={img.id || i}
                         onClick={() => setSelectedImageIndex(i)}
-                        className={`aspect-square bg-gray-50 rounded-md overflow-hidden cursor-pointer transition-all ${
+                        className={`relative aspect-square bg-gray-50 rounded-md overflow-hidden cursor-pointer transition-all ${
                           selectedImageIndex === i
                             ? 'ring-2 ring-black ring-offset-2'
                             : 'hover:opacity-80 active:opacity-60'
                         }`}
                       >
-                        <img
-                          src={thumbUrl}
-                          alt={`${product.name} - ${i + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                        {thumbUrl && (
+                          <Image src={thumbUrl} alt={`${product.name} - ${i + 1}`} fill sizes="(min-width: 640px) 12vw, 33vw" className="object-cover" unoptimized />
+                        )}
                       </button>
                     );
                   })}

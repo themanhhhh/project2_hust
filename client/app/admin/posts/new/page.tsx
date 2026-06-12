@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Save, Loader2, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { TiptapEditor } from '@/components/admin/TiptapEditor';
@@ -200,11 +201,14 @@ export default function NewPostPage() {
           <div className="bg-white rounded-xl p-6 border border-border">
             <label className="block text-sm font-medium mb-2">Hình đại diện</label>
             {featuredImage ? (
-              <div className="relative">
-                <img
+              <div className="relative h-48 overflow-hidden rounded-lg">
+                <Image
                   src={featuredImage}
                   alt="Featured"
-                  className="w-full h-48 object-cover rounded-lg"
+                  fill
+                  sizes="(min-width: 1024px) 33vw, 100vw"
+                  className="object-cover"
+                  unoptimized
                 />
                 <button
                   type="button"

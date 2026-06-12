@@ -1,7 +1,36 @@
 import type { WorkSheet } from 'xlsx';
 import { formatPrice } from './productMapper';
 
-type OrderLike = Record<string, any>;
+interface OrderItemLike {
+  quantity?: number | string;
+  price?: number | string;
+  sku?: string;
+  name?: string;
+  product?: {
+    name?: string;
+    sku?: string;
+  };
+}
+
+interface OrderLike {
+  id?: string;
+  order_number?: string;
+  orderNumber?: string;
+  customer?: string;
+  email?: string;
+  user?: {
+    name?: string;
+    email?: string;
+  };
+  order_items?: OrderItemLike[];
+  items?: OrderItemLike[];
+  created_at?: string;
+  createdAt?: string;
+  payment_status?: string;
+  paymentStatus?: string;
+  total?: number | string;
+  status?: string;
+}
 
 function normalizeOrderNumber(order: OrderLike): string {
   return order.order_number || order.orderNumber || order.id || '';
@@ -15,16 +44,16 @@ function normalizeCustomerEmail(order: OrderLike): string {
   return order.email || order.user?.email || '';
 }
 
-function normalizeItems(order: OrderLike): OrderLike[] {
+function normalizeItems(order: OrderLike): OrderItemLike[] {
   return order.order_items || order.items || [];
 }
 
 function normalizeItemCount(order: OrderLike): number {
-  return normalizeItems(order).reduce((acc: number, item: OrderLike) => acc + (item.quantity || 1), 0);
+  return normalizeItems(order).reduce((acc, item) => acc + Number(item.quantity || 1), 0);
 }
 
 function normalizeItemNames(order: OrderLike): string {
-  return normalizeItems(order).map((item: OrderLike) => item.product?.name || 'San pham').join(', ');
+  return normalizeItems(order).map((item) => item.product?.name || 'San pham').join(', ');
 }
 
 function normalizeDate(order: OrderLike): string {
@@ -37,11 +66,11 @@ function normalizePaymentStatus(order: OrderLike): string {
   return order.payment_status || order.paymentStatus || '';
 }
 
-function normalizeProductName(item: OrderLike): string {
+function normalizeProductName(item: OrderItemLike): string {
   return item.product?.name || item.name || 'San pham';
 }
 
-function normalizeProductSku(item: OrderLike): string {
+function normalizeProductSku(item: OrderItemLike): string {
   return item.product?.sku || item.sku || '';
 }
 
@@ -103,8 +132,8 @@ export async function exportOrdersToExcel(orders: OrderLike[], fileName: string)
     'So san pham': normalizeItemCount(order),
     'Danh sach san pham': normalizeItemNames(order),
     'Tong tien': Number(order.total || 0),
-    'Tong tien hien thi': formatPrice(order.total || 0),
-    'Trang thai': statusLabels[order.status] || order.status || '',
+    'Tong tien hien thi': formatPrice(Number(order.total || 0)),
+    'Trang thai': order.status ? statusLabels[order.status] || order.status : '',
     'Thanh toan': normalizePaymentStatus(order),
     'Ngay dat': normalizeDate(order),
   }));
@@ -112,7 +141,7 @@ export async function exportOrdersToExcel(orders: OrderLike[], fileName: string)
   const orderItemRows = orders.flatMap((order, orderIndex) => {
     const orderNumber = normalizeOrderNumber(order);
     const customerName = normalizeCustomerName(order);
-    return normalizeItems(order).map((item: OrderLike, itemIndex: number) => ({
+    return normalizeItems(order).map((item, itemIndex) => ({
       STT: `${orderIndex + 1}.${itemIndex + 1}`,
       'Ma don': orderNumber,
       'Khach hang': customerName,
@@ -120,7 +149,7 @@ export async function exportOrdersToExcel(orders: OrderLike[], fileName: string)
       'San pham': normalizeProductName(item),
       'So luong': Number(item.quantity || 0),
       'Don gia': Number(item.price || 0),
-      'Thanh tien': Number((item.price || 0) * (item.quantity || 0)),
+      'Thanh tien': Number(item.price || 0) * Number(item.quantity || 0),
       'Ngay dat': normalizeDate(order),
     }));
   });
