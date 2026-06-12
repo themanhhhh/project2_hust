@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { FulfillmentService } from '../services/fulfillment.service';
-import { ShipmentStatus, CarrierService, ShippingMethod } from '../enums';
+import { CarrierService, ShippingMethod } from '../enums';
 import { AppError } from '../middlewares/error.middleware';
 
 export class FulfillmentController {

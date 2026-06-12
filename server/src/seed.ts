@@ -121,7 +121,7 @@ async function seed() {
     // USERS
     // ============================================
     console.log('👤 Seeding users...');
-    const [admin, u1, u2, u3, u4] = await Promise.all([
+    const [_admin, u1, u2, u3, _u4] = await Promise.all([
       prisma.user.create({ data: { email: 'admin@badshop.com', password_hash: hash, name: 'Admin User', phone: '0901234567', role: 'admin' } }),
       prisma.user.create({ data: { email: 'nguyen.van.a@gmail.com', password_hash: hash, name: 'Nguyễn Văn A', phone: '0912345678' } }),
       prisma.user.create({ data: { email: 'tran.thi.b@gmail.com', password_hash: hash, name: 'Trần Thị B', phone: '0923456789' } }),

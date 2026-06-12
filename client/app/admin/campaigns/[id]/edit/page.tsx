@@ -16,7 +16,6 @@ import {
   Check,
   Loader2,
   Trash2,
-  Upload,
   Image as ImageIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -57,10 +56,19 @@ interface Product {
   brand?: { name: string };
 }
 
+type CampaignProduct = Pick<Product, 'id' | 'name'>;
+type CampaignWithProducts = {
+  products?: CampaignProduct[];
+};
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 function getProductThumbnail(product: Product): string {
   const rawImages = (product.product_images || product.images || []) as Array<{ image_url?: string; url?: string; is_primary?: boolean; is_delete?: boolean }>;
-  const images = rawImages.filter((image: any) => !image.is_delete);
-  const primaryImage = images.find((image: any) => image.is_primary) || images[0];
+  const images = rawImages.filter((image) => !image.is_delete);
+  const primaryImage = images.find((image) => image.is_primary) || images[0];
 
   return primaryImage?.image_url || primaryImage?.url || '/products/placeholder.jpg';
 }
@@ -126,8 +134,9 @@ export default function EditCampaignPage() {
       });
       setSelectedType(campaign.type || 'collection');
       
-      if ((campaign as any).products) {
-         setSelectedProducts((campaign as any).products.map((p: any) => p.id));
+      const campaignProducts = (campaign as CampaignWithProducts).products;
+      if (campaignProducts) {
+         setSelectedProducts(campaignProducts.map((p) => p.id));
       }
     }
   }, [campaign]);
@@ -163,9 +172,9 @@ export default function EditCampaignPage() {
     try {
       const result = await uploadApi.uploadImage(file);
       setFormData(prev => ({ ...prev, image_url: result.url }));
-    } catch (err: any) {
+    } catch (err) {
       setError('Không thể tải ảnh banner. Vui lòng thử lại.');
-      toast.error(err.message || 'Lỗi tải ảnh');
+      toast.error(getErrorMessage(err, 'Lỗi tải ảnh'));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -212,14 +221,15 @@ export default function EditCampaignPage() {
       }
 
       // Sync products logic
-       if ((campaign as any)?.products || selectedProducts.length > 0) {
+       const campaignProducts = (campaign as CampaignWithProducts | null)?.products || [];
+       if (campaignProducts.length > 0 || selectedProducts.length > 0) {
         // Since we don't have a sync endpoint, we will just try to add all selected.
         // It might fail if already exists depending on API, or we can clear and add if we had clear endpoint.
         // A safer way without sync endpoint is to just use 'POST /products' which usually handles "add if not exists" or similar, 
         // OR we should be explicit. 
         // Given earlier analysis: API has addProducts and removeProducts.
         // Let's TRY to compute diff if we have initial products.
-        const currentIds = (campaign as any)?.products?.map((p: any) => p.id) || [];
+        const currentIds = campaignProducts.map((p) => p.id);
         const toAdd = selectedProducts.filter(id => !currentIds.includes(id));
         const toRemove = currentIds.filter((id: string) => !selectedProducts.includes(id));
 
@@ -241,9 +251,10 @@ export default function EditCampaignPage() {
 
       toast.success('Cập nhật chiến dịch thành công');
       router.push('/admin/campaigns');
-    } catch (err: any) {
-      setError(err.message);
-      toast.error(err.message);
+    } catch (err) {
+      const message = getErrorMessage(err, 'Không thể cập nhật chiến dịch');
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -261,8 +272,8 @@ export default function EditCampaignPage() {
           toast.success('Đã xóa chiến dịch');
           setIsDeleteDialogOpen(false);
           router.push('/admin/campaigns');
-      } catch (err: any) {
-          toast.error(err.message);
+      } catch (err) {
+          toast.error(getErrorMessage(err, 'Không thể xóa chiến dịch'));
       } finally {
           setIsDeletingCampaign(false);
       }
@@ -508,7 +519,7 @@ export default function EditCampaignPage() {
                     {selectedProducts.map(id => {
                       const product = (allProducts || []).find((p: Product) => p.id === id);
                       // If product is not in allProducts (maybe not loaded yet or pagination issue), try to find in initial campaign products if available
-                      const productDisplay = product || ((campaign as any)?.products || []).find((p: any) => p.id === id);
+                      const productDisplay = product || ((campaign as CampaignWithProducts | null)?.products || []).find((p) => p.id === id);
                       
                       if (!productDisplay) return null;
                       return (

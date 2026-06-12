@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { 
   Plus, 
@@ -8,9 +8,6 @@ import {
   Trash2, 
   Search,
   Loader2,
-  FolderTree,
-  ChevronRight,
-  ChevronDown,
   Trophy,
   Package,
   X
@@ -39,6 +36,16 @@ import {
 import { useCollections, useProducts } from '@/hooks/useApi';
 import { api } from '@/lib/api';
 import type { Collection } from '@/lib/types';
+
+type CollectionProduct = {
+  id: string;
+  name: string;
+  images?: Array<{ url?: string; image_url?: string }>;
+};
+
+type CollectionWithProducts = Collection & {
+  products?: CollectionProduct[];
+};
 
 export default function AdminCollectionsPage() {
   const { data: collections, loading, refetch } = useCollections();
@@ -76,9 +83,10 @@ export default function AdminCollectionsPage() {
   const [productSearch, setProductSearch] = useState('');
 
   // Selected products for UI
-  const selectedProducts = products?.filter((p: any) => formData.productIds.includes(p.id)) || [];
+  const productList = (products || []) as CollectionProduct[];
+  const selectedProducts = productList.filter((p) => formData.productIds.includes(p.id));
   const searchResults = productSearch 
-    ? products?.filter((p: any) => 
+    ? productList.filter((p) => 
         !formData.productIds.includes(p.id) && 
         p.name.toLowerCase().includes(productSearch.toLowerCase())
       ).slice(0, 10) || []
@@ -128,7 +136,7 @@ export default function AdminCollectionsPage() {
       sport: collection.sport || '',
       achievement: collection.achievement || '',
       is_active: collection.is_active !== undefined ? collection.is_active : true,
-      productIds: collection.products?.map((p: any) => p.id) || [],
+      productIds: (collection as CollectionWithProducts).products?.map((p) => p.id) || [],
     });
     setIsDialogOpen(true);
   };
@@ -450,7 +458,7 @@ export default function AdminCollectionsPage() {
               {/* Đã chọn */}
               {selectedProducts.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
-                  {selectedProducts.map((p: any) => (
+                  {selectedProducts.map((p) => (
                     <div key={p.id} className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 text-sm text-gray-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                       <span className="truncate max-w-[150px] font-medium" title={p.name}>{p.name}</span>
                       <button 
@@ -482,31 +490,35 @@ export default function AdminCollectionsPage() {
               {/* Kết quả tìm kiếm */}
               {productSearch && (
                 <div className="mt-2 grid max-h-48 grid-cols-1 gap-2 overflow-y-auto rounded-md border bg-gray-50/50 p-2 dark:border-slate-800 dark:bg-slate-900/40 sm:grid-cols-2">
-                  {searchResults.map((p: any) => (
-                    <div 
-                      key={p.id} 
-                      onClick={() => {
-                        setFormData(prev => ({
-                          ...prev,
-                          productIds: [...prev.productIds, p.id]
-                        }));
-                        setProductSearch(''); // Reset search after pick
-                      }}
-                      className="flex cursor-pointer items-center gap-3 rounded border bg-white p-2 shadow-sm transition-colors hover:bg-gray-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
-                    >
-                      {p.images && p.images[0] ? (
-                        <Image src={p.images[0].url} alt={p.name} width={32} height={32} className="h-8 w-8 shrink-0 rounded object-cover" unoptimized />
-                      ) : (
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-slate-800">
-                          <Package className="h-4 w-4 text-gray-400 dark:text-slate-400" />
-                        </div>
-                      )}
-                      <span className="flex-1 truncate text-sm font-medium dark:text-white" title={p.name}>{p.name}</span>
-                      <Button type="button" variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0">
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+                  {searchResults.map((p) => {
+                    const imageUrl = p.images?.[0]?.url || p.images?.[0]?.image_url;
+
+                    return (
+                      <div 
+                        key={p.id} 
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            productIds: [...prev.productIds, p.id]
+                          }));
+                          setProductSearch(''); // Reset search after pick
+                        }}
+                        className="flex cursor-pointer items-center gap-3 rounded border bg-white p-2 shadow-sm transition-colors hover:bg-gray-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+                      >
+                        {imageUrl ? (
+                          <Image src={imageUrl} alt={p.name} width={32} height={32} className="h-8 w-8 shrink-0 rounded object-cover" unoptimized />
+                        ) : (
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-slate-800">
+                            <Package className="h-4 w-4 text-gray-400 dark:text-slate-400" />
+                          </div>
+                        )}
+                        <span className="flex-1 truncate text-sm font-medium dark:text-white" title={p.name}>{p.name}</span>
+                        <Button type="button" variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0">
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
                   {searchResults.length === 0 && (
                     <div className="col-span-full py-4 text-center text-sm text-gray-500 dark:text-slate-400">
                       Không tìm thấy sản phẩm nào phù hợp

@@ -1,13 +1,11 @@
 'use client';
 
-import { Bell, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/shop/ThemeToggle';
 
 export function AdminHeader() {
-  const [notifications] = useState(5);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {

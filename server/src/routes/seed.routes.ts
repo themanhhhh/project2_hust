@@ -16,7 +16,7 @@ router.post('/', async (req: Request, res: Response) => {
     await prisma.category.deleteMany();
     await prisma.brand.deleteMany();
 
-    const [catRacket, catShoes, catClothes, catAccessories, catBags, catShuttlecock] = await Promise.all([
+    const [catRacket, catShoes, catClothes] = await Promise.all([
       prisma.category.create({ data: { name: 'Vợt cầu lông', slug: 'vot-cau-long' } }),
       prisma.category.create({ data: { name: 'Giày cầu lông', slug: 'giay-cau-long' } }),
       prisma.category.create({ data: { name: 'Quần áo cầu lông', slug: 'quan-ao-cau-long' } }),
@@ -25,7 +25,7 @@ router.post('/', async (req: Request, res: Response) => {
       prisma.category.create({ data: { name: 'Cầu lông', slug: 'cau-long' } }),
     ]);
 
-    const [brandYonex, brandVictor, brandLining] = await Promise.all([
+    const [brandYonex, brandVictor] = await Promise.all([
       prisma.brand.create({ data: { name: 'Yonex', slug: 'yonex' } }),
       prisma.brand.create({ data: { name: 'Victor', slug: 'victor' } }),
       prisma.brand.create({ data: { name: 'Lining', slug: 'lining' } }),

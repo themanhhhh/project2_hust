@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const { data: stats, loading: statsLoading } = useDashboardStats();
   const { data: sellerOrdersResult, loading: ordersLoading } = useSellerOrders({ page: 1, limit: 1000 });
-  const { data: products, loading: productsLoading } = useProducts();
+  const { loading: productsLoading } = useProducts();
   const orders = useMemo(
     () => (sellerOrdersResult?.data ?? []) as SellerDashboardOrder[],
     [sellerOrdersResult?.data]

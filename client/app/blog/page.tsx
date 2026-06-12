@@ -8,12 +8,13 @@ import { Header } from '@/components/shop/Header';
 import { Footer } from '@/components/shop/Footer';
 import { Button } from '@/components/ui/button';
 import { usePublishedPosts } from '@/hooks/useApi';
+import type { Post } from '@/lib/types';
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
   const { data, loading } = usePublishedPosts(page, 9);
 
-  const posts = data?.data || [];
+  const posts = (data?.data || []) as Post[];
   const pagination = data?.pagination || { page: 1, totalPages: 1, total: 0 };
 
   return (
@@ -67,7 +68,7 @@ export default function BlogPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-                {posts.map((post: any, index: number) => (
+                {posts.map((post, index) => (
                   <article
                     key={post.id}
                     className={`group overflow-hidden rounded-[28px] border border-gray-100 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_-32px_rgba(0,0,0,0.22)] ${

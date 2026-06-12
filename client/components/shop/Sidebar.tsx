@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { X, ChevronRight, ChevronLeft, Instagram, Facebook, Youtube } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -79,14 +79,6 @@ const menuItems: MenuItem[] = [
     href: '/products?sale=true',
     highlight: true,
   },
-];
-
-const bottomLinks = [
-  { label: 'Blog', href: '/blog' },
-  { label: 'Về chúng tôi', href: '/about' },
-  { label: 'Liên hệ', href: '/contact' },
-  { label: 'Chính sách đổi trả', href: '/policy' },
-  { label: 'Câu hỏi thường gặp', href: '/faq' },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {

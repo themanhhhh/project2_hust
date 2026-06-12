@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Save, Loader2, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { TiptapEditor } from '@/components/admin/TiptapEditor';
 import { uploadApi, postApi } from '@/lib/api';
@@ -66,7 +66,7 @@ export default function EditPostPage() {
         setStatus(post.status || 'draft');
         setMetaTitle(post.meta_title || '');
         setMetaDescription(post.meta_description || '');
-      } catch (error) {
+      } catch {
         toast.error('Không thể tải bài viết');
         router.push('/admin/posts');
       } finally {
@@ -87,7 +87,7 @@ export default function EditPostPage() {
     try {
       const result = await uploadApi.uploadImage(file);
       setFeaturedImage(result.url);
-    } catch (error) {
+    } catch {
       toast.error('Không thể tải lên hình ảnh');
     } finally {
       setUploadingImage(false);
@@ -104,16 +104,17 @@ export default function EditPostPage() {
 
     setLoading(true);
     try {
-      await postApi.update(postId, {
+      const payload = {
         title,
         slug: slug || undefined,
         excerpt,
         content,
-        featured_image: featuredImage || null,
+        featured_image: featuredImage || undefined,
         status,
-        meta_title: metaTitle || null,
-        meta_description: metaDescription || null,
-      } as any);
+        meta_title: metaTitle || undefined,
+        meta_description: metaDescription || undefined,
+      };
+      await postApi.update(postId, payload);
 
       toast.success('Cập nhật bài viết thành công');
       router.push('/admin/posts');

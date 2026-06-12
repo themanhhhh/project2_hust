@@ -31,8 +31,8 @@ export default function SellerRegisterPage() {
       } else {
         toast.error(result.message || 'Đăng ký thất bại.');
       }
-    } catch (err: any) {
-      toast.error(err.message || 'Có lỗi xảy ra khi đăng ký');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng ký');
     } finally {
       setIsSubmitting(false);
     }

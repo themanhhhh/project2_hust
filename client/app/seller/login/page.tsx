@@ -30,8 +30,8 @@ export default function SellerLoginPage() {
       } else {
         toast.error(result.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
       }
-    } catch (err: any) {
-      toast.error(err.message || 'Có lỗi xảy ra khi đăng nhập');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng nhập');
     } finally {
       setIsSubmitting(false);
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, Package, ArrowRight, Loader2 } from 'lucide-react';
@@ -31,20 +31,16 @@ interface Order {
   order_items?: OrderItem[];
 }
 
-const paymentLabels: Record<string, string> = {
-  cod: 'Thanh toán khi nhận hàng (COD)',
-  banking: 'Chuyển khoản ngân hàng',
-  momo: 'Ví MoMo',
-  vnpay: 'VNPay',
-};
-
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const orderNumbersParam = searchParams.get('orders') || searchParams.get('order') || '';
-  const orderNumbers = orderNumbersParam
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
+  const orderNumbers = useMemo(
+    () => orderNumbersParam
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean),
+    [orderNumbersParam]
+  );
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(orderNumbers.length > 0);
 
@@ -54,7 +50,7 @@ function CheckoutSuccessContent() {
     const fetchOrder = async () => {
       try {
         const data = await Promise.all(orderNumbers.map((orderNumber) => orderApi.getByOrderNumber(orderNumber)));
-        setOrders(data as any);
+        setOrders(data as unknown as Order[]);
       } catch (err) {
         console.error('Failed to fetch order:', err);
       } finally {
@@ -62,7 +58,7 @@ function CheckoutSuccessContent() {
       }
     };
     fetchOrder();
-  }, [orderNumbersParam]);
+  }, [orderNumbers]);
 
   const grandTotal = orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
 

@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Plus, Search, Edit, Trash2, Eye, Star, Loader2, Image as ImageIcon, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Star, Loader2, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSellerProducts, useBrands, useCategories } from '@/hooks/useApi';
 import { useSellerAuth } from '@/contexts/SellerAuthContext';
 import { formatPrice } from '@/lib/productMapper';
@@ -27,7 +27,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { sellerApi } from '@/lib/api';
 import type { Brand, Category, Product } from '@/lib/types';
 import { AdminLoading } from '@/components/admin/AdminLoading';
 

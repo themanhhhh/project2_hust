@@ -7,7 +7,7 @@ import { ProductCard } from '@/components/shop/ProductCard';
 import { ScrollReveal, StaggeredGrid } from '@/components/shop/ScrollReveal';
 import { useProducts, useCategories } from '@/hooks/useApi';
 import { mapProductsForDisplay } from '@/lib/productMapper';
-import { CampaignSection } from '@/components/shop/CampaignSection';
+import type { Category } from '@/lib/types';
 
 // Category icon renderer
 function CategoryIcon({ iconName, className }: { iconName: string; className?: string }) {
@@ -56,7 +56,7 @@ export default function HomePage() {
   const saleProducts = displayProducts.filter(p => p.badge === 'hot' || p.badge === 'sale').slice(0, 4);
 
   // Use real categories or fallback
-  const categories = apiCategories || [];
+  const categories = (apiCategories || []) as Category[];
 
   return (
     <div className="min-h-screen">
@@ -100,7 +100,7 @@ export default function HomePage() {
               </div>
             </ScrollReveal>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {categories.map((category: any, index: number) => (
+              {categories.map((category, index) => (
                 <ScrollReveal key={category.id} delay={0.1 + index * 0.05} direction="up">
                   <Link
                     href={`/products?category=${category.slug || category.id}`}

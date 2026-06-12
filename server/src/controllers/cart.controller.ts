@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { BaseController } from './base.controller';
 import { CartService } from '../services/cart.service';
-import prisma from '../lib/prisma';
 
 export class CartController extends BaseController {
   private cartService: CartService;

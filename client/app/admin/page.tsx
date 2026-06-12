@@ -10,36 +10,59 @@ import { formatPrice } from '@/lib/productMapper';
 import { AdminLoading } from '@/components/admin/AdminLoading';
 import { AdminSelect } from '@/components/admin/AdminSelect';
 
-export default function AdminDashboardPage() {
-  const monthOptions = [
-    { value: '0', label: 'Tháng 1' },
-    { value: '1', label: 'Tháng 2' },
-    { value: '2', label: 'Tháng 3' },
-    { value: '3', label: 'Tháng 4' },
-    { value: '4', label: 'Tháng 5' },
-    { value: '5', label: 'Tháng 6' },
-    { value: '6', label: 'Tháng 7' },
-    { value: '7', label: 'Tháng 8' },
-    { value: '8', label: 'Tháng 9' },
-    { value: '9', label: 'Tháng 10' },
-    { value: '10', label: 'Tháng 11' },
-    { value: '11', label: 'Tháng 12' },
-  ];
+const monthOptions = [
+  { value: '0', label: 'Tháng 1' },
+  { value: '1', label: 'Tháng 2' },
+  { value: '2', label: 'Tháng 3' },
+  { value: '3', label: 'Tháng 4' },
+  { value: '4', label: 'Tháng 5' },
+  { value: '5', label: 'Tháng 6' },
+  { value: '6', label: 'Tháng 7' },
+  { value: '7', label: 'Tháng 8' },
+  { value: '8', label: 'Tháng 9' },
+  { value: '9', label: 'Tháng 10' },
+  { value: '10', label: 'Tháng 11' },
+  { value: '11', label: 'Tháng 12' },
+];
 
+type DashboardOrderItem = {
+  quantity?: number;
+  product_id?: string;
+  productId?: string;
+  product?: { id?: string; name?: string };
+};
+
+type DashboardOrder = {
+  id?: string;
+  orderNumber?: string;
+  status?: string;
+  total?: number;
+  created_at?: string;
+  createdAt?: string;
+  customer?: string;
+  email?: string;
+  user?: { name?: string; email?: string };
+  products?: string[];
+  items?: DashboardOrderItem[];
+  order_items?: DashboardOrderItem[];
+};
+
+export default function AdminDashboardPage() {
   const [chartView, setChartView] = useState<'year' | 'month' | 'week'>('month');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
   const { data: stats, loading: statsLoading } = useDashboardStats();
   const { data: orders, loading: ordersLoading } = useOrders();
-  const { data: products, loading: productsLoading } = useProducts();
+  const { loading: productsLoading } = useProducts();
   
   // Use API data only - no mock fallback
-  const recentOrders = orders?.slice(0, 5) || [];
+  const orderList = useMemo(() => (orders || []) as DashboardOrder[], [orders]);
+  const recentOrders = orderList.slice(0, 5);
   const loading = statsLoading || ordersLoading || productsLoading; // Keep others for lists for now
 
   const availableYears = useMemo(() => {
     const years = new Set<number>();
-    (orders || []).forEach((order: any) => {
+    orderList.forEach((order) => {
       const rawDate = order.created_at || order.createdAt;
       if (!rawDate) return;
       const date = new Date(rawDate);
@@ -53,7 +76,7 @@ export default function AdminDashboardPage() {
     }
 
     return Array.from(years).sort((a, b) => b - a);
-  }, [orders]);
+  }, [orderList]);
 
   const revenueChartData = useMemo(() => {
     if (chartView === 'year') {
@@ -62,7 +85,7 @@ export default function AdminDashboardPage() {
         .sort((a, b) => a - b)
         .map((year) => ({ label: `${year}`, revenue: 0, orders: 0 }));
 
-      (orders || []).forEach((order: any) => {
+      orderList.forEach((order) => {
         if (order.status === 'cancelled') return;
 
         const rawDate = order.created_at || order.createdAt;
@@ -89,7 +112,7 @@ export default function AdminDashboardPage() {
         { label: 'W5', revenue: 0, orders: 0 },
       ];
 
-      (orders || []).forEach((order: any) => {
+      orderList.forEach((order) => {
         if (order.status === 'cancelled') return;
 
         const rawDate = order.created_at || order.createdAt;
@@ -115,7 +138,7 @@ export default function AdminDashboardPage() {
     const monthLabels = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
     const initial = monthLabels.map((label) => ({ label, revenue: 0, orders: 0 }));
 
-    (orders || []).forEach((order: any) => {
+    orderList.forEach((order) => {
       if (order.status === 'cancelled') return;
 
       const rawDate = order.created_at || order.createdAt;
@@ -130,7 +153,7 @@ export default function AdminDashboardPage() {
     });
 
     return initial;
-  }, [availableYears, chartView, orders, selectedMonth, selectedYear]);
+  }, [availableYears, chartView, orderList, selectedMonth, selectedYear]);
 
   const selectedScopeRevenue = useMemo(
     () => revenueChartData.reduce((sum, item) => sum + item.revenue, 0),
@@ -150,7 +173,7 @@ export default function AdminDashboardPage() {
       return `${formatPrice(selectedScopeRevenue)} trong ${monthLabel.toLowerCase()} năm ${selectedYear}`;
     }
     return `${formatPrice(selectedScopeRevenue)} trong năm ${selectedYear}`;
-  }, [chartView, monthOptions, selectedMonth, selectedScopeRevenue, selectedYear]);
+  }, [chartView, selectedMonth, selectedScopeRevenue, selectedYear]);
 
   const dynamicStats = {
     totalRevenue: stats?.totalRevenue || 0,
@@ -166,11 +189,11 @@ export default function AdminDashboardPage() {
   const topSellingProducts = useMemo(() => {
     const productSales = new Map<string, { id: string; name: string; orders: number; quantity: number }>();
 
-    (orders || []).forEach((order: any) => {
+    orderList.forEach((order) => {
       if (order.status === 'cancelled') return;
 
       const items = order.order_items || order.items || [];
-      items.forEach((item: any) => {
+      items.forEach((item) => {
         const productId = item.product?.id || item.product_id || item.productId;
         if (!productId) return;
 
@@ -195,7 +218,7 @@ export default function AdminDashboardPage() {
         return b.orders - a.orders;
       })
       .slice(0, 3);
-  }, [orders]);
+  }, [orderList]);
 
   const statusColors: Record<string, string> = {
     pending: 'bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-300',
@@ -359,7 +382,7 @@ export default function AdminDashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {recentOrders.map((order: any) => (
+              {recentOrders.map((order) => (
                 <tr key={order.id || order.orderNumber} className="hover:bg-muted/50 transition-colors">
                   <td className="px-6 py-4">
                     <span className="font-mono text-sm font-medium">{order.id || order.orderNumber}</span>
@@ -372,15 +395,15 @@ export default function AdminDashboardPage() {
                   </td>
                   <td className="px-6 py-4">
                     <p className="text-sm truncate max-w-[200px]">
-                      {order.products?.join(', ') || order.items?.map((i: any) => i.product?.name).join(', ') || 'Sản phẩm'}
+                      {order.products?.join(', ') || order.items?.map((i) => i.product?.name).join(', ') || 'Sản phẩm'}
                     </p>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-medium">{formatPrice(order.total)}</span>
+                    <span className="font-medium">{formatPrice(order.total || 0)}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-700'}`}>
-                      {statusLabels[order.status] || order.status}
+                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status || ''] || 'bg-gray-100 text-gray-700'}`}>
+                      {statusLabels[order.status || ''] || order.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">

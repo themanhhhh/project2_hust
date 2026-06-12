@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Save, Loader2, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { TiptapEditor } from '@/components/admin/TiptapEditor';
 import { postApi, uploadApi } from '@/lib/api';
@@ -56,7 +56,7 @@ export default function NewPostPage() {
     try {
       const result = await uploadApi.uploadImage(file);
       setFeaturedImage(result.url);
-    } catch (error) {
+    } catch {
       toast.error('Không thể tải lên hình ảnh');
     } finally {
       setUploadingImage(false);
@@ -73,16 +73,17 @@ export default function NewPostPage() {
 
     setLoading(true);
     try {
-      await postApi.create({
+      const payload = {
         title,
         slug: slug || undefined,
         excerpt,
         content,
-        featured_image: featuredImage || null,
+        featured_image: featuredImage || undefined,
         status,
-        meta_title: metaTitle || null,
-        meta_description: metaDescription || null,
-      } as any);
+        meta_title: metaTitle || undefined,
+        meta_description: metaDescription || undefined,
+      };
+      await postApi.create(payload);
 
       toast.success('Tạo bài viết thành công');
       router.push('/admin/posts');

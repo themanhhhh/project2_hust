@@ -5,15 +5,15 @@ import { Footer } from '@/components/shop/Footer';
 import { HeroBanner } from '@/components/shop/HeroBanner';
 import { CategoryGrid } from '@/components/shop/CategoryGrid';
 import { AthleteSpotlight } from '@/components/shop/AthleteSpotlight';
-import { TechShowcase } from '@/components/shop/TechShowcase';
 import { ProductCarousel } from '@/components/shop/ProductCarousel';
 import { CampaignSection } from '@/components/shop/CampaignSection';
 import { useProducts, useHomepageCampaigns } from '@/hooks/useApi';
 import { mapProductsForDisplay } from '@/lib/productMapper';
 import { Loader2 } from 'lucide-react';
+import type { Campaign } from '@/lib/types';
 
 export default function HomePage() {
-  const { data: apiProducts, loading, error } = useProducts(100);
+  const { data: apiProducts, loading } = useProducts(100);
   const { data: campaigns } = useHomepageCampaigns();
   
   // Map API products to display format
@@ -62,7 +62,7 @@ export default function HomePage() {
         )}
 
         {/* Campaign Collections from API */}
-        {activeCampaigns.map((campaign: any) => (
+        {(activeCampaigns as Campaign[]).map((campaign) => (
           <CampaignSection key={campaign.id} campaign={campaign} />
         ))}
 

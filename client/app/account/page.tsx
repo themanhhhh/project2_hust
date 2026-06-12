@@ -188,125 +188,6 @@ function ChangePasswordSection() {
   );
 }
 
-// Login Form Component
-function LoginForm() {
-  const router = useRouter();
-  const { login } = useAuth();
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const result = await login(formData);
-      
-      if (result.success) {
-        // Redirect based on user role
-        if (result.user?.role === 'admin') {
-          router.push('/admin');
-        } else {
-          router.push('/');
-        }
-      } else {
-        toast.error(result.message || 'Đăng nhập thất bại');
-      }
-    } catch {
-      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <main className="min-h-screen bg-white flex flex-col">
-      <div className="py-6 border-b border-gray-100">
-        <Link href="/" className="block text-center">
-          <h1 className="text-xl font-bold tracking-[0.3em] uppercase">
-            BadmintonPro
-          </h1>
-        </Link>
-      </div>
-
-      <div className="flex-1 flex items-center justify-center px-4 py-16">
-        <Card className="w-full max-w-md border-0 shadow-none">
-          <CardHeader className="text-center space-y-1 pb-8">
-            <CardTitle className="text-2xl font-bold">Đăng nhập</CardTitle>
-            <CardDescription>
-              Đăng nhập để mua sắm và theo dõi đơn hàng
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="email">
-                  Email <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="email@example.com"
-                  className="h-12 bg-gray-50"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">
-                  Mật khẩu <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Mật khẩu"
-                  className="h-12 bg-gray-50"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="text-left">
-                <Link 
-                  href="/account/forgot-password" 
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Quên thông tin tài khoản
-                </Link>
-              </div>
-
-              <Button type="submit" className="w-full h-12" disabled={loading}>
-                {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-              </Button>
-            </form>
-
-            <div className="mt-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Bạn chưa có tài khoản?{' '}
-                <Link 
-                  href="/account/register" 
-                  className="text-foreground font-medium hover:underline"
-                >
-                  Đăng ký ngay
-                </Link>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </main>
-  );
-}
-
 // Order type from API
 interface OrderItem {
   id: string;
@@ -351,7 +232,7 @@ function AccountDashboard() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [, setOrdersLoading] = useState(true);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [addressesLoading, setAddressesLoading] = useState(true);
 

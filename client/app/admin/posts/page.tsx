@@ -13,7 +13,6 @@ import {
   EyeOff,
   Loader2,
   Check,
-  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePosts } from '@/hooks/useApi';
@@ -29,6 +28,18 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+type AdminPost = {
+  id: string;
+  title?: string;
+  slug?: string;
+  excerpt?: string;
+  status?: string;
+  featured_image?: string;
+  thumbnail?: string;
+  view_count?: number;
+  created_at?: string;
+};
+
 export default function AdminPostsPage() {
   const [page, setPage] = useState(1);
   const { data, loading, refetch } = usePosts(page, 10);
@@ -37,10 +48,10 @@ export default function AdminPostsPage() {
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
   const [isDeletingPost, setIsDeletingPost] = useState(false);
 
-  const posts = data?.data || [];
+  const posts = (data?.data || []) as AdminPost[];
   const pagination = data?.pagination || { page: 1, totalPages: 1, total: 0 };
 
-  const filteredPosts = posts.filter((post: any) => {
+  const filteredPosts = posts.filter((post) => {
     const matchesSearch = post.title?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -70,14 +81,14 @@ export default function AdminPostsPage() {
       } else {
         toast.error('Không thể xóa bài viết');
       }
-    } catch (error) {
+    } catch {
       toast.error('Có lỗi xảy ra');
     } finally {
       setIsDeletingPost(false);
     }
   };
 
-  const handleToggleStatus = async (post: any) => {
+  const handleToggleStatus = async (post: AdminPost) => {
     const newStatus = post.status === 'published' ? 'draft' : 'published';
     
     try {
@@ -94,7 +105,7 @@ export default function AdminPostsPage() {
       } else {
         toast.error('Không thể cập nhật trạng thái');
       }
-    } catch (error) {
+    } catch {
       toast.error('Có lỗi xảy ra');
     }
   };
@@ -143,7 +154,7 @@ export default function AdminPostsPage() {
             <div>
               <p className="text-sm text-muted-foreground">Đã đăng</p>
               <p className="text-2xl font-bold text-foreground">
-                {posts.filter((p: any) => p.status === 'published').length}
+                {posts.filter((p) => p.status === 'published').length}
               </p>
             </div>
           </div>
@@ -156,7 +167,7 @@ export default function AdminPostsPage() {
             <div>
               <p className="text-sm text-muted-foreground">Nháp</p>
               <p className="text-2xl font-bold text-foreground">
-                {posts.filter((p: any) => p.status === 'draft').length}
+                {posts.filter((p) => p.status === 'draft').length}
               </p>
             </div>
           </div>
@@ -215,14 +226,14 @@ export default function AdminPostsPage() {
                   </td>
                 </tr>
               )}
-              {!loading && filteredPosts.map((post: any) => (
+              {!loading && filteredPosts.map((post) => (
                 <tr key={post.id} className="hover:bg-muted/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       {post.featured_image ? (
                         <Image
                           src={post.featured_image}
-                          alt={post.title}
+                          alt={post.title || 'Bài viết'}
                           width={48}
                           height={48}
                           className="h-12 w-12 rounded-lg object-cover"
@@ -248,8 +259,8 @@ export default function AdminPostsPage() {
                     <span className="text-sm">{post.view_count || 0}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${statusColors[post.status] || 'bg-secondary text-secondary-foreground'}`}>
-                      {statusLabels[post.status] || post.status}
+                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${statusColors[post.status || ''] || 'bg-secondary text-secondary-foreground'}`}>
+                      {statusLabels[post.status || ''] || post.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">

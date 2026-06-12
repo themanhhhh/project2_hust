@@ -1,6 +1,18 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Header } from '@/components/shop/Header';
 import { Footer } from '@/components/shop/Footer';
+
+export const metadata: Metadata = {
+  title: 'Chính sách đổi trả - SmashX',
+  description: 'Chính sách đổi trả sản phẩm cầu lông tại SmashX: điều kiện đổi trả, quy trình xử lý, phí vận chuyển và thời gian hoàn tiền.',
+  alternates: { canonical: '/policy' },
+  openGraph: {
+    title: 'Chính sách đổi trả - SmashX',
+    description: 'Thông tin chính sách đổi trả, bảo hành và hoàn tiền dành cho khách hàng SmashX.',
+    url: '/policy',
+  },
+};
 
 export default function PolicyPage() {
   return (

@@ -110,7 +110,7 @@ export default function EditProductPage() {
           ),
         });
         setImages(product.product_images?.map((img: ProductImageLike) => img.image_url || img.url || '') || product.images?.map((img: ProductImageLike) => img.url || img.image_url || '') || []);
-      } catch (err) {
+      } catch {
         toast.error('Không thể tải thông tin sản phẩm');
       } finally {
         setLoading(false);

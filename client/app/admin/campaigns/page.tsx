@@ -10,7 +10,6 @@ import {
   Edit, 
   Trash2, 
   Play, 
-  Pause, 
   Zap,
   Ticket,
   Image,
@@ -38,21 +37,38 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+type CampaignListItem = {
+  id: string;
+  name: string;
+  code?: string;
+  type?: string;
+  status?: string;
+  isActive?: boolean;
+  budget?: number;
+  revenue?: number;
+  spent?: number;
+  impressions?: number;
+  clicks?: number;
+  conversions?: number;
+  start_date?: string;
+  end_date?: string;
+};
+
 export default function AdminCampaignsPage() {
   const { data: campaigns, loading } = useCampaigns();
   const [typeFilter, setTypeFilter] = useState('all');
-  const [deletingCampaign, setDeletingCampaign] = useState<any | null>(null);
+  const [deletingCampaign, setDeletingCampaign] = useState<CampaignListItem | null>(null);
   const [isDeletingCampaign, setIsDeletingCampaign] = useState(false);
 
   // Use API data directly
-  const displayCampaigns = campaigns || [];
+  const displayCampaigns = (campaigns || []) as CampaignListItem[];
 
   // Calculate dynamic stats
   const dynamicStats = {
     totalCampaigns: displayCampaigns.length,
-    activeCampaigns: displayCampaigns.filter((c: any) => c.status === 'active' || c.isActive).length,
-    totalBudget: (displayCampaigns as any[]).reduce((sum, c) => sum + (c.budget || 0), 0),
-    totalRevenue: (displayCampaigns as any[]).reduce((sum, c) => sum + (c.revenue || 0), 0),
+    activeCampaigns: displayCampaigns.filter((c) => c.status === 'active' || c.isActive).length,
+    totalBudget: displayCampaigns.reduce((sum, c) => sum + (c.budget || 0), 0),
+    totalRevenue: displayCampaigns.reduce((sum, c) => sum + (c.revenue || 0), 0),
   };
 
   const statusColors: Record<string, string> = {
@@ -249,8 +265,9 @@ export default function AdminCampaignsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {displayCampaigns.map((campaign: any) => {
-                const TypeIcon = typeIcons[campaign.type] || Ticket;
+              {displayCampaigns.map((campaign) => {
+                const campaignType = campaign.type || '';
+                const TypeIcon = typeIcons[campaignType] || Ticket;
                 
                 // Fields might be undefined or different based on type usage
                 const budget = campaign.budget || 0;
@@ -263,7 +280,7 @@ export default function AdminCampaignsPage() {
                   ? ((conversions / clicks) * 100).toFixed(1) 
                   : 0;
                 
-                const status = campaign.status; // Now using status field directly
+                const status = campaign.status || 'draft'; // Now using status field directly
                 
                 return (
                   <tr key={campaign.id} className="hover:bg-muted/50 transition-colors">
@@ -272,7 +289,7 @@ export default function AdminCampaignsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColors[campaign.type] || 'bg-muted text-muted-foreground'}`}>
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColors[campaignType] || 'bg-muted text-muted-foreground'}`}>
                           <TypeIcon className="h-5 w-5" aria-hidden="true" />
                         </div>
                         <div>
@@ -282,8 +299,8 @@ export default function AdminCampaignsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${typeColors[campaign.type] || 'bg-muted text-muted-foreground'}`}>
-                        {typeLabels[campaign.type] || campaign.type}
+                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${typeColors[campaignType] || 'bg-muted text-muted-foreground'}`}>
+                        {typeLabels[campaignType] || campaignType}
                       </span>
                     </td>
                     <td className="px-6 py-4">

@@ -17,13 +17,13 @@ export class SellerService {
       include: { kyb: true },
     });
     if (!seller) throw new Error('Seller không tồn tại');
-    const { password_hash, ...profile } = seller;
+    const { password_hash: _password_hash, ...profile } = seller;
     return profile;
   }
 
   async updateProfile(sellerId: string, data: any) {
     // Không cho phép đổi email/password qua đây
-    const { email, password_hash, ...safeData } = data;
+    const { email: _email, password_hash: _password_hash, ...safeData } = data;
     return prisma.seller.update({ where: { id: sellerId }, data: safeData });
   }
 
@@ -158,14 +158,14 @@ export class SellerService {
       prisma.seller.count({ where: { is_delete: false } }),
     ]);
     // Strip password_hash
-    const data = sellers.map(({ password_hash, ...s }) => s);
+    const data = sellers.map(({ password_hash: _password_hash, ...s }) => s);
     return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   }
 
   async findById(id: string) {
     const seller = await prisma.seller.findFirst({ where: { id, is_delete: false }, include: { kyb: true } });
     if (!seller) return null;
-    const { password_hash, ...profile } = seller;
+    const { password_hash: _password_hash, ...profile } = seller;
     return profile;
   }
 

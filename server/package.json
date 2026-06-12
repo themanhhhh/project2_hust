@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "lint": "eslint \"src/**/*.ts\" \"prisma.config.ts\"",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "seed": "ts-node src/seed.ts",
@@ -36,6 +37,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@prisma/config": "^7.7.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
@@ -46,8 +48,11 @@
     "@types/nodemailer": "^7.0.11",
     "@types/qs": "^6.15.1",
     "@types/uuid": "^9.0.7",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.61.0"
   }
 }

@@ -1,7 +1,18 @@
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { Header } from '@/components/shop/Header';
 import { Footer } from '@/components/shop/Footer';
+
+export const metadata: Metadata = {
+  title: 'Về SmashX - Sàn thương mại điện tử cầu lông',
+  description: 'Tìm hiểu về SmashX, nền tảng thương mại điện tử chuyên thiết bị cầu lông chính hãng, tư vấn sản phẩm và hỗ trợ người chơi mọi cấp độ.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'Về SmashX',
+    description: 'SmashX cung cấp sản phẩm cầu lông chính hãng, nội dung tư vấn và trải nghiệm mua sắm dành cho cộng đồng cầu lông.',
+    url: '/about',
+  },
+};
 
 export default function AboutPage() {
   return (

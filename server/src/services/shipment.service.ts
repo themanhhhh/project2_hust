@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma';
-import { ShipmentStatus, OrderStatus } from '@prisma/client';
+import { ShipmentStatus } from '@prisma/client';
 
 export class ShipmentService {
   async findById(id: string) {

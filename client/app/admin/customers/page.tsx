@@ -32,6 +32,38 @@ import { exportCustomersToExcel } from '@/lib/exportCustomersToExcel';
 import { createExcelFileName } from '@/lib/excelExportUtils';
 import { api } from '@/lib/api';
 
+type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  is_active?: boolean;
+  createdAt?: string;
+  created_at?: string;
+};
+
+type AdminOrder = {
+  status?: string;
+  total?: number | string;
+  userId?: string;
+  user_id?: string;
+  user?: { id?: string };
+  createdAt?: string;
+  created_at?: string;
+};
+
+type CustomerRow = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  totalOrders: number;
+  totalSpent: number;
+  status: 'active' | 'inactive';
+  joinedDate: string;
+  lastOrderDate: string;
+};
+
 export default function AdminCustomersPage() {
   const { data: usersResponse, loading, refetch } = useUsers();
   const { data: orders, loading: ordersLoading } = useOrders();
@@ -41,10 +73,10 @@ export default function AdminCustomersPage() {
   const [exporting, setExporting] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState<any | null>(null);
+  const [editingCustomer, setEditingCustomer] = useState<CustomerRow | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingCustomer, setDeletingCustomer] = useState<any | null>(null);
+  const [deletingCustomer, setDeletingCustomer] = useState<CustomerRow | null>(null);
   const [isDeletingCustomer, setIsDeletingCustomer] = useState(false);
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
@@ -62,14 +94,14 @@ export default function AdminCustomersPage() {
     is_active: true,
   });
   const itemsPerPage = 10;
-  const users = usersResponse?.data || [];
+  const users = useMemo(() => (usersResponse?.data || []) as AdminUser[], [usersResponse]);
   const apiPagination = usersResponse?.pagination || { total: users.length, totalPages: Math.ceil(users.length / itemsPerPage) };
 
   // Transform API users to customer format
   const allCustomers = useMemo(() => {
     const ordersByUser = new Map<string, { totalOrders: number; totalSpent: number; lastOrderDate: string }>();
 
-    (orders || []).forEach((order: any) => {
+    ((orders || []) as AdminOrder[]).forEach((order) => {
       if (order.status === 'cancelled') return;
 
       const userId = order.userId || order.user_id || order.user?.id;
@@ -108,7 +140,7 @@ export default function AdminCustomersPage() {
         totalOrders: orderStats?.totalOrders || 0,
         totalSpent: orderStats?.totalSpent || 0,
         status: user.is_active === false ? 'inactive' as const : 'active' as const,
-        joinedDate: (user.createdAt || (user as any).created_at) ? new Date(user.createdAt || (user as any).created_at).toLocaleDateString('vi-VN') : '',
+        joinedDate: (user.createdAt || user.created_at) ? new Date(user.createdAt || user.created_at || '').toLocaleDateString('vi-VN') : '',
         lastOrderDate: orderStats?.lastOrderDate ? new Date(orderStats.lastOrderDate).toLocaleDateString('vi-VN') : '',
       };
     });
@@ -184,7 +216,7 @@ export default function AdminCustomersPage() {
     setSelectedUserIds((prev) => prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]);
   };
 
-  const handleOpenEdit = (customer: any) => {
+  const handleOpenEdit = (customer: CustomerRow) => {
     setEditingCustomer(customer);
     setEditFormData({
       name: customer.name || '',
@@ -211,14 +243,15 @@ export default function AdminCustomersPage() {
 
     try {
       setIsSubmitting(true);
-      await api.users.create({
+      const createPayload = {
         name: createFormData.name,
         email: createFormData.email,
         phone: createFormData.phone || undefined,
         password: createFormData.password,
-        role: 'customer',
+        role: 'customer' as const,
         is_active: createFormData.is_active,
-      } as any);
+      };
+      await api.users.create(createPayload);
       toast.success('Tạo khách hàng thành công');
       setIsCreateDialogOpen(false);
       await refetch();

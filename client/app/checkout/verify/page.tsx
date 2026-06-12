@@ -111,8 +111,8 @@ function VerifyOTPContent() {
         setOtp(['', '', '', '', '', '']);
         inputRefs.current[0]?.focus();
       }
-    } catch (err: any) {
-      setError(err?.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
